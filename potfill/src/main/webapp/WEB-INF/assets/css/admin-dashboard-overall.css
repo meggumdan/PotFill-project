@@ -22,7 +22,7 @@ body {
 .admin-main {
     margin-left: 202px; /* 사이드바 너비 */
     margin-top: 77px; /* 헤더 높이 */
-    padding: 8px;
+    padding: 5px;
     min-height: calc(100vh - 77px);
     width: calc(100% - 202px);
 }
@@ -40,21 +40,21 @@ body {
 /* ========== 핵심 지표 카드 영역 ========== */
 .metrics-section {
     width: 100%;
-    max-width: 1000px;
-    height: 90px;
-    margin: 0 auto 8px auto;
+    max-width: 900px;
+    height: 75px;
+    margin: 0 auto 5px auto;
     display: flex;
-    gap: 15px;
+    gap: 12px;
     justify-content: center;
-    padding: 0 40px;
+    padding: 0 30px;
 }
 
 .metric-card {
-    width: 220px;
-    height: 90px;
+    width: 200px;
+    height: 75px;
     background: #526484;
-    border-radius: 10px;
-    padding: 12px;
+    border-radius: 8px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -66,48 +66,52 @@ body {
 .metric-header {
     display: flex;
     align-items: center;
-    gap: 5px;
-    margin-bottom: 4px;
+    gap: 4px;
+    margin-bottom: 3px;
 }
 
 .metric-icon {
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .metric-title {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
     color: #FFFCFC;
 }
 
 .metric-value {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     color: #FFFCFC;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
     line-height: 1;
 }
 
 .metric-change {
-    font-size: 10px;
+    font-size: 9px;
     color: #1EE0AC;
     font-weight: 600;
     margin-bottom: 1px;
 }
 
 .metric-period {
-    font-size: 8px;
+    font-size: 7px;
     color: #C4CEFE;
 }
 
 /* ========== 하단 그리드 레이아웃 ========== */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 1fr 380px;
-    grid-template-rows: 200px 280px;
-    gap: 8px;
-    height: 488px;
-    max-width: 1300px;
+    grid-template-columns: 1fr 350px;
+    grid-template-rows: 165px 235px; 
+    /* 
+    첫 번째 값(150px)이 우선처리 지역 TOP 5 섹션의 높이
+	두 번째 값(250px)이 지역별(구별) 우선도 랭킹 섹션의 높이 
+	*/
+    gap: 6px;
+    height: 406px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
@@ -116,9 +120,10 @@ body {
     grid-column: 1;
     grid-row: 1;
     background: white;
-    border-radius: 10px;
+    border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 15px;
+    padding: 8px;
+    overflow: hidden;
 }
 
 /* ========== 지역별(구별) 우선도 랭킹 (좌하단) ========== */
@@ -126,37 +131,39 @@ body {
     grid-column: 1;
     grid-row: 2;
     background: white;
-    border-radius: 10px;
+    border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 15px;
+    padding: 12px;
 }
 
 /* ========== 지역별 포트홀 신고현황 (우상하단) ========== */
 .status-section {
     grid-column: 2;
     grid-row: 1 / span 2;
-    width: 380px;
+    width: 350px;
     background: white;
-    border-radius: 10px;
+    border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 15px;
+    padding: 12px;
 }
 
 /* ========== 섹션 타이틀 ========== */
 .section-title {
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 10px;
+    font-weight: 800;
     color: #2c3e50;
-    margin-bottom: 10px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 11px;
+    padding-bottom: 1px;
+    /* border-bottom: 1px solid #e9ecef; */
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 2px;
+    line-height: 1;
+    height: 10px;
 }
 
 .section-icon {
-    font-size: 14px;
+    font-size: 8px;
 }
 
 /* ========== 임시 컨텐츠 스타일 ========== */
@@ -164,17 +171,17 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: calc(100% - 35px);
+    height: calc(100% - 25px);
     color: #6c757d;
     text-align: center;
 }
 
 .temp-content h4 {
-    margin-bottom: 5px;
-    font-size: 12px;
+    margin-bottom: 4px;
+    font-size: 11px;
 }
 
 .temp-content p {
-    font-size: 10px;
+    font-size: 9px;
     line-height: 1.4;
 }

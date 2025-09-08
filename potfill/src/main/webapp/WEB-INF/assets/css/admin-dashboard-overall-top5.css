@@ -1,0 +1,197 @@
+/* 우선처리 지역 TOP 5 테이블 전용 스타일 */
+
+/* ========== 우선처리 지역 TOP 5 테이블 스타일 ========== */
+.priority-table-container {
+    width: 100%;
+    overflow: hidden;
+    height: 128px;
+}
+
+.priority-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 6px;
+    background-color: white;
+    table-layout: fixed;
+    border: none;
+}
+
+.priority-table thead th {
+    background-color: transparent;
+    color: #8094AE;
+    font-weight: 600;
+    font-size: 7px !important;
+    padding: 0px 1px !important;
+    text-align: center;
+    border: none;
+    border-bottom: 1px solid #e9ecef;
+    line-height: 1;
+    height: 10px !important;
+    vertical-align: middle;
+}
+
+/* 각 컬럼별 헤더 정렬 맞추기 */
+.priority-table thead th:nth-child(1) { /* 순위 */
+    width: 18px;
+    text-align: center;
+}
+
+.priority-table thead th:nth-child(2) { /* 지역명 */
+    width: 60px;
+    text-align: center;
+}
+
+.priority-table thead th:nth-child(3), /* 미처리 건수 */
+.priority-table thead th:nth-child(4), /* 최대 경과일 */
+.priority-table thead th:nth-child(5) { /* 반복 신고 */
+    width: 30px;
+    text-align: center;
+}
+
+.priority-table thead th:nth-child(6) { /* 주요장소 근접 여부 */
+    width: 35px;
+    text-align: center;
+}
+
+.priority-table thead th:nth-child(7) { /* 우선순위 점수 */
+    width: 30px;
+    text-align: center;
+}
+
+.priority-table tbody td {
+    padding: 0px 1px;
+    text-align: center;
+    border-bottom: 1px solid #f1f3f4;
+    color: #364A63;
+    font-size: 8px;
+    line-height: 1;
+    height: 5px !important;
+    vertical-align: middle;
+    max-height: 7px !important;
+    overflow: hidden;
+}
+
+/* 순위 컬럼 스타일 */
+.priority-table .rank-column {
+    color: #798BFF !important;
+    font-weight: 600;
+    width: 18px;
+}
+
+.priority-table tbody td:nth-child(1) {
+    color: #798BFF !important;
+    font-weight: 600;
+}
+
+/* 지역명 컬럼 스타일 */
+.priority-table .region-column {
+    text-align: center;
+    font-weight: 500;
+    width: 60px;
+}
+
+.priority-table tbody td:nth-child(2) {
+    text-align: center;
+    font-weight: 500;
+}
+
+/* 데이터 컬럼 스타일 */
+.priority-table .data-column {
+    width: 30px;
+}
+
+/* 체크/크로스 아이콘 스타일 */
+.priority-table .check-column {
+    width: 35px;
+}
+
+.check-icon {
+    color: #28a745;
+    font-weight: bold;
+    font-size: 7px;
+}
+
+.cross-icon {
+    color: #dc3545;
+    font-weight: bold;
+    font-size: 7px;
+}
+
+/* 우선순위 점수 스타일 */
+.priority-score {
+    color: #E85347 !important;
+    font-weight: 600;
+    width: 30px;
+}
+
+.priority-table tbody td:nth-child(7) {
+    color: #E85347 !important;
+    font-weight: 600;
+}
+
+/* DataTables 기본 스타일 제거 */
+.priority-table_wrapper {
+    width: 100%;
+    overflow: hidden;
+}
+
+.priority-table_wrapper .dataTables_length,
+.priority-table_wrapper .dataTables_filter,
+.priority-table_wrapper .dataTables_info,
+.priority-table_wrapper .dataTables_paginate {
+    display: none !important;
+}
+
+.priority-table_wrapper .dataTables_scrollHead,
+.priority-table_wrapper .dataTables_scrollBody {
+    overflow: hidden !important;
+}
+
+.priority-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* DataTables 정렬 화살표 제거 */
+.priority-table thead th.sorting,
+.priority-table thead th.sorting_asc,
+.priority-table thead th.sorting_desc {
+    background-image: none !important;
+}
+
+.priority-table thead th.sorting:after,
+.priority-table thead th.sorting_asc:after,
+.priority-table thead th.sorting_desc:after {
+    display: none !important;
+}
+
+/* 테이블 전체 높이 제한 */
+.priority-table tbody {
+    max-height: 70px;
+    overflow: hidden;
+}
+
+/* 테이블 행 개수 제한 (5개 행만 표시) */
+.priority-table tbody tr:nth-child(n+6) {
+    display: none;
+}
+
+/* 테이블 반응형 처리 */
+@media (max-width: 768px) {
+    .priority-table {
+        font-size: 5px;
+    }
+
+    .priority-table thead th,
+    .priority-table tbody td {
+        padding: 1px;
+        height: 6px !important;
+    }
+
+    .priority-table .region-column {
+        width: 55px;
+    }
+
+    .priority-table .data-column {
+        width: 25px;
+    }
+}
