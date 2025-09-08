@@ -36,7 +36,6 @@
 		</beans:property>
 	</beans:bean>
 		
-	<!-- conponent-scan은 root-context 보다 servlet context에서 우선으로 인식하는 듯 -->
 	<context:component-scan	base-package="com.potfill" />
 
 	
