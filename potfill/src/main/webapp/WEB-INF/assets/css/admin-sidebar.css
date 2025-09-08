@@ -1,0 +1,133 @@
+/* 관리자 사이드바 전용 스타일 */
+
+/* ========== 사이드바 스타일 ========== */
+.admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 202px;
+    height: 100vh;
+    background-color: #3E4653;
+    z-index: 1001;
+    overflow-y: auto;
+    padding-top: 0; /* 헤더 여백 제거 */
+}
+
+/* 로고 영역 */
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 77px; /* 헤더와 같은 높이 */
+    background-color: #3E4653;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-logo .logo {
+    width: 176px;
+    height: 63px;
+    object-fit: contain;
+}
+
+.sidebar-nav {
+    padding: 20px 0;
+}
+
+.nav-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item {
+    margin-bottom: 5px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.nav-item.active .nav-link {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-left-color: #007bff;
+}
+
+.nav-icon {
+    margin-right: 12px;
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+}
+
+.nav-text {
+    flex: 1;
+}
+
+/* 서브메뉴 스타일 */
+.sub-menu {
+    list-style: none;
+    background-color: rgba(0, 0, 0, 0.2);
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item.active .sub-menu {
+    display: block;
+}
+
+.sub-item {
+    margin: 0;
+}
+
+.sub-link {
+    display: block;
+    padding: 10px 20px 10px 50px;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.sub-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.sub-item.active .sub-link {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.1);
+    font-weight: 500;
+}
+
+/* ========== 스크롤바 커스터마이징 ========== */
+.admin-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.admin-sidebar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}

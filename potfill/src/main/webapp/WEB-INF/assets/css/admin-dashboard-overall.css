@@ -1,0 +1,180 @@
+/* 관리자 대시보드 전체 페이지 전용 스타일 */
+
+/* ========== 기본 레이아웃 ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #F5F5F7;
+    color: #333;
+}
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ========== 메인 컨텐츠 영역 ========== */
+.admin-main {
+    margin-left: 202px; /* 사이드바 너비 */
+    margin-top: 77px; /* 헤더 높이 */
+    padding: 8px;
+    min-height: calc(100vh - 77px);
+    width: calc(100% - 202px);
+}
+
+.dashboard-container {
+    max-width: 1698px;
+    margin: 0 auto;
+}
+
+/* ========== 대시보드 컨텐츠 ========== */
+.dashboard-content {
+    min-height: 600px;
+}
+
+/* ========== 핵심 지표 카드 영역 ========== */
+.metrics-section {
+    width: 100%;
+    max-width: 1000px;
+    height: 90px;
+    margin: 0 auto 8px auto;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    padding: 0 40px;
+}
+
+.metric-card {
+    width: 220px;
+    height: 90px;
+    background: #526484;
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.metric-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 4px;
+}
+
+.metric-icon {
+    font-size: 14px;
+}
+
+.metric-title {
+    font-size: 11px;
+    font-weight: 500;
+    color: #FFFCFC;
+}
+
+.metric-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #FFFCFC;
+    margin-bottom: 4px;
+    line-height: 1;
+}
+
+.metric-change {
+    font-size: 10px;
+    color: #1EE0AC;
+    font-weight: 600;
+    margin-bottom: 1px;
+}
+
+.metric-period {
+    font-size: 8px;
+    color: #C4CEFE;
+}
+
+/* ========== 하단 그리드 레이아웃 ========== */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    grid-template-rows: 200px 280px;
+    gap: 8px;
+    height: 488px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+/* ========== 우선처리 지역 TOP 5 (좌상단) ========== */
+.priority-section {
+    grid-column: 1;
+    grid-row: 1;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+}
+
+/* ========== 지역별(구별) 우선도 랭킹 (좌하단) ========== */
+.ranking-section {
+    grid-column: 1;
+    grid-row: 2;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+}
+
+/* ========== 지역별 포트홀 신고현황 (우상하단) ========== */
+.status-section {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: 380px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+}
+
+/* ========== 섹션 타이틀 ========== */
+.section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.section-icon {
+    font-size: 14px;
+}
+
+/* ========== 임시 컨텐츠 스타일 ========== */
+.temp-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100% - 35px);
+    color: #6c757d;
+    text-align: center;
+}
+
+.temp-content h4 {
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+
+.temp-content p {
+    font-size: 10px;
+    line-height: 1.4;
+}

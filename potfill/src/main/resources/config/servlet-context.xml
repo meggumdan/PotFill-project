@@ -10,9 +10,9 @@
 
 	<annotation-driven />
 
-	<resources mapping="/js/" location="/WEB-INF/assets/js/" />
-	<resources mapping="/css/" location="/WEB-INF/assets/css/" />
-	<resources mapping="/images/" location="/WEB-INF/assets/images/" />
+	<resources mapping="/js/**" location="/WEB-INF/assets/js/" />
+	<resources mapping="/css/**" location="/WEB-INF/assets/css/" />
+	<resources mapping="/images/**" location="/WEB-INF/assets/images/" />
 
 
 	<!-- View Resolver 설정 -->
