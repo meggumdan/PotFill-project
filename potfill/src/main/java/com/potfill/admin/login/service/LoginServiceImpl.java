@@ -17,11 +17,4 @@ public class LoginServiceImpl implements LoginService {
 	public LoginAdminInfo checkCredentials(Login login) {
 		return loginRepository.checkCredentials(login);
 	}
-
-	@Override
-	public Integer getAdminRole(String username) {
-//		Integer role = loginRepository.getAdminRole(username);
-		return null;
-	}
-
 }

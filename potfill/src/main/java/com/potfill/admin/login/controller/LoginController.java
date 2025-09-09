@@ -1,4 +1,7 @@
-// 김슬기
+/*
+ * 작성자 : 김슬기
+ * 작성일 : 2025.09.09
+ */
 package com.potfill.admin.login.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +43,10 @@ public class LoginController {
 			HttpSession session = request.getSession();
 			session.setAttribute("adminInfo", adminInfo);
 			
-			String url = adminInfo.getAdminRole() == ROLE_ZERO 
+			String view = adminInfo.getAdminRole() == ROLE_ZERO 
 					? "admin/login/all" 
 					: "admin/login/normal";
-			return url;
+			return view;
 		}
 		
 	}
