@@ -37,10 +37,10 @@
 <body>
     <div class="admin-layout">
         <!-- 헤더 Include -->
-        <%@ include file="../adminComponent/header.jsp" %>
+        <%@ include file="../admin_component/header.jsp" %>
         
         <!-- 사이드바 Include -->
-        <%@ include file="../adminComponent/sidebar.jsp" %>
+        <%@ include file="../admin_component/sidebar.jsp" %>
         
         <!-- 메인 컨텐츠 영역 -->
         <main class="admin-main">
