@@ -1,0 +1,68 @@
+@charset "UTF-8";
+/* 민원 관리 페이지 전용 스타일 */
+.sidebar {
+	min-height: 100vh;
+	background-color: #343a40;
+}
+
+.main-content {
+	min-height: 100vh;
+}
+
+.complaint-item {
+	cursor: pointer;
+	border-left: 4px solid transparent;
+	transition: all 0.3s;
+}
+
+.complaint-item:hover {
+	background-color: #f8f9fa;
+	border-left-color: #007bff;
+}
+
+.complaint-item.selected {
+	background-color: #e3f2fd;
+	border-left-color: #2196f3;
+}
+
+.risk-badge {
+	font-size: 0.75rem;
+}
+
+.risk-high {
+	background-color: #dc3545;
+}
+
+.risk-medium {
+	background-color: #fd7e14;
+}
+
+.risk-low {
+	background-color: #28a745;
+}
+
+.status-received {
+	background-color: #6c757d;
+}
+
+.status-processing {
+	background-color: #17a2b8;
+}
+
+.status-completed {
+	background-color: #28a745;
+}
+
+.status-rejected {
+	background-color: #dc3545;
+}
+
+.detail-panel {
+	height: calc(100vh - 140px);
+	overflow-y: auto;
+}
+
+.list-panel {
+	height: calc(100vh - 140px);
+	overflow-y: auto;
+}
