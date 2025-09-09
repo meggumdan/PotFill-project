@@ -78,7 +78,7 @@ function updatePriorityTableData(data) {
 function loadSamplePriorityData() {
     const sampleData = [
         {
-            regionName: '구 역삼동',
+            regionName: '강남구 역삼동',
             pendingCount: 15,
             maxElapsedDays: 7,
             repeatCount: 9,
@@ -86,7 +86,7 @@ function loadSamplePriorityData() {
             priorityScore: 94.2
         },
         {
-            regionName: '서초구 방배동',
+            regionName: '영등포구 방배동',
             pendingCount: 12,
             maxElapsedDays: 14,
             repeatCount: 8,
