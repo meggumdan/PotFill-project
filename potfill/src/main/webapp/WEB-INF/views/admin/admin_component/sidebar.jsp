@@ -32,7 +32,7 @@
             
             <!-- 민원 관리 -->
             <li class="nav-item">
-                <a href="${pageContext.request.contextPath}/admin/complaints" class="nav-link">
+                <a href="${pageContext.request.contextPath}/admin/complaints/list" class="nav-link">
                     <i class="nav-icon">📝</i>
                     <span class="nav-text">민원 관리</span>
                 </a>

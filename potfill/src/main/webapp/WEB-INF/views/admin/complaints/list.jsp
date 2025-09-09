@@ -12,18 +12,22 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
+    
+     <link href="${pageContext.request.contextPath}/css/admin/admin-header.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/css/admin/admin-sidebar.css" rel="stylesheet">
+    
+    
     <link href="<c:url value='/css/admin/complaints.css'/>" rel="stylesheet">
     
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${jsKey}&libraries=services"></script>
 </head>
 <body>
-    <%-- <jsp:include page="/WEB-INF/views/admin/common/header.jsp"/> --%>
 
-    <div class="container-fluid">
-        <div class="row">
-            <%-- <div class="col-md-2 p-0">
-                <jsp:include page="/WEB-INF/views/admin/common/sidebar.jsp"/>
-            </div> --%>
+      <div class="admin-layout">
+        
+        <%@ include file="../admin_component/header.jsp" %>
+        <%@ include file="../admin_component/sidebar.jsp" %>
+             
 
             <div class="col-md-10 main-content p-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -132,10 +136,10 @@
 					</div>
 				</div>
 
-				<nav class="mt-4" id="paginationArea"></nav>
-            </div>
+				 <nav class="mt-4" id="paginationArea"></nav>
+        </main>
+        </div> <div class="modal fade" id="riskChangeModal" tabindex="-1" aria-labelledby="riskChangeModalLabel" aria-hidden="true">
         </div>
-    </div>
 
     <div class="modal fade" id="riskChangeModal" tabindex="-1" aria-labelledby="riskChangeModalLabel" aria-hidden="true">
         <div class="modal-dialog">

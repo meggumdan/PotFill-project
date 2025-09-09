@@ -6,9 +6,23 @@
 }
 
 .main-content {
-	min-height: 100vh;
+    /* 헤더와 사이드바가 차지하는 공간만큼 바깥 여백을 줘서 밀어냄 */
+    margin-top: 77px;    /* 헤더 높이 */
+    margin-left: 202px;  /* 사이드바 너비 */
+    
+    /* 실제 컨텐츠가 차지할 너비를 계산. */
+    width: calc(100% - 202px);
+    
+    /* 컨텐츠의 최소 높이를 확보. */
+    min-height: calc(100vh - 77px);
+    
+    /* 기존 내부 여백은 그대로 유지 */
+    padding: 24px;
 }
-
+/* 민원 상세 보기 탭의 비활성 상태 글자색을 항상 보이도록 수정 */
+#detailPanel .nav-tabs .nav-link {
+    color: #495057; /* 부트스트랩 기본 본문 색상 (어두운 회색) */
+}
 .complaint-item {
 	cursor: pointer;
 	border-left: 4px solid transparent;
