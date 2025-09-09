@@ -213,41 +213,7 @@
 		</div>
 	</div>
 
-	<div class="modal fade" id="statusChangeModal" tabindex="-1" aria-labelledby="statusChangeModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="statusChangeModalLabel">민원 상태 변경</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					<form id="statusChangeForm">
-						<input type="hidden" id="statusComplaintId">
-						
-						<div class="mb-3">
-							<label for="modalStatusSelect" class="form-label">변경할 상태</label>
-							<select class="form-select" id="modalStatusSelect" required>
-								<option value="" disabled selected>상태를 선택하세요...</option>
-								<option value="RECEIVED">접수</option>
-								<option value="PROCESSING">처리중</option>
-								<option value="COMPLETED">완료</option>
-								<option value="REJECTED">반려</option>
-							</select>
-						</div>
-						
-						<div class="mb-3">
-							<label for="modalCommentText" class="form-label">처리 코멘트 (메모)</label>
-							<textarea class="form-control" id="modalCommentText" rows="4" placeholder="처리 내용을 입력하세요. (예: 처리 업체에 작업 지시 완료)"></textarea>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-					<button type="button" class="btn btn-primary" id="saveStatusBtn">변경 내용 저장</button>
-				</div>
-			</div>
-		</div>
-	</div>
+	
 
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -276,11 +242,12 @@
                 loadComplaintList();
             });
 
-            // ✅ 2. '변경 내용 저장' 버튼 이벤트 핸들러 추가
-            $('#saveStatusBtn').on('click', function() {
-                const complaintId = $('#statusComplaintId').val();
-                const status = $('#modalStatusSelect').val();
-                const comment = $('#modalCommentText').val();
+         // '저장' 버튼 클릭 이벤트
+            $(document).on('click', '#saveNewStatusBtn', function() {
+                // 현재 선택된 민원의 ID는 전역 변수 selectedComplaintId 에서 가져옴
+                const complaintId = selectedComplaintId;
+                const status = $('#newStatusSelect').val();
+                const comment = $('#newCommentText').val();
 
                 if (!status) {
                     alert('변경할 상태를 선택해주세요.');
@@ -290,24 +257,22 @@
                 $.ajax({
                     url: CONTEXT_PATH + '/admin/complaints/api/status',
                     method: 'POST',
-                    data: {
-                        complaintId: complaintId,
-                        status: status,
-                        comment: comment
-                    },
+                    data: { complaintId, status, comment },
                     success: function(response) {
                         if (response.success) {
                             alert('상태가 성공적으로 변경되었습니다.');
-                            
-                            const statusModal = bootstrap.Modal.getInstance(document.getElementById('statusChangeModal'));
-                            statusModal.hide();
-                            
+                            // 1. 우측 상세보기 뷰 새로고침 (기존 코드)
                             loadComplaintDetail(complaintId);
 
+                            //  2. 좌측 리스트의 상태 배지 실시간 업데이트 (추가된 코드)
                             const listItem = $(`.complaint-item[data-id="${complaintId}"]`);
-                            const statusBadge = listItem.find('.badge[class*="status-"]');
-                            statusBadge.removeClass().addClass(`badge status-${status.toLowerCase()}`).text(getStatusText(status));
-
+                            if (listItem.length > 0) {
+                                const statusBadge = listItem.find('.badge[class*="status-"]');
+                                // 기존 status- 클래스를 모두 지우고 새 클래스와 텍스트를 적용
+                                statusBadge.removeClass (function (index, className) {
+                                    return (className.match (/\bstatus-\S+/g) || []).join(' ');
+                                }).addClass(`status-${status.toLowerCase()}`).text(getStatusText(status));
+                            }
                         } else {
                             alert('상태 변경에 실패했습니다: ' + response.message);
                         }
@@ -317,6 +282,13 @@
                     }
                 });
             });
+
+            // '취소' 버튼 클릭 이벤트
+            $(document).on('click', '#cancelUpdateBtn', function() {
+                $('#statusUpdateDiv').hide();
+                $('#actionButtons').show();
+            });
+
         });
 
         function loadComplaintList() {
@@ -463,29 +435,54 @@
 			$('#detailPanel').html(detailHtml);
 		}
 
+		// 1. '요약' 탭 HTML 생성 (수정된 버전)
 		function renderSummaryTab(complaint) {
-			return `
-				<h5>민원 기본 정보</h5>
-				<table class="table table-bordered">
-					<tbody>
-						<tr><th style="width:25%;">민원 ID</th><td>${complaint.complaintId}</td></tr>
-						<tr><th>신고자</th><td>${escapeHtml(complaint.reporterName)} (${maskPhone(complaint.reporterNumber)})</td></tr>
-						<tr><th>접수일시</th><td>${formatDateTime(complaint.createdAt)}</td></tr>
-						<tr><th>주소</th><td>${escapeHtml(complaint.incidentAddress)}</td></tr>
-						<tr><th>상태</th><td><span class="badge status-${(complaint.status || 'received').toLowerCase()}">${getStatusText(complaint.status)}</span></td></tr>
-						<tr><th>위험도</th><td><span class="badge risk-${(complaint.riskLevel || 'low').toLowerCase()}">${getRiskText(complaint.riskLevel)}</span></td></tr>
-					</tbody>
-				</table>
-				
-				<h5 class="mt-4">신고 내용</h5>
-				<div class="p-3 bg-light border rounded" style="white-space: pre-wrap;">${escapeHtml(complaint.reportContent || '내용 없음')}</div>
-				
-				<div class="d-flex justify-content-end gap-2 mt-4">
-					<button class="btn btn-info btn-sm" onclick="changeStatus(${complaint.complaintId})"><i class="fas fa-edit"></i> 상태 변경</button>
-					<button class="btn btn-warning btn-sm" onclick="changeRisk(${complaint.complaintId})"><i class="fas fa-exclamation-triangle"></i> 위험도 수정</button>
-					<button class="btn btn-secondary btn-sm" onclick="editLocation(${complaint.complaintId})"><i class="fas fa-map-marker-alt"></i> 위치 수정</button>
-				</div>
-			`;
+		    // 현재 상태가 없을 경우 기본값 'RECEIVED'로 설정
+		    const currentStatus = complaint.status || 'RECEIVED';
+
+		    return `
+		        <h5>민원 기본 정보</h5>
+		        <table class="table table-bordered">
+		            <tbody>
+		                <tr><th style="width:25%;">민원 ID</th><td>${complaint.complaintId}</td></tr>
+		                <tr><th>신고자</th><td>${escapeHtml(complaint.reporterName)} (${maskPhone(complaint.reporterNumber)})</td></tr>
+		                <tr><th>접수일시</th><td>${formatDateTime(complaint.createdAt)}</td></tr>
+		                <tr><th>주소</th><td>${escapeHtml(complaint.incidentAddress)}</td></tr>
+		                <tr><th>상태</th><td><span class="badge status-${currentStatus.toLowerCase()}">${getStatusText(currentStatus)}</span></td></tr>
+		                <tr><th>위험도</th><td><span class="badge risk-${(complaint.riskLevel || 'low').toLowerCase()}">${getRiskText(complaint.riskLevel)}</span></td></tr>
+		            </tbody>
+		        </table>
+		        
+		        <h5 class="mt-4">신고 내용</h5>
+		        <div class="p-3 bg-light border rounded" style="white-space: pre-wrap;">${escapeHtml(complaint.reportContent || '내용 없음')}</div>
+		        
+		        <div class="d-flex justify-content-end gap-2 mt-4" id="actionButtons">
+		            <button class="btn btn-info btn-sm" onclick="changeStatus(${complaint.complaintId}, '${currentStatus}')"><i class="fas fa-edit"></i> 상태 변경</button>
+		            <button class="btn btn-warning btn-sm" onclick="changeRisk(${complaint.complaintId})"><i class="fas fa-exclamation-triangle"></i> 위험도 수정</button>
+		            <button class="btn btn-secondary btn-sm" onclick="editLocation(${complaint.complaintId})"><i class="fas fa-map-marker-alt"></i> 위치 수정</button>
+		        </div>
+
+		        <div class="card mt-3" id="statusUpdateDiv" style="display: none;">
+		            <div class="card-body">
+		                <h6 class="card-title">상태 변경 및 코멘트</h6>
+		                <div class="mb-3">
+		                    <select class="form-select" id="newStatusSelect">
+		                        <option value="RECEIVED">접수</option>
+		                        <option value="PROCESSING">처리중</option>
+		                        <option value="COMPLETED">완료</option>
+		                        <option value="REJECTED">반려</option>
+		                    </select>
+		                </div>
+		                <div class="mb-3">
+		                    <textarea class="form-control" id="newCommentText" rows="3" placeholder="처리 결과를 입력하세요."></textarea>
+		                </div>
+		                <div class="d-flex justify-content-end gap-2">
+		                    <button class="btn btn-secondary btn-sm" id="cancelUpdateBtn">취소</button>
+		                    <button class="btn btn-primary btn-sm" id="saveNewStatusBtn">저장</button>
+		                </div>
+		            </div>
+		        </div>
+		    `;
 		}
 
 		function renderHistoryTab(histories) {
@@ -549,15 +546,17 @@
 			return dupHtml;
 		}
 		
-        // ✅ 3. 기존 changeStatus 함수를 Modal을 띄우는 역할로 변경
-        function changeStatus(complaintId) {
-            $('#statusComplaintId').val(complaintId);
-            $('#modalStatusSelect').val('');
-            $('#modalCommentText').val('');
-            
-            const statusModal = new bootstrap.Modal(document.getElementById('statusChangeModal'));
-            statusModal.show();
-        }
+		//  숨겨진 입력 영역을 보여주는 역할로 변경
+		function changeStatus(complaintId, currentStatus) {
+		    // 드롭다운의 기본값을 현재 민원의 상태로 설정
+		    $('#newStatusSelect').val(currentStatus);
+		    // 코멘트 입력창은 비워줌
+		    $('#newCommentText').val('');
+
+		    // 다른 버튼들은 숨기고, 상태 변경 입력창을 보여줌
+		    $('#actionButtons').hide();
+		    $('#statusUpdateDiv').show();
+		}
 
         function changeRisk(complaintId) {
             alert(`위험도 수정 기능 구현 필요 (ID: ${complaintId})`);
