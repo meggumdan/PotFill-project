@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <mapper namespace="com.potfill.user.map.dao.MapRepository">
+ 	
+ 	<select id="getPotholeLists" resultType="hashmap">
+ 		
+		 SELECT cp.complaint_id as complaintId
+		      , cp.lat
+		      , cp.lon
+		      , cp.report_count as reportCount
+		      , cp.district_code as districtCode
+		      , cp.risk_level as riskLevel
+		      , cpl.status_comment as statusComment
+		      , cpl.status 
+		  FROM complaints cp, complaint_histories cpl
+		 WHERE cp.complaint_id = cpl.complaint_id
+		   AND status != 'COMPLETED' 
+		   AND status != 'REJECTED'
+ 	</select>
+ 	
+ 
+ </mapper>

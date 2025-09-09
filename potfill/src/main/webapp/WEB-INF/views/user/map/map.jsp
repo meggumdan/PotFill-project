@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Insert title here</title>
 	<c:set var="contextPath" value="${pageContext.request.contextPath}" />
-	<link href="${pageContext.request.contextPath}/css/map/user-map-style.css" rel="stylesheet"  type="text/css">
+	<link href="${pageContext.request.contextPath}/css/user/map/user-map-style.css" rel="stylesheet"  type="text/css">
 </head>
 
 <body>
@@ -37,11 +37,34 @@
 			};
 
 		var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+		
+		let imageName;
+		const expr = 3;
+		switch(expr) {
+		case 1:
+			imageName = "location-green";
+			break;
+		case 2:
+			imageName = "location-yellow";
+			break;
+		default :
+			imageName = "location-red";
+		}
+		
+		// 마커 이미지 생성
+		var imageSrc = '${pageContext.request.contextPath}/images/'+imageName+'.png', // 마커이미지의 주소입니다    
+		    imageSize = new kakao.maps.Size(40, 40), // 마커이미지의 크기입니다
+		    imageOption = {offset: new kakao.maps.Point(20, 40)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+		
+	    var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption),
+	        markerPosition = new kakao.maps.LatLng(37.54699, 127.09598); // 마커가 표시될 위치입니다
 
+	    
 		// 지오코더 생성 (Geocoder)
 		var geocoder = new kakao.maps.services.Geocoder();
 		let marker;
 		let overlay;
+		
 
 		// GPS 요청
 		if (navigator.geolocation) {
@@ -67,7 +90,8 @@
 		function displayMarker(locPosition) {
 			marker = new kakao.maps.Marker({
 				map: map,
-				position: locPosition
+				position: locPosition,
+				image: markerImage
 			});
 
 			let content = buildOverlayContent();
@@ -75,12 +99,12 @@
 			overlay = new kakao.maps.CustomOverlay({
 				content: content,
 				map: map,
-				position: marker.getPosition()
+				position: marker.getPosition(),
+				yAnchor: 1 
 			});
 
 			overlay.setMap(null);
-
-
+			console.log(overlay.getPosition());
 
 			kakao.maps.event.addListener(marker, 'click', function () {
 				overlay.setMap(map);
