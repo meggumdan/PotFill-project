@@ -1,0 +1,171 @@
+@import url("reset.css");
+
+.container {
+    width: 100%;          /* body 기준 100% */
+    min-height: 100vh;    /* 화면 높이 채움 */
+    background-color: #F5F5F7;    /* 본문 영역 */
+    padding-top: 80px;
+    margin: 0 auto;
+}
+    
+
+/* 로고  */
+.logo-box {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 1s ease-in-out;
+}
+
+.logo {
+    font-family: 'Cafe24ProUp', sans-serif;
+    font-size: 40px;
+    font-weight: normal;
+    color: #fff;
+}
+
+
+
+.header {
+    width: 360px;
+    position: fixed;
+    top: 0;
+    height: 80px;
+    background-color: #3E4653;
+    color: #F5F5F7;
+    text-align: center;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding-top: env(safe-area-inset-top); /* iOS notch 대응 */
+}
+
+.logo{
+	font-size : 25px;
+}
+
+.explain {
+	width: 80%;
+	margin: 0 auto;
+	padding-top:10px;
+	padding-left: 15px;
+}
+
+.explain p {
+	color: #898989;
+}
+
+.required {
+	color: #FA8C2D;
+	font-size: 16px; 
+}
+
+.complaint-form {
+	width: 80%;
+	margin: 0 auto;
+	padding-top: 30px;
+}
+
+.complaint-form div {
+	margin-bottom: 20px;
+} 
+
+.complaint-form label {
+	display:block;
+}
+
+.complaint-form input {
+	border: 1px solid #3E4653; 
+	width: 100%;
+	padding: 15px;
+	margin-top : 10px;
+	border-radius: 10px;
+}
+
+.button-box {
+	padding-top : 15px;
+	display: flex;
+	justify-content: space-between;
+	gap: 20px;
+}
+
+.button-box button {
+	flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background-color: #3E4653;
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.photo-section {
+	padding-top : 20px;
+}
+
+.photo-section p{
+	font-size : 14px;
+	color: #898989;
+}
+
+.photo-box {
+    display: flex;
+    gap: 10px;
+}
+
+.photo-upload {
+    width: 80px;
+    height: 80px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    font-weight: bold;
+    color: #FA8C2D;
+    cursor: pointer;
+    background-color: #fff;
+    line-height: 1;
+     position: relative;  /* 가상요소 위치 기준 */
+}
+
+.photo-upload::before {
+    content: "+";
+    position: absolute;   /* ✅ 절대 위치 */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 정확히 중앙 */
+    font-size: 30px;
+    color: #FA8C2D;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
