@@ -239,34 +239,40 @@ function renderComplaintList(complaints) {
 	} else {
 		complaints.forEach(function(complaint) {
 			const riskClass = complaint.riskLevel?.toLowerCase() || 'low';
-			const statusClass = complaint.status?.toLowerCase() || 'received';
 			const statusText = getStatusText(complaint.status);
 			const riskText = getRiskText(complaint.riskLevel);
-
 			const safeAddress = escapeHtml(complaint.incidentAddress || '주소 없음');
 			const maskedName = maskName(escapeHtml(complaint.reporterName));
 
-			const duplicateBadge = complaint.reportCount > 1
-				? `<span class="badge bg-warning text-dark">중복 ${complaint.reportCount}건</span>`
+			// [유지] 누적 신고 뱃지는 그대로 둡니다.
+			const countBadge = complaint.reportCount > 1
+				? `<span class="badge rounded-pill bg-warning text-dark ms-2">누적${complaint.reportCount}건</span>`
 				: '';
+
+			// [복원] 위험도/상태 뱃지를 다시 묶어서 관리합니다.
+			const statusBadgesHtml = `
+				<div class="d-flex align-items-center gap-2">
+					<span class="badge risk-badge risk-${riskClass}">${riskText}</span>
+					
+					<span class="badge list-status-badge">${statusText}</span>
+				</div>
+			`;
 
 			html += `
                 <div class="complaint-item p-3 border-bottom" data-id="${complaint.complaintId}" 
                     onclick="selectComplaint(${complaint.complaintId})">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
+
+                    <div class="d-flex justify-content-between align-items-center"> 
                         <div>
                             <h6 class="mb-1">#${complaint.complaintId}</h6>
-                            <small class="text-muted">${formatDate(complaint.createdAt)}</small>
+                            <p class="mb-1 text-truncate" style="max-width: 300px;">${safeAddress}</p>
+                            <small class="text-muted">
+                                ${formatDate(complaint.createdAt)} / 신고자: ${maskedName}
+                                ${countBadge}
+                            </small>
                         </div>
-                        <div class="text-end">
-                            <span class="badge risk-${riskClass} risk-badge me-1">${riskText}</span>
-                            <span class="badge status-${statusClass}">${statusText}</span>
-                        </div>
-                    </div>
-                    <p class="mb-2 text-truncate">${safeAddress}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">신고자: ${maskedName}</small>
-                        ${duplicateBadge}
+                        
+                        ${statusBadgesHtml}
                     </div>
                 </div>
             `;
@@ -274,6 +280,7 @@ function renderComplaintList(complaints) {
 	}
 	$('#complaintList').html(html);
 }
+
 
 function loadComplaintDetail(complaintId) {
 	$('#detailPanel').html('<div class="text-center py-5"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>');
@@ -338,41 +345,41 @@ function renderComplaintDetail(data) {
 }
 
 function renderSummaryTab(complaint) {
-
-	//console.log("renderSummaryTab에 전달된 complaint 객체:", complaint);
-
 	const currentStatus = complaint.status || 'RECEIVED';
 	const currentRisk = complaint.riskLevel || 'LOW';
-	// 마스킹된 값과 원본 값을 변수로 
 	const maskedName = maskName(escapeHtml(complaint.reporterName));
 	const maskedNumber = maskPhone(complaint.reporterNumber);
 	const fullName = escapeHtml(complaint.reporterName);
 	const fullNumber = escapeHtml(complaint.reporterNumber);
 
+	const riskBadgeHtml = `<span class="risk-badge risk-${currentRisk.toLowerCase()}">${getRiskText(currentRisk)}</span>`;
+	
+	// [수정] 히스토리 뱃지와 동일한 HTML 구조를 사용합니다.
+	const statusBadgeHtml = `<span class="badge status-badge status-${currentStatus.toLowerCase()}">${getStatusText(currentStatus)}</span>`;
+
 	return `
         <h5>민원 기본 정보</h5>
-        <table class="table table-bordered">
+        <table class="table table-bordered align-middle">
             <tbody>
                 <tr><th style="width:25%;">민원 ID</th><td>${complaint.complaintId}</td></tr>
                 <tr>
 				<th>신고자</th>
-				                    <td>
-				                        <span id="reporterInfoText">${maskedName} (${maskedNumber})</span>
-				                        
-				                        <button type="button" class="btn btn-sm btn-outline-secondary ms-2" id="toggleInfoBtn"
-										data-full-name="${fullName}"
-										                                data-full-number="${fullNumber}"
-										                                data-masked-name="${maskedName}"
-										                                data-masked-number="${maskedNumber}"
-										                                data-state="masked">
-				                            <i class="fas fa-eye"></i> 정보 보기
-				                        </button>
-				                        
-				                    </td>				</tr>
+				    <td>
+				        <span id="reporterInfoText">${maskedName} (${maskedNumber})</span>
+				        <button type="button" class="btn btn-sm btn-outline-secondary ms-2" id="toggleInfoBtn"
+								data-full-name="${fullName}"
+                                data-full-number="${fullNumber}"
+                                data-masked-name="${maskedName}"
+                                data-masked-number="${maskedNumber}"
+                                data-state="masked">
+				            <i class="fas fa-eye"></i> 정보 보기
+				        </button>
+				    </td>
+				</tr>
                 <tr><th>접수일시</th><td>${formatDateTime(complaint.createdAt)}</td></tr>
                 <tr><th>주소</th><td>${escapeHtml(complaint.incidentAddress)}</td></tr>
-                <tr><th>상태</th><td><span class="badge status-${currentStatus.toLowerCase()}">${getStatusText(currentStatus)}</span></td></tr>
-                <tr><th>위험도</th><td><span class="badge risk-${currentRisk.toLowerCase()}">${getRiskText(currentRisk)}</span></td></tr>
+                <tr><th>상태</th><td>${statusBadgeHtml}</td></tr>
+                <tr><th>위험도</th><td>${riskBadgeHtml}</td></tr>
             </tbody>
         </table>
         
@@ -380,9 +387,9 @@ function renderSummaryTab(complaint) {
         <div class="p-3 bg-light border rounded" style="white-space: pre-wrap;">${escapeHtml(complaint.reportContent || '내용 없음')}</div>
         
         <div class="d-flex justify-content-end gap-2 mt-4" id="actionButtons">
-            <button class="btn btn-info btn-sm" onclick="changeStatus('${currentStatus}')"><i class="fas fa-edit"></i> 상태 변경</button>
-            <button class="btn btn-warning btn-sm" onclick="changeRisk('${complaint.complaintId}', '${currentRisk}')"><i class="fas fa-exclamation-triangle"></i> 위험도 수정</button>
-            <button class="btn btn-secondary btn-sm" onclick="editLocation()"><i class="fas fa-map-marker-alt"></i> 위치 수정</button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="changeStatus('${currentStatus}')"><i class="fas fa-edit"></i> 상태 변경</button>
+            <button class="btn btn-outline-warning btn-sm" onclick="changeRisk('${complaint.complaintId}', '${currentRisk}')"><i class="fas fa-exclamation-triangle"></i> 위험도 수정</button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="editLocation()"><i class="fas fa-map-marker-alt"></i> 위치 수정</button>
         </div>
 
         <div class="card mt-3" id="statusUpdateDiv" style="display: none;">
