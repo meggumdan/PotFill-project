@@ -48,44 +48,57 @@
 
     <!-- 공통 검색 조건 -->
     <sql id="searchCondition">
-        <where>
-            1=1
-            <if test="searchParams.searchType != null and searchParams.searchKeyword != null and searchParams.searchKeyword != ''">
-                <choose>
-                    <when test="searchParams.searchType == 'complaintId'">
-                        AND c.complaint_id = #{searchParams.searchKeyword}
-                    </when>
-                    <when test="searchParams.searchType == 'reporterName'">
-                        AND c.reporter_name LIKE '%' || #{searchParams.searchKeyword} || '%'
-                    </when>
-                    <when test="searchParams.searchType == 'reporterNumber'">
-                        AND c.reporter_number LIKE '%' || #{searchParams.searchKeyword} || '%'
-                    </when>
-                    <when test="searchParams.searchType == 'address'">
-                        AND c.incident_address LIKE '%' || #{searchParams.searchKeyword} || '%'
-                    </when>
-                </choose>
-            </if>
-            <if test="searchParams.status != null and searchParams.status != ''">
-                AND ch.status = #{searchParams.status}
-            </if>
-            <if test="searchParams.riskLevel != null and searchParams.riskLevel != ''">
-                AND c.risk_level = #{searchParams.riskLevel}
-            </if>
-            <if test="searchParams.gu != null and searchParams.gu != ''">
-                AND c.gu = #{searchParams.gu}
-            </if>
-            <if test="searchParams.dong != null and searchParams.dong != ''">
-                AND c.dong = #{searchParams.dong}
-            </if>
-            <if test="searchParams.startDate != null and searchParams.startDate != ''">
-                AND c.created_at >= TO_DATE(#{searchParams.startDate}, 'YYYY-MM-DD')
-            </if>
-            <if test="searchParams.endDate != null and searchParams.endDate != ''">
-                AND c.created_at <![CDATA[<=]]> TO_DATE(#{searchParams.endDate}, 'YYYY-MM-DD') + 1
-            </if>
-        </where>
-    </sql>
+    <where>
+        1=1
+        <if test="searchParams.searchType != null and searchParams.searchKeyword != null and searchParams.searchKeyword != ''">
+            <choose>
+                <when test="searchParams.searchType == 'complaintId'">
+                    AND c.complaint_id = #{searchParams.searchKeyword}
+                </when>
+                <when test="searchParams.searchType == 'reporterName'">
+                    AND c.reporter_name LIKE '%' || #{searchParams.searchKeyword} || '%'
+                </when>
+                <when test="searchParams.searchType == 'reporterNumber'">
+                    AND c.reporter_number LIKE '%' || #{searchParams.searchKeyword} || '%'
+                </when>
+                <when test="searchParams.searchType == 'address'">
+                    AND c.incident_address LIKE '%' || #{searchParams.searchKeyword} || '%'
+                </when>
+            </choose>
+        </if>
+        <if test="searchParams.status != null and searchParams.status != ''">
+            AND ch.status = #{searchParams.status}
+        </if>
+        
+        <if test="searchParams.riskLevel != null and searchParams.riskLevel != ''">
+            AND
+            <choose>
+                <when test="searchParams.riskLevel == 'HIGH'">
+                    c.report_count > 5
+                </when>
+                <when test="searchParams.riskLevel == 'MEDIUM'">
+                    c.report_count > 2 AND c.report_count &lt;= 5
+                </when>
+                <when test="searchParams.riskLevel == 'LOW'">
+                    c.report_count &lt;= 2
+                </when>
+            </choose>
+        </if>
+        
+        <if test="searchParams.gu != null and searchParams.gu != ''">
+            AND c.gu = #{searchParams.gu}
+        </if>
+        <if test="searchParams.dong != null and searchParams.dong != ''">
+            AND c.dong = #{searchParams.dong}
+        </if>
+        <if test="searchParams.startDate != null and searchParams.startDate != ''">
+            AND c.created_at >= TO_DATE(#{searchParams.startDate}, 'YYYY-MM-DD')
+        </if>
+        <if test="searchParams.endDate != null and searchParams.endDate != ''">
+            AND c.created_at <![CDATA[<=]]> TO_DATE(#{searchParams.endDate}, 'YYYY-MM-DD') + 1
+        </if>
+    </where>
+</sql>
 
     <!-- 민원 리스트 조회 -->
     <select id="getComplaintList" resultMap="ComplaintResultMap">
