@@ -63,6 +63,10 @@
         </jsp-property-group>
     </jsp-config>
     
+    <session-config>
+  		<!-- 비활동 최대 시간(분) -->
+  		<session-timeout>30</session-timeout>
+	</session-config>
     
 
 	<welcome-file-list>
