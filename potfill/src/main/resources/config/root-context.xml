@@ -48,7 +48,12 @@
     <tx:annotation-driven/>
     <!-- dataSource, jdbcTemplate, transactionManager 는 기본 id로 하는 걸 권장함. -->
 
-	<context:component-scan	base-package="com.potfill" />
-	<mybatis-spring:scan base-package="com.potfill" />
-	
+    <!-- DAO 패키지만 지정 (여러 개면 콤마로 나열) -->
+	<!-- <bean class="org.mybatis.spring.mapper02.MapperScannerConfigurer">
+	    <property name="basePackage" 
+    			value="com.potfill.admin.login.dao"/>
+	</bean> -->
+
+	<mybatis-spring:scan base-package=
+			"com.potfill.admin.login.dao" />
 </beans>

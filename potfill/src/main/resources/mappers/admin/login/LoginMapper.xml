@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <mapper namespace="com.potfill.admin.login.dao.LoginRepository">
+ 	
+ 	<select id="checkCredentials" 
+		 	parameterType="com.potfill.admin.login.model.Login" 
+		 	resultType="com.potfill.admin.login.model.LoginAdminInfo">
+ 		
+ 		SELECT login_id, admin_name, email, phone, district_code, admin_role 
+		  FROM admins 
+		 WHERE login_id = #{loginId} 
+		   AND admin_pw = #{adminPw}
+		   
+ 	</select>
+ 	
+ 
+ </mapper>

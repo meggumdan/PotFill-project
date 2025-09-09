@@ -13,13 +13,13 @@
     <div class="login-container">
         <h1 class="login-title">로그인</h1>
         
-        <form class="login-form">
+        <form class="login-form" method="post" action="${pageContext.request.contextPath}/admin/login">
             <div class="input-group">
-                <input type="text" class="input-field" placeholder="username" required>
+                <input type="text" class="input-field" placeholder="username" name="loginId" required>
             </div>
             
             <div class="input-group password-container">
-                <input type="password" class="input-field" id="password" placeholder="password" required>
+                <input type="password" class="input-field" id="password" name="adminPw" placeholder="password" required>
                 <button type="button" class="show-password" onclick="togglePassword()">
                     <span id="eye-icon">👁</span>
                 </button>
@@ -45,8 +45,10 @@
 
         // 폼 제출 처리
         document.querySelector('.login-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('로그인 기능은 백엔드 구현이 필요합니다!');
+/*             if(${message} != null ){
+	        	e.preventDefault();
+	            alert(${message});
+            } */
         });
 
         // 엔터키로 로그인
