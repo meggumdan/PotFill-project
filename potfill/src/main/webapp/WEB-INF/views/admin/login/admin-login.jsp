@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>로그인</title>
-    <link href="${pageContext.request.contextPath}/css/admin/login/admin-login.css" rel="stylesheet"  type="text/css"/>
+    <link href="${pageContext.request.contextPath}/css/admin-login/admin-login.css" rel="stylesheet"  type="text/css"/>
 </head>
 <body>
     <div class="login-container">
