@@ -108,7 +108,7 @@ body {
 /* ========== 하단 그리드 레이아웃 ========== */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 1fr 450px;
+    grid-template-columns: 1fr 500px;
     grid-template-rows: 218px 288px; /* 180px/240px에서 200px/270px로 증가 */
     gap: 12px;
     height: calc(100% - 115px); /* 100px에서 115px로 조정 */
@@ -142,7 +142,7 @@ body {
 .status-section {
     grid-column: 2;
     grid-row: 1 / span 2;
-    width: 450px;
+    width: 500px;
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
