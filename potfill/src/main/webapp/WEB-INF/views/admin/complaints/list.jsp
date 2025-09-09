@@ -1,11 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8" isELIgnored="true"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<spring:eval expression="@keyProps['kakao.js.apikey']" var="jsKey" />
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script type="text/javascript"
+	src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${jsKey }"></script>
 <title>민원 관리 - PotFill</title>
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
@@ -213,26 +217,75 @@
 		</div>
 	</div>
 
-	
+	<div class="modal fade" id="riskChangeModal" tabindex="-1"
+		aria-labelledby="riskChangeModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="riskChangeModalLabel">민원 위험도 수정</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="riskChangeForm">
+						<input type="hidden" id="riskComplaintId">
+						<p class="mb-2">
+							<strong>민원 #${selectedComplaintId}</strong>의 위험도를 변경합니다.
+						</p>
+						<p class="text-muted small">위험도는 신고 건수를 기반으로 자동 계산되지만, 관리자가 직접
+							조정할 수 있습니다.</p>
+						<div class="mb-3">
+							<label for="modalRiskSelect" class="form-label">변경할 위험도</label> <select
+								class="form-select" id="modalRiskSelect" required>
+								<option value="" disabled selected>위험도를 선택하세요...</option>
+								<option value="HIGH">높음</option>
+								<option value="MEDIUM">보통</option>
+								<option value="LOW">낮음</option>
+							</select>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-bs-dismiss="modal">취소</button>
+					<button type="button" class="btn btn-primary" id="saveRiskBtn">위험도
+						저장</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 	<script>
-        const CONTEXT_PATH = "/potfill"; 
-
-        let currentPage = 1;
-        let selectedComplaintId = null;
+    // --- 1. 전역 변수 선언 ---
+    const CONTEXT_PATH = "/potfill"; 
+    let currentPage = 1;
+    let selectedComplaintId = null;
+    let currentComplaintDetail = null; // 현재 선택된 민원의 상세 데이터를 저장할 변수
         
+    // 지도 관련 전역 변수
+    let map = null;
+    let marker = null;
+    let geocoder = null;
+    
+ // --- 2. 초기화 및 이벤트 핸들러  ---
         $(document).ready(function() {
+        	 // Kakao Geocoder 초기화
+            geocoder = new kakao.maps.services.Geocoder();
+            
+            // 최초 목록 로딩
             loadComplaintList();
             
+            // 필터 및 검색 버튼 이벤트
             $('#searchBtn, #statusFilter, #riskFilter, #guFilter, #sortFilter, #periodFilter').on('click change', function() {
                 currentPage = 1;
                 loadComplaintList();
             });
 
+            // 초기화 버튼 이벤트
             $('#resetBtn').on('click', function() {
                 $('#statusFilter, #riskFilter, #guFilter, #periodFilter').val('');
                 $('#searchType').val('complaintId');
@@ -439,6 +492,7 @@
 		function renderSummaryTab(complaint) {
 		    // 현재 상태가 없을 경우 기본값 'RECEIVED'로 설정
 		    const currentStatus = complaint.status || 'RECEIVED';
+		    const currentRisk = complaint.riskLevel || 'LOW'; // 현재 위험도 가져오기
 
 		    return `
 		        <h5>민원 기본 정보</h5>
@@ -485,6 +539,96 @@
 		    `;
 		}
 
+		$(document).ready(function() {
+			loadComplaintList();
+            
+            $('#searchBtn, #statusFilter, #riskFilter, #guFilter, #sortFilter, #periodFilter').on('click change', function() {
+                currentPage = 1;
+                loadComplaintList();
+            });
+
+            $('#resetBtn').on('click', function() {
+                $('#statusFilter, #riskFilter, #guFilter, #periodFilter').val('');
+                $('#searchType').val('complaintId');
+                $('#searchKeyword').val('');
+                $('#sortFilter').val('created_at,DESC');
+                currentPage = 1;
+                loadComplaintList();
+            });
+
+		    // ✅ '위험도 저장' 버튼 이벤트 핸들러 추가
+		    $('#saveRiskBtn').on('click', function() {
+		        const complaintId = $('#riskComplaintId').val();
+		        const riskLevel = $('#modalRiskSelect').val();
+
+		        if (!riskLevel) {
+		            alert('변경할 위험도를 선택해주세요.');
+		            return;
+		        }
+
+		        $.ajax({
+		            url: CONTEXT_PATH + '/admin/complaints/api/risk',
+		            method: 'POST',
+		            data: { complaintId, riskLevel },
+		            success: function(response) {
+		                if (response.success) {
+		                    alert('위험도가 성공적으로 변경되었습니다.');
+		                    
+		                    const riskModal = bootstrap.Modal.getInstance(document.getElementById('riskChangeModal'));
+		                    riskModal.hide();
+		                    
+		                    // 1. 우측 상세보기 뷰 새로고침
+		                    loadComplaintDetail(complaintId);
+
+		                    // 2. 좌측 리스트의 위험도 배지 실시간 업데이트
+		                    const listItem = $(`.complaint-item[data-id="${complaintId}"]`);
+		                    if (listItem.length > 0) {
+		                        const riskBadge = listItem.find('.risk-badge');
+		                        riskBadge.removeClass('risk-high risk-medium risk-low')
+		                                 .addClass(`risk-${riskLevel.toLowerCase()}`)
+		                                 .text(getRiskText(riskLevel));
+		                    }
+		                } else {
+		                    alert('위험도 변경에 실패했습니다: ' + response.message);
+		                }
+		            },
+		            error: function() {
+		                alert('위험도 변경 중 오류가 발생했습니다.');
+		            }
+		        });
+		    });
+		    
+		 // ✅ 위치 저장 버튼 클릭 이벤트
+		    $('#saveLocationBtn').on('click', function() {
+		        const complaintId = selectedComplaintId;
+		        const lat = $('#newLat').val();
+		        const lon = $('#newLon').val();
+		        const address = $('#newAddress').val();
+
+		        if (!address || address === "주소를 찾을 수 없습니다.") {
+		            alert("유효한 주소를 찾을 수 없습니다. 마커를 다른 위치로 옮겨보세요.");
+		            return;
+		        }
+
+		        $.ajax({
+		            url: `${CONTEXT_PATH}/admin/complaints/api/location`,
+		            method: 'POST',
+		            data: { complaintId, lat, lon, address },
+		            success: function(response) {
+		                if (response.success) {
+		                    alert('위치가 성공적으로 변경되었습니다.');
+		                    bootstrap.Modal.getInstance(document.getElementById('locationChangeModal')).hide();
+		                    loadComplaintDetail(complaintId); // 상세보기 새로고침
+		                } else {
+		                    alert('위치 변경에 실패했습니다: ' + response.message);
+		                }
+		            },
+		            error: () => alert('위치 변경 중 오류가 발생했습니다.')
+		        });
+		    });
+		 
+		});
+		
 		function renderHistoryTab(histories) {
 			if (!histories || histories.length === 0) {
 				return '<p class="text-muted">처리 내역이 없습니다.</p>';
@@ -558,10 +702,19 @@
 		    $('#statusUpdateDiv').show();
 		}
 
-        function changeRisk(complaintId) {
-            alert(`위험도 수정 기능 구현 필요 (ID: ${complaintId})`);
-        }
 
+		function changeRisk(complaintId, currentRisk) {
+		    // 1. Modal의 숨겨진 필드에 ID 저장 및 제목 업데이트
+		    $('#riskComplaintId').val(complaintId);
+		    $('#riskChangeModal .modal-body p > strong').text(`민원 #${complaintId}`);
+		    
+		    // 2. 드롭다운의 기본값을 현재 민원의 위험도로 설정
+		    $('#modalRiskSelect').val(currentRisk);
+		    
+		    // 3. Bootstrap Modal을 띄움
+		    const riskModal = new bootstrap.Modal(document.getElementById('riskChangeModal'));
+		    riskModal.show();
+		}
         function editLocation(complaintId) {
             alert(`위치 수정 기능 구현 필요 (ID: ${complaintId})`);
         }
@@ -643,6 +796,101 @@
             currentPage = page;
             loadComplaintList();
         }
+        
+        
+
+
+        // ✅ editLocation 함수 수정: Modal을 띄우고 지도를 초기화하는 역할
+        function editLocation() {
+            if (!currentComplaintDetail) return;
+
+            const locationModal = new bootstrap.Modal(document.getElementById('locationChangeModal'));
+            
+            // ❗️ 중요: Modal이 완전히 나타난 후에 지도를 생성해야 깨지지 않음
+            document.getElementById('locationChangeModal').addEventListener('shown.bs.modal', function () {
+                initMap(currentComplaintDetail.lat, currentComplaintDetail.lon);
+            }, { once: true }); // 이벤트가 한번만 실행되도록 설정
+
+            locationModal.show();
+        }
+
+        // ✅ 지도를 초기화하고 마커를 생성하는 함수
+        function initMap(lat, lon) {
+            const mapContainer = document.getElementById('map');
+            const mapOption = {
+                center: new kakao.maps.LatLng(lat, lon), // 현재 민원 위치를 중심으로
+                level: 3 
+            };
+
+            // 지도와 마커 (재)생성
+            map = new kakao.maps.Map(mapContainer, mapOption);
+            marker = new kakao.maps.Marker({
+                position: new kakao.maps.LatLng(lat, lon),
+                draggable: true // 마커를 드래그할 수 있도록 설정
+            });
+            marker.setMap(map);
+
+            // 마커 드래그가 끝났을 때 이벤트
+            kakao.maps.event.addListener(marker, 'dragend', function() {
+                updateLocationInfo(marker.getPosition());
+            });
+
+            // 초기 위치 정보 업데이트
+            updateLocationInfo(marker.getPosition());
+        }
+
+        // ✅ 마커 위치를 기반으로 주소와 좌표 정보를 업데이트하는 함수
+        function updateLocationInfo(latlng) {
+            // 좌표 표시 업데이트
+            $('#newLat').val(latlng.getLat());
+            $('#newLon').val(latlng.getLng());
+            $('#newCoordsText').text(`위도: ${latlng.getLat().toFixed(6)}, 경도: ${latlng.getLng().toFixed(6)}`);
+
+            // 좌표 -> 주소 변환
+            geocoder.coord2Address(latlng.getLng(), latlng.getLat(), function(result, status) {
+                if (status === kakao.maps.services.Status.OK) {
+                    const address = result[0].road_address ? result[0].road_address.address_name : result[0].address.address_name;
+                    $('#newAddress').val(address);
+                    $('#newAddressText').text(address);
+                } else {
+                    $('#newAddressText').text("주소를 찾을 수 없습니다.");
+                }
+            });
+        }
     </script>
+	<div class="modal fade" id="locationChangeModal" tabindex="-1"
+		aria-labelledby="locationModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="locationModalLabel">민원 위치 수정</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div id="map" style="width: 100%; height: 400px;"></div>
+
+					<div class="mt-3">
+						<p class="mb-1">
+							<strong>변경될 주소:</strong> <span id="newAddressText">주소를
+								불러오는 중...</span>
+						</p>
+						<p class="mb-0 text-muted small">
+							<strong>좌표:</strong> <span id="newCoordsText"></span>
+						</p>
+					</div>
+
+					<input type="hidden" id="newLat"> <input type="hidden"
+						id="newLon"> <input type="hidden" id="newAddress">
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-bs-dismiss="modal">취소</button>
+					<button type="button" class="btn btn-primary" id="saveLocationBtn">위치
+						저장</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
