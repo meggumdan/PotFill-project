@@ -1,0 +1,84 @@
+@import url("reset.css");
+
+.container {
+    width: 100%;          /* body 기준 100% */
+    min-height: 100vh;    /* 화면 높이 채움 */
+    background-color: #3E4653;    /* 본문 영역 */
+    transition: background-color 0.8s ease-in-out;
+    overflow: hidden;
+}
+
+/* 로고  */
+.logo-box {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 1s ease-in-out;
+}
+
+.logo {
+    font-family: 'Cafe24ProUp', sans-serif;
+    font-size: 40px;
+    font-weight: normal;
+    color: #fff;
+}
+
+/* 로고 위로 이동 + 축소 */
+.logo-box.move-up {
+    justify-content: center;
+    height: 150px;
+}
+.logo-box.move-up .logo {
+    font-size: 30px;
+    color: #333;
+}
+
+
+/* 메뉴 박스 */
+.menu-box {
+	display: flex;
+    flex-direction: column;
+    justify-content: center;  /* 세로 중앙 */
+    align-items: center;      /* 가로 중앙 */
+    height: calc(100vh - 350px); /* 로고 영역 빼고 전체 높이 */
+    opacity: 0;
+    transform: translateY(100%);
+    transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+}
+.menu-box.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.menu-box ul {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 15px;
+}
+
+.menu-box ul li {
+	width: 80%;
+	border: 2px solid #474A51;
+	padding: 20px 0;
+	text-align: center;
+	box-sizing: border-box;
+	border-radius: 20px;
+	color : #3E4653;
+	font-weight:500;
+}
+
+.menu-box ul li:first-child {
+	border : none;
+	background-color : #FA8C2D;
+	color: #F5F5F7;
+}
+
+.hidden{
+	display: none;
+}
+
+
