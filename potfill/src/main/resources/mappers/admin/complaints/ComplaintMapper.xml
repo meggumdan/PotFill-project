@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.potfill.admin.complaints.dao.ComplaintRepository">
+    <!-- 민원 기본 결과 매핑 -->
+    <resultMap id="ComplaintResultMap" type="com.potfill.admin.complaints.model.Complaint">
+        <id property="complaintId" column="complaint_id"/>
+        <result property="reporterName" column="reporter_name"/>
+        <result property="reporterNumber" column="reporter_number"/>
+        <result property="incidentAddress" column="incident_address"/>
+        <result property="districtCode" column="district_code"/>
+        <result property="gu" column="gu"/>
+        <result property="dong" column="dong"/>
+        <result property="lat" column="lat"/>
+        <result property="lon" column="lon"/>
+        <result property="radius" column="radius"/>
+        <result property="h3Index" column="h3_index"/>
+        <result property="h3Res" column="h3_res"/>
+        <result property="reportContent" column="report_content"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="assignedAdminId" column="assigned_admin_id"/>
+        <result property="assignedDepartment" column="assigned_department"/>
+        <result property="reportCount" column="report_count"/>
+        <result property="riskLevel" column="risk_level"/>
+        <result property="riskScore" column="risk_score"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <!-- 히스토리 결과 매핑 -->
+    <resultMap id="HistoryResultMap" type="com.potfill.admin.complaints.model.ComplaintHistory">
+        <id property="historyId" column="history_id"/>
+        <result property="complaintId" column="complaint_id"/>
+        <result property="adminId" column="admin_id"/>
+        <result property="status" column="status"/>
+        <result property="statusComment" column="status_comment"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <!-- 사진 결과 매핑 -->
+    <resultMap id="PhotoResultMap" type="com.potfill.admin.complaints.model.ReportPhoto">
+        <id property="photoId" column="photo_id"/>
+        <result property="complaintId" column="complaint_id"/>
+        <result property="fileUrl" column="file_url"/>
+        <result property="photoName" column="photo_name"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <!-- 공통 검색 조건 -->
+    <sql id="searchCondition">
+        <where>
+            1=1
+            <if test="searchParams.searchType != null and searchParams.searchKeyword != null and searchParams.searchKeyword != ''">
+                <choose>
+                    <when test="searchParams.searchType == 'complaintId'">
+                        AND c.complaint_id = #{searchParams.searchKeyword}
+                    </when>
+                    <when test="searchParams.searchType == 'reporterName'">
+                        AND c.reporter_name LIKE '%' || #{searchParams.searchKeyword} || '%'
+                    </when>
+                    <when test="searchParams.searchType == 'reporterNumber'">
+                        AND c.reporter_number LIKE '%' || #{searchParams.searchKeyword} || '%'
+                    </when>
+                    <when test="searchParams.searchType == 'address'">
+                        AND c.incident_address LIKE '%' || #{searchParams.searchKeyword} || '%'
+                    </when>
+                </choose>
+            </if>
+            <if test="searchParams.status != null and searchParams.status != ''">
+                AND ch.status = #{searchParams.status}
+            </if>
+            <if test="searchParams.riskLevel != null and searchParams.riskLevel != ''">
+                AND c.risk_level = #{searchParams.riskLevel}
+            </if>
+            <if test="searchParams.gu != null and searchParams.gu != ''">
+                AND c.gu = #{searchParams.gu}
+            </if>
+            <if test="searchParams.dong != null and searchParams.dong != ''">
+                AND c.dong = #{searchParams.dong}
+            </if>
+            <if test="searchParams.startDate != null and searchParams.startDate != ''">
+                AND c.created_at >= TO_DATE(#{searchParams.startDate}, 'YYYY-MM-DD')
+            </if>
+            <if test="searchParams.endDate != null and searchParams.endDate != ''">
+                AND c.created_at <![CDATA[<=]]> TO_DATE(#{searchParams.endDate}, 'YYYY-MM-DD') + 1
+            </if>
+        </where>
+    </sql>
+
+    <!-- 민원 리스트 조회 -->
+    <select id="getComplaintList" resultMap="ComplaintResultMap">
+        SELECT * FROM (
+            SELECT 
+                c.*,
+                ch.status,
+                CASE 
+                    WHEN c.report_count > 5 THEN 'HIGH'
+                    WHEN c.report_count > 2 THEN 'MEDIUM'
+                    ELSE 'LOW'
+                END as risk_level,
+                c.report_count * 10 as risk_score,
+                ROW_NUMBER() OVER (
+                    ORDER BY 
+                    <choose>
+                        <when test="searchParams.sortBy == 'created_at'">
+                            c.created_at ${searchParams.sortOrder}
+                        </when>
+                        <when test="searchParams.sortBy == 'risk_level'">
+                            (CASE 
+                                WHEN c.report_count > 5 THEN 3
+                                WHEN c.report_count > 2 THEN 2
+                                ELSE 1
+                            END) ${searchParams.sortOrder}, c.created_at DESC
+                        </when>
+                        <when test="searchParams.sortBy == 'report_count'">
+                            c.report_count ${searchParams.sortOrder}, c.created_at DESC
+                        </when>
+                        <otherwise>
+                            c.created_at DESC
+                        </otherwise>
+                    </choose>
+                ) as rnum
+            FROM complaints c
+            LEFT JOIN (
+                SELECT 
+                    complaint_id,
+                    status,
+                    ROW_NUMBER() OVER (PARTITION BY complaint_id ORDER BY created_at DESC) as rn
+                FROM complaint_histories
+            ) ch ON c.complaint_id = ch.complaint_id AND ch.rn = 1
+            <include refid="searchCondition"/>
+        ) 
+         WHERE rnum BETWEEN #{searchParams.startRow} AND #{searchParams.endRow}
+    </select>
+
+    <!-- 민원 총 개수 조회 -->
+    <select id="getComplaintCount" resultType="int">
+        SELECT COUNT(*)
+        FROM complaints c
+        LEFT JOIN (
+            SELECT 
+                complaint_id,
+                status,
+                ROW_NUMBER() OVER (PARTITION BY complaint_id ORDER BY created_at DESC) as rn
+            FROM complaint_histories
+        ) ch ON c.complaint_id = ch.complaint_id AND ch.rn = 1
+        <include refid="searchCondition"/>
+    </select>
+
+    <!-- 민원 상세 조회 -->
+    <select id="getComplaintById" resultMap="ComplaintResultMap">
+        SELECT 
+            c.*,
+            ch.status,
+            CASE 
+                WHEN c.report_count > 5 THEN 'HIGH'
+                WHEN c.report_count > 2 THEN 'MEDIUM'
+                ELSE 'LOW'
+            END as risk_level,
+            c.report_count * 10 as risk_score
+        FROM complaints c
+        LEFT JOIN (
+            SELECT 
+                complaint_id,
+                status,
+                ROW_NUMBER() OVER (PARTITION BY complaint_id ORDER BY created_at DESC) as rn
+            FROM complaint_histories
+        ) ch ON c.complaint_id = ch.complaint_id AND ch.rn = 1
+        WHERE c.complaint_id = #{complaintId}
+    </select>
+
+    <!-- 민원 상태 변경 -->
+    <update id="updateComplaintStatus">
+        UPDATE complaints 
+        SET assigned_admin_id = COALESCE(assigned_admin_id, 
+            (SELECT admin_id FROM admins WHERE district_code = district_code AND ROWNUM = 1))
+        WHERE complaint_id = #{complaintId}
+    </update>
+
+    <!-- 민원 위험도 수정 (실제로는 report_count 기반이므로 임시 구현) -->
+    <update id="updateComplaintRisk">
+        UPDATE complaints 
+        SET report_count = 
+            CASE 
+                WHEN #{riskLevel} = 'HIGH' THEN GREATEST(report_count, 6)
+                WHEN #{riskLevel} = 'MEDIUM' THEN GREATEST(report_count, 3)
+                ELSE LEAST(report_count, 2)
+            END
+        WHERE complaint_id = #{complaintId}
+    </update>
+
+    <!-- 민원 위치 수정 -->
+    <update id="updateComplaintLocation">
+        UPDATE complaints 
+        SET lat = #{lat}, 
+            lon = #{lon},
+            incident_address = #{incidentAddress}
+        WHERE complaint_id = #{complaintId}
+    </update>
+
+    <!-- 민원 히스토리 추가 -->
+    <insert id="insertComplaintHistory">
+        INSERT INTO complaint_histories (
+            history_id, complaint_id, admin_id, status, status_comment, created_at
+        ) VALUES (
+            complaint_histories_seq.NEXTVAL, 
+            #{complaintId}, 
+            #{adminId}, 
+            #{status}, 
+            #{statusComment}, 
+            #{createdAt}
+        )
+    </insert>
+
+    <!-- 민원 히스토리 조회 -->
+    <select id="getComplaintHistories" resultMap="HistoryResultMap">
+        SELECT h.*, a.admin_name
+        FROM complaint_histories h
+        LEFT JOIN admins a ON h.admin_id = a.admin_id
+        WHERE h.complaint_id = #{complaintId}
+        ORDER BY h.created_at DESC
+    </select>
+
+    <!-- 민원 사진 조회 -->
+    <select id="getComplaintPhotos" resultMap="PhotoResultMap">
+        SELECT *
+        FROM report_photos
+        WHERE complaint_id = #{complaintId}
+        ORDER BY created_at ASC
+    </select>
+
+    <!-- 중복 신고 확인 -->
+    <select id="getDuplicateComplaints" resultMap="ComplaintResultMap">
+        SELECT 
+            c.*,
+            ch.status,
+            CASE 
+                WHEN c.report_count > 5 THEN 'HIGH'
+                WHEN c.report_count > 2 THEN 'MEDIUM'
+                ELSE 'LOW'
+            END as risk_level
+        FROM complaints c
+        LEFT JOIN (
+            SELECT 
+                complaint_id,
+                status,
+                ROW_NUMBER() OVER (PARTITION BY complaint_id ORDER BY created_at DESC) as rn
+            FROM complaint_histories
+        ) ch ON c.complaint_id = ch.complaint_id AND ch.rn = 1
+        WHERE c.h3_index = #{h3Index}
+        AND c.complaint_id != #{complaintId}
+        ORDER BY c.created_at DESC
+    </select>
+
+    <!-- 대시보드 통계 데이터 -->
+    <select id="getDashboardStats" resultType="map">
+        SELECT 
+            COUNT(*) as totalCount,
+            COUNT(CASE WHEN ch.status = 'RECEIVED' THEN 1 END) as receivedCount,
+            COUNT(CASE WHEN ch.status = 'PROCESSING' THEN 1 END) as processingCount,
+            COUNT(CASE WHEN ch.status = 'COMPLETED' THEN 1 END) as completedCount,
+            COUNT(CASE WHEN ch.status = 'REJECTED' THEN 1 END) as rejectedCount,
+            COUNT(CASE WHEN c.report_count > 5 THEN 1 END) as highRiskCount,
+            COUNT(CASE WHEN c.created_at >= TRUNC(SYSDATE) THEN 1 END) as todayCount
+        FROM complaints c
+        LEFT JOIN (
+            SELECT 
+                complaint_id,
+                status,
+                ROW_NUMBER() OVER (PARTITION BY complaint_id ORDER BY created_at DESC) as rn
+            FROM complaint_histories
+        ) ch ON c.complaint_id = ch.complaint_id AND ch.rn = 1
+        <if test="adminId != null">
+            WHERE c.assigned_admin_id = #{adminId}
+        </if>
+    </select>
+
+</mapper>
