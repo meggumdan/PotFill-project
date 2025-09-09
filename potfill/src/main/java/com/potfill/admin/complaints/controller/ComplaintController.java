@@ -2,6 +2,8 @@ package com.potfill.admin.complaints.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.potfill.admin.complaints.service.ComplaintService;
+import org.springframework.web.bind.annotation.GetMapping;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 @Controller
 @RequestMapping("/admin/complaints")
 public class ComplaintController {
@@ -201,4 +208,59 @@ public class ComplaintController {
         
         return response;
     }
+    
+    
+    /**
+     * 민원 목록 엑셀 내보내기
+     */
+    @GetMapping("/export")
+    public void exportComplaintsToExcel(
+            HttpServletResponse response,
+            // JavaScript에서 보낸 모든 파라미터를 받습니다.
+            @RequestParam(value = "searchType", required = false) String searchType,
+            @RequestParam(value = "searchKeyword", required = false) String searchKeyword,
+            @RequestParam(value = "status", required = false) String status,
+            // JSP의 필터 ID는 riskFilter지만, API에서는 riskLevel로 사용하고 있으므로 맞춰줍니다.
+            @RequestParam(value = "risk", required = false) String riskLevel, 
+            @RequestParam(value = "gu", required = false) String gu,
+            @RequestParam(value = "dong", required = false) String dong,
+            // JSP의 필터 ID는 sortFilter지만, API에서는 sortBy, sortOrder로 나눠서 사용합니다.
+            @RequestParam(value = "sort", defaultValue = "created_at,DESC") String sort) {
+        
+        try {
+            // 1. 파일 이름 및 HTTP 헤더 설정
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            String fileName = "민원_목록_" + sdf.format(new Date()) + ".xlsx";
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+
+            // 2. 서비스에 넘길 검색 파라미터 맵 생성
+            Map<String, Object> searchParams = new HashMap<>();
+            searchParams.put("searchType", searchType);
+            searchParams.put("searchKeyword", searchKeyword);
+            searchParams.put("status", status);
+            searchParams.put("riskLevel", riskLevel);
+            searchParams.put("gu", gu);
+            searchParams.put("dong", dong);
+
+            // 정렬 파라미터 파싱 (예: "created_at,DESC")
+            if (sort != null && !sort.isEmpty()) {
+                String[] sortParams = sort.split(",");
+                if (sortParams.length == 2) {
+                    searchParams.put("sortBy", sortParams[0]);
+                    searchParams.put("sortOrder", sortParams[1]);
+                }
+            }
+
+            // 3. 서비스 레이어 호출하여 엑셀 파일 생성
+            complaintService.exportComplaintsToExcel(searchParams, response.getOutputStream());
+
+        } catch (IOException e) {
+            // 엑셀 생성 중 오류 발생 시 처리
+            e.printStackTrace();
+            // 필요하다면 에러 페이지로 리다이렉트하거나 다른 처리를 할 수 있습니다.
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+    
 }

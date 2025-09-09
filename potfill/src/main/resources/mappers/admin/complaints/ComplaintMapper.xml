@@ -287,5 +287,46 @@
             WHERE c.assigned_admin_id = #{adminId}
         </if>
     </select>
+    
+        <!-- 내보내기위한  페이징없는 데이터 조회 -->
+    <select id="getComplaintListForExport" resultMap="ComplaintResultMap">
+        SELECT 
+            c.*,
+            ch.status,
+            CASE 
+                WHEN c.report_count > 5 THEN 'HIGH'
+                WHEN c.report_count > 2 THEN 'MEDIUM'
+                ELSE 'LOW'
+            END as risk_level,
+            c.report_count * 10 as risk_score
+        FROM complaints c
+        LEFT JOIN (
+            SELECT 
+                complaint_id,
+                status,
+                ROW_NUMBER() OVER (PARTITION BY complaint_id ORDER BY created_at DESC) as rn
+            FROM complaint_histories
+        ) ch ON c.complaint_id = ch.complaint_id AND ch.rn = 1
+        <include refid="searchCondition"/>
+        ORDER BY 
+        <choose>
+            <when test="searchParams.sortBy == 'created_at'">
+                c.created_at ${searchParams.sortOrder}
+            </when>
+            <when test="searchParams.sortBy == 'risk_level'">
+                (CASE 
+                    WHEN c.report_count > 5 THEN 3
+                    WHEN c.report_count > 2 THEN 2
+                    ELSE 1
+                END) ${searchParams.sortOrder}, c.created_at DESC
+            </when>
+            <when test="searchParams.sortBy == 'report_count'">
+                c.report_count ${searchParams.sortOrder}, c.created_at DESC
+            </when>
+            <otherwise>
+                c.created_at DESC
+            </otherwise>
+        </choose>
+    </select>
 
 </mapper>
