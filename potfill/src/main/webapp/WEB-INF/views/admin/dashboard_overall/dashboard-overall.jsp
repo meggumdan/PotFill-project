@@ -16,10 +16,10 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     
     <!-- 관리자 CSS 파일들 -->
-    <link href="${pageContext.request.contextPath}/css/admin-header.css" rel="stylesheet">
-    <link href="${pageContext.request.contextPath}/css/admin-sidebar.css" rel="stylesheet">
-    <link href="${pageContext.request.contextPath}/css/admin-dashboard-overall.css" rel="stylesheet">
-    <link href="${pageContext.request.contextPath}/css/admin-dashboard-overall-top5.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/css/admin/admin-header.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/css/admin/admin-sidebar.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/css/admin/admin-dashboard-overall.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/css/admin/admin-dashboard-overall-top5.css" rel="stylesheet">
     
 <!--     <style>
     .section-title {
@@ -210,6 +210,6 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     
     <!-- 우선 처리 지역 TOP 5 테이블 JavaScript -->
-    <script src="${pageContext.request.contextPath}/js/admin-dashboard-overall-top5.js"></script>
+    <script src="${pageContext.request.contextPath}/js/admin/admin-dashboard-overall-top5.js"></script>
 </body>
 </html>
