@@ -20,41 +20,46 @@ body {
 
 /* ========== 메인 컨텐츠 영역 ========== */
 .admin-main {
-    margin-left: 202px; /* 사이드바 너비 */
-    margin-top: 77px; /* 헤더 높이 */
-    padding: 5px;
-    min-height: calc(100vh - 77px);
-    width: calc(100% - 202px);
+    margin-left: 160px; /* 사이드바 너비 */
+    margin-top: 50px; /* 헤더 높이 */
+    padding: 10px;
+    height: calc(100vh - 50px);
+    width: calc(100% - 160px);
+    overflow: hidden;
 }
 
 .dashboard-container {
-    max-width: 1698px;
+    max-width: 1700px;
     margin: 0 auto;
+    height: 100%;
 }
 
 /* ========== 대시보드 컨텐츠 ========== */
 .dashboard-content {
-    min-height: 600px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ========== 핵심 지표 카드 영역 ========== */
 .metrics-section {
     width: 100%;
-    max-width: 900px;
-    height: 75px;
-    margin: 0 auto 5px auto;
+    max-width: 1200px; /*1200*/
+    height: 95px; /* 80px에서 95px로 증가 */
+    margin: 0 auto 10px auto;
     display: flex;
-    gap: 12px;
+    gap: 38px;  /*38*/
     justify-content: center;
-    padding: 0 30px;
+    padding: 0 10px;
+    flex-shrink: 0;
 }
 
 .metric-card {
-    width: 200px;
-    height: 75px;
+    width: 240px;
+    height: 95px; /* 80px에서 95px로 증가 */
     background: #526484;
     border-radius: 8px;
-    padding: 10px;
+    padding: 15px; /* 12px에서 15px로 증가 */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -66,53 +71,50 @@ body {
 .metric-header {
     display: flex;
     align-items: center;
-    gap: 4px;
-    margin-bottom: 3px;
+    gap: 5px;
+    margin-bottom: 5px; /* 4px에서 5px로 증가 */
 }
 
 .metric-icon {
-    font-size: 12px;
+    font-size: 15px; /* 14px에서 15px로 증가 */
 }
 
 .metric-title {
-    font-size: 10px;
+    font-size: 12px; /* 11px에서 12px로 증가 */
     font-weight: 500;
     color: #FFFCFC;
 }
 
 .metric-value {
-    font-size: 16px;
+    font-size: 20px; /* 18px에서 20px로 증가 */
     font-weight: 700;
     color: #FFFCFC;
-    margin-bottom: 3px;
+    margin-bottom: 5px; /* 4px에서 5px로 증가 */
     line-height: 1;
 }
 
 .metric-change {
-    font-size: 9px;
+    font-size: 11px; /* 10px에서 11px로 증가 */
     color: #1EE0AC;
     font-weight: 600;
-    margin-bottom: 1px;
+    margin-bottom: 2px;
 }
 
 .metric-period {
-    font-size: 7px;
+    font-size: 9px; /* 8px에서 9px로 증가 */
     color: #C4CEFE;
 }
 
 /* ========== 하단 그리드 레이아웃 ========== */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 1fr 350px;
-    grid-template-rows: 165px 235px; 
-    /* 
-    첫 번째 값(150px)이 우선처리 지역 TOP 5 섹션의 높이
-	두 번째 값(250px)이 지역별(구별) 우선도 랭킹 섹션의 높이 
-	*/
-    gap: 6px;
-    height: 406px;
-    max-width: 1200px;
+    grid-template-columns: 1fr 450px;
+    grid-template-rows: 218px 288px; /* 180px/240px에서 200px/270px로 증가 */
+    gap: 12px;
+    height: calc(100% - 115px); /* 100px에서 115px로 조정 */
+    max-width: 1650px;
     margin: 0 auto;
+    flex: 1;
 }
 
 /* ========== 우선처리 지역 TOP 5 (좌상단) ========== */
@@ -122,7 +124,7 @@ body {
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 8px;
+    padding: 12px;
     overflow: hidden;
 }
 
@@ -140,7 +142,7 @@ body {
 .status-section {
     grid-column: 2;
     grid-row: 1 / span 2;
-    width: 350px;
+    width: 450px;
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -149,21 +151,20 @@ body {
 
 /* ========== 섹션 타이틀 ========== */
 .section-title {
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 800;
     color: #2c3e50;
-    margin-bottom: 11px;
-    padding-bottom: 1px;
-    /* border-bottom: 1px solid #e9ecef; */
+    /* margin-bottom: 1px; */
+    /* padding-bottom: 4px; */
     display: flex;
     align-items: center;
-    gap: 2px;
-    line-height: 1;
-    height: 10px;
+    gap: 5px;
+    line-height: 1.2;
+    height: auto;
 }
 
 .section-icon {
-    font-size: 8px;
+    font-size: 13px;
 }
 
 /* ========== 임시 컨텐츠 스타일 ========== */
@@ -171,17 +172,17 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: calc(100% - 25px);
+    height: calc(100% - 40px);
     color: #6c757d;
     text-align: center;
 }
 
 .temp-content h4 {
-    margin-bottom: 4px;
-    font-size: 11px;
+    margin-bottom: 6px;
+    font-size: 15px;
 }
 
 .temp-content p {
-    font-size: 9px;
+    font-size: 12px;
     line-height: 1.4;
 }

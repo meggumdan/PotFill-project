@@ -78,7 +78,7 @@ function updatePriorityTableData(data) {
 function loadSamplePriorityData() {
     const sampleData = [
         {
-            regionName: '강남구 역삼동',
+            regionName: '구 역삼동',
             pendingCount: 15,
             maxElapsedDays: 7,
             repeatCount: 9,
