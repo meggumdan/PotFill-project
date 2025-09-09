@@ -386,4 +386,8 @@ pyrightconfig.json
 .history
 .ionide
 
+### 소영 서버 이상 ###
+/Servers/
+
+
 # End of https://www.toptal.com/developers/gitignore/api/eclipse,oracleforms,java,intellij+all,visualstudiocode,python
