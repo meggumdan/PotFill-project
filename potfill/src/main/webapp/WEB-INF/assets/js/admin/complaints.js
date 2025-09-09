@@ -38,7 +38,7 @@ $(document).ready(function() {
 
 	// '내보내기' 버튼 클릭 이벤트
 	    $('#exportBtn').on('click', function() {
-	        // 현재 필터와 검색 조건들을 가져옵니다.
+	        // 현재 필터와 검색 조건들을 가져옴
 	        const params = {
 	            period: $('#periodFilter').val(),
 	            status: $('#statusFilter').val(),
@@ -49,14 +49,14 @@ $(document).ready(function() {
 	            searchKeyword: $('#searchKeyword').val()
 	        };
 
-	        // 쿼리 스트링으로 변환합니다. (예: period=today&status=RECEIVED...)
-	        // 값이 없는 파라미터는 제외합니다.
+	        // 쿼리 스트링으로 변환 (예: period=today&status=RECEIVED...)
+	        // 값이 없는 파라미터는 제외
 	        const queryString = Object.entries(params)
 	            .filter(([key, value]) => value !== null && value !== '')
 	            .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
 	            .join('&');
 	            
-	        // 새로운 URL로 이동하여 파일 다운로드를 트리거합니다.
+	        // 새로운 URL로 이동하여 파일 다운로드를 트리거
 	        window.location.href = `${CONTEXT_PATH}/admin/complaints/export?${queryString}`;
 	    });
 	

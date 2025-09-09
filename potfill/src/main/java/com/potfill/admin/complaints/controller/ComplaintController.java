@@ -216,15 +216,15 @@ public class ComplaintController {
     @GetMapping("/export")
     public void exportComplaintsToExcel(
             HttpServletResponse response,
-            // JavaScript에서 보낸 모든 파라미터를 받습니다.
+            // JavaScript에서 보낸 모든 파라미터를 받고
             @RequestParam(value = "searchType", required = false) String searchType,
             @RequestParam(value = "searchKeyword", required = false) String searchKeyword,
             @RequestParam(value = "status", required = false) String status,
-            // JSP의 필터 ID는 riskFilter지만, API에서는 riskLevel로 사용하고 있으므로 맞춰줍니다.
+            // JSP의 필터 ID는 riskFilter지만, API에서는 riskLevel로 사용하고 있으므로 맞춘다
             @RequestParam(value = "risk", required = false) String riskLevel, 
             @RequestParam(value = "gu", required = false) String gu,
             @RequestParam(value = "dong", required = false) String dong,
-            // JSP의 필터 ID는 sortFilter지만, API에서는 sortBy, sortOrder로 나눠서 사용합니다.
+            // JSP의 필터 ID는 sortFilter지만, API에서는 sortBy, sortOrder로 나눠서 사용.
             @RequestParam(value = "sort", defaultValue = "created_at,DESC") String sort) {
         
         try {
@@ -258,7 +258,7 @@ public class ComplaintController {
         } catch (IOException e) {
             // 엑셀 생성 중 오류 발생 시 처리
             e.printStackTrace();
-            // 필요하다면 에러 페이지로 리다이렉트하거나 다른 처리를 할 수 있습니다.
+            // 필요시 에러 페이지로 리다이렉트하거나 다른 처리를 할 수 있음
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }

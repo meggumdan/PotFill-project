@@ -180,7 +180,7 @@ public class ComplaintServiceImpl implements ComplaintService {
                 row.createCell(4).setCellValue(complaint.getReporterNumber());
                 row.createCell(5).setCellValue(complaint.getIncidentAddress());
                 row.createCell(6).setCellValue(complaint.getReportCount());
-                // 날짜(Timestamp)는 포맷팅해서 넣어주는 것이 좋습니다.
+                // 날짜(Timestamp)는 포맷팅해서 넣어주는 것이 좋음
                 row.createCell(7).setCellValue(sdf.format(complaint.getCreatedAt()));
             }
 
