@@ -318,40 +318,160 @@ function selectComplaint(complaintId) {
 } 
        
 function loadComplaintDetail(complaintId) {
+    // 로딩 중임을 표시 (사용자 경험 개선)
+    $('#detailPanel').html('<div class="text-center py-5"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+    
     $.ajax({
         url: `${CONTEXT_PATH}/admin/complaints/api/detail/${complaintId}`,
         method: 'GET',
         success: function(response) {
             if (response.success) {
+                // 성공하면 받은 데이터로 상세 뷰를 렌더링
                 renderComplaintDetail(response.data);
             } else {
-                $('#detailPanel').html(`<div class="text-center text-danger p-4">${escapeHtml(response.message)}</div>`);
+                $('#detailPanel').html(`<div class="alert alert-danger m-3">${escapeHtml(response.message)}</div>`);
             }
         },
         error: function() {
-            $('#detailPanel').html('<div class="text-center text-danger p-4">상세 정보를 불러오는 데 실패했습니다.</div>');
+            $('#detailPanel').html('<div class="alert alert-danger m-3">상세 정보를 불러오는 데 실패했습니다.</div>');
         }
     });
 }
 
-        // 요약 탭 렌더링
-        function renderSummaryTab(complaint) {
-            // 수정 2: 출력되는 모든 데이터에 escapeHtml 함수를 적용합니다.
-            return `
-                <div class="row">
-                    <div class="col-md-6">
-                        <table class="table table-borderless">
-                            <tr><th width="30%">신고자:</th><td>${escapeHtml(complaint.reporterName)} (${maskPhone(complaint.reporterNumber)})</td></tr>
-                            </table>
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <h6>신고 내용:</h6>
-                    <p class="bg-light p-3 rounded">${escapeHtml(complaint.reportContent || '내용 없음')}</p>
-                </div>
-            `;
-        }
+//상세 정보 전체를 렌더링하는 메인 함수
+function renderComplaintDetail(data) {
+    const { complaint, histories, photos, duplicateComplaints } = data;
+
+    // 탭 구조 HTML
+    const detailHtml = `
+        <ul class="nav nav-tabs px-3" id="detailTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab">요약</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">
+                    처리 히스토리 <span class="badge bg-secondary">${histories.length}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="photos-tab" data-bs-toggle="tab" data-bs-target="#photos" type="button" role="tab">
+                    첨부 사진 <span class="badge bg-secondary">${photos.length}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="duplicates-tab" data-bs-toggle="tab" data-bs-target="#duplicates" type="button" role="tab">
+                    중복 신고 <span class="badge bg-warning text-dark">${duplicateComplaints.length}</span>
+                </button>
+            </li>
+        </ul>
+        <div class="tab-content p-3" id="detailTabContent">
+            <div class="tab-pane fade show active" id="summary" role="tabpanel">
+                ${renderSummaryTab(complaint)}
+            </div>
+            <div class="tab-pane fade" id="history" role="tabpanel">
+                ${renderHistoryTab(histories)}
+            </div>
+            <div class="tab-pane fade" id="photos" role="tabpanel">
+                ${renderPhotosTab(photos)}
+            </div>
+            <div class="tab-pane fade" id="duplicates" role="tabpanel">
+                ${renderDuplicatesTab(duplicateComplaints)}
+            </div>
+        </div>
+    `;
+    
+    $('#detailPanel').html(detailHtml);
+}
+
+// 1. '요약' 탭 HTML 생성
+function renderSummaryTab(complaint) {
+    return `
+        <h5>민원 기본 정보</h5>
+        <table class="table table-bordered">
+            <tbody>
+                <tr><th style="width:25%;">민원 ID</th><td>${complaint.complaintId}</td></tr>
+                <tr><th>신고자</th><td>${escapeHtml(complaint.reporterName)} (${maskPhone(complaint.reporterNumber)})</td></tr>
+                <tr><th>접수일시</th><td>${formatDateTime(complaint.createdAt)}</td></tr>
+                <tr><th>주소</th><td>${escapeHtml(complaint.incidentAddress)}</td></tr>
+                <tr><th>상태</th><td><span class="badge status-${(complaint.status || 'received').toLowerCase()}">${getStatusText(complaint.status)}</span></td></tr>
+                <tr><th>위험도</th><td><span class="badge risk-${(complaint.riskLevel || 'low').toLowerCase()}">${getRiskText(complaint.riskLevel)}</span></td></tr>
+            </tbody>
+        </table>
         
+        <h5 class="mt-4">신고 내용</h5>
+        <div class="p-3 bg-light border rounded" style="white-space: pre-wrap;">${escapeHtml(complaint.reportContent || '내용 없음')}</div>
+        
+        <div class="d-flex justify-content-end gap-2 mt-4">
+            <button class="btn btn-info btn-sm" onclick="changeStatus(${complaint.complaintId})"><i class="fas fa-edit"></i> 상태 변경</button>
+            <button class="btn btn-warning btn-sm" onclick="changeRisk(${complaint.complaintId})"><i class="fas fa-exclamation-triangle"></i> 위험도 수정</button>
+            <button class="btn btn-secondary btn-sm" onclick="editLocation(${complaint.complaintId})"><i class="fas fa-map-marker-alt"></i> 위치 수정</button>
+        </div>
+    `;
+}
+
+// 2. '처리 히스토리' 탭 HTML 생성
+function renderHistoryTab(histories) {
+    if (histories.length === 0) {
+        return '<p class="text-muted">처리 내역이 없습니다.</p>';
+    }
+    let historyHtml = '<ul class="list-group">';
+    histories.forEach(h => {
+        historyHtml += `
+            <li class="list-group-item">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">
+                        <span class="badge status-${h.status.toLowerCase()}">${getStatusText(h.status)}</span>
+                        <span class="ms-2">${escapeHtml(h.admin_name || '시스템')}</span>
+                    </h6>
+                    <small>${formatDateTime(h.createdAt)}</small>
+                </div>
+                <p class="mb-1">${escapeHtml(h.statusComment || '코멘트 없음')}</p>
+            </li>
+        `;
+    });
+    historyHtml += '</ul>';
+    return historyHtml;
+}
+
+// 3. '첨부 사진' 탭 HTML 생성
+function renderPhotosTab(photos) {
+    if (photos.length === 0) {
+        return '<p class="text-muted">첨부된 사진이 없습니다.</p>';
+    }
+    let photosHtml = '<div class="row g-2">';
+    photos.forEach(p => {
+        photosHtml += `
+            <div class="col-md-6">
+                <a href="${p.fileUrl}" target="_blank">
+                    <img src="${p.fileUrl}" class="img-fluid rounded" alt="${escapeHtml(p.photoName)}">
+                </a>
+            </div>
+        `;
+    });
+    photosHtml += '</div>';
+    return photosHtml;
+}
+
+// 4. '중복 신고' 탭 HTML 생성
+function renderDuplicatesTab(duplicates) {
+    if (duplicates.length === 0) {
+        return '<p class="text-muted">동일 위치에 다른 신고가 없습니다.</p>';
+    }
+    let dupHtml = '<ul class="list-group">';
+    duplicates.forEach(d => {
+        dupHtml += `
+            <li class="list-group-item list-group-item-action" style="cursor:pointer;" onclick="selectComplaint(${d.complaintId})">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">#${d.complaintId} - ${escapeHtml(d.incidentAddress)}</h6>
+                    <small>${formatDate(d.createdAt)}</small>
+                </div>
+                <small>상태: ${getStatusText(d.status)} / 위험도: ${getRiskText(d.riskLevel)}</small>
+            </li>
+        `;
+    });
+    dupHtml += '</ul>';
+    return dupHtml;
+}
         function changeStatus(complaintId) {
             // 수정 3: prompt 대신 Bootstrap Modal을 사용하는 것을 강력히 권장합니다.
             // 아래는 임시로 현재 로직을 유지하되, 개선 방향을 제시합니다.
