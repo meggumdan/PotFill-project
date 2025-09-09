@@ -186,35 +186,123 @@
 							</div>
 						</div>
 
-						<!-- 지역별 포트홀 신고현황 (우상하단) -->
-						<!-- 지역별 포트홀 신고현황 (우상하단) 섹션 내부에 추가 -->
+						<!-- 지역별 포트홀 신고현황 섹션 -->
 						<div class="status-section">
 							<h3 class="section-title">
 								<span class="section-icon">📍</span> 지역별 포트홀 신고현황
 							</h3>
 
-							<!-- 상단 도넛차트 영역 -->
-							<div class="status-chart-section">
-								<div class="status-chart-container">
-									<div class="donut-chart-wrapper">
-										<canvas id="statusDonutChart"></canvas>
+							<div
+								style="text-align: center; font-size: 10px; color: #8094AE; margin-bottom: 0px;">
+								전체 처리 현황</div>
+
+							<div style="display: flex; gap: 20px; margin-bottom: 0px;">
+								<!-- 도넛차트 (왼쪽) -->
+								<div style="width: 170px; height: 170px; flex-shrink: 0;">
+									<canvas id="statusDonutChart"
+										style="width: 170px !important; height: 170px !important;"></canvas>
+								</div>
+
+								<!-- 범례 (오른쪽) - 정사각형 컬러박스와 함께 -->
+								<div
+									style="flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 0.5fr 0.4fr; gap: 0px 0px; padding-top: 0px; padding-left: 26px"
+									class="chart-legend-grid">
+									<!-- 완료 -->
+									<div class="legend-entry">
+										<div class="color-box"
+											style="background-color: #D4DFB8; width: 18px; height: 18px; border-radius: 0px; flex-shrink: 0; margin-bottom:15px;'"></div>
+										<div class="legend-details">
+											<div class="status-label"
+												style="font-size: 12px; color: #364A63; font-weight: 500;">완료</div>
+											<div class="status-value"
+												style="font-size: 13px; font-weight: 600; color: #8094AE; margin-top:3px">
+												<span class="completed-count">1,158</span>건 <span
+													class="status-percentage"
+													style="font-size: 9px; color: #8094AE; margin-left: 3px;">51%</span>
+											</div>
+										</div>
 									</div>
-									<div class="chart-info">
-										<!-- JavaScript로 동적 생성 -->
+
+									<!-- 처리중 -->
+									<div class="legend-entry">
+										<div class="color-box"
+											style="background-color: #3D70C3; width: 18px; height: 18px; border-radius: 0px; flex-shrink: 0; margin-bottom:15px;"></div>
+										<div class="legend-details">
+											<div class="status-label"
+												style="font-size: 12px; color: #364A63; font-weight: 500;">처리중</div>
+											<div class="status-value"
+												style="font-size: 13px; font-weight: 600; color: #8094AE; margin-top:3px">
+												<span class="processing-count">500</span>건 <span
+													class="status-percentage"
+													style="font-size: 9px; color: #8094AE; margin-left: 3px;">22%</span>
+											</div>
+										</div>
+									</div>
+
+									<!-- 접수 -->
+									<div class="legend-entry">
+										<div class="color-box"
+											style="background-color: #FFB97D; width: 18px; height: 18px; border-radius: 0px; flex-shrink: 0;  margin-bottom:15px;"></div>
+										<div class="legend-details">
+											<div class="status-label"
+												style="font-size: 12px; color: #364A63; font-weight: 500;">접수</div>
+											<div class="status-value"
+												style="font-size: 13px; font-weight: 600; color: #8094AE;margin-top:3px">
+												<span class="received-count">341</span>건 <span
+													class="status-percentage"
+													style="font-size: 9px; color: #8094AE; margin-left: 3px;">15%</span>
+											</div>
+										</div>
+									</div>
+
+									<!-- 반려 -->
+									<div class="legend-entry">
+										<div class="color-box"
+											style="background-color: #868EA1; width: 18px; height: 18px; border-radius: 0px; flex-shrink: 0; margin-bottom:15px;"></div>
+										<div class="legend-details">
+											<div class="status-label"
+												style="font-size: 12px; color: #364A63; font-weight: 500;">반려</div>
+											<div class="status-value"
+												style="font-size: 13px; font-weight: 600; color: #8094AE;margin-top:3px">
+												<span class="rejected-count">272</span>건 <span
+													class="status-percentage"
+													style="font-size: 9px; color: #8094AE; margin-left: 3px;">12%</span>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
 
-							<!-- 하단 테이블 영역 -->
-							<div class="status-table-section">
-								<div class="status-table-title">구별 상세 현황</div>
-								<div class="status-table-subtitle">신고건수, 처리율, 평균처리시간</div>
-								<div class="status-table-container">
-									<table id="statusTable" class="status-table">
-										<!-- DataTables로 동적 생성 -->
-									</table>
-								</div>
+							<div
+								style="text-align: center; font-size: 10px; color: #8094AE; margin-bottom: 5px;">
+								구별 상세 현황</div>
+
+							<div style="height: calc(100% - 180px); overflow: hidden;">
+								<table id="mainStatusTable"
+									style="width: 100%; border-collapse: collapse; font-size: 10px;">
+								</table>
 							</div>
+							<!-- 테이블 스타일을 위한 CSS 추가 -->
+							<style>
+								#mainStatusTable tbody td {
+									font-size: 11px !important;
+									padding: 8px 4px !important;
+									color: #364A63 !important;
+								}
+								
+								/* 순위 컬럼 (첫 번째 컬럼) */
+								#mainStatusTable tbody td:nth-child(1) {
+									color: #798BFF !important;
+									font-weight: 600 !important;
+								}
+								
+								/* 평균 처리시간 컬럼 (다섯 번째 컬럼) */
+								#mainStatusTable tbody td:nth-child(5) {
+									color: #E85347 !important;
+									font-weight: 600 !important;
+								}
+							</style>
+
 						</div>
 					</div>
 				</div>
