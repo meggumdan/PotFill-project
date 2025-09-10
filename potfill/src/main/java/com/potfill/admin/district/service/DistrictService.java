@@ -1,12 +1,12 @@
-package com.potfill.admin.managerdistrict.service;
+package com.potfill.admin.district.service;
 
 import java.util.List;
 
-import com.potfill.admin.managerdistrict.model.Complaint;
-import com.potfill.admin.managerdistrict.model.DailyCount;
+import com.potfill.admin.district.model.Complaint;
+import com.potfill.admin.district.model.DailyCount;
 
 
-public interface ComplaintService {
+public interface DistrictService {
 
     // 총 민원 건수
     int getNewCount();
