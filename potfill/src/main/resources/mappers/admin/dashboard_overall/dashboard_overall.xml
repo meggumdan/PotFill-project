@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.potfill.admin.dashboard_overall.dao.MajorPlaceRepository">
+
+    <!-- ResultMap 정의 -->
+    <resultMap id="majorPlaceResultMap" type="com.potfill.admin.dashboard_overall.model.MajorPlace">
+        <id property="majorId" column="major_id"/>
+        <result property="areaName" column="area_name"/>
+        <result property="gu" column="gu"/>
+        <result property="dong" column="dong"/>
+    </resultMap>
+
+    <!-- 전체 주요장소 개수 조회 -->
+    <select id="getMajorPlacesCount" resultType="int">
+        SELECT NVL(COUNT(*), 0) FROM major_places
+    </select>
+
+    <!-- 주요장소 삽입 -->
+    <insert id="insertMajorPlace" parameterType="com.potfill.admin.dashboard_overall.model.MajorPlace">
+        <selectKey keyProperty="majorId" resultType="int" order="BEFORE">
+            SELECT NVL(MAX(major_id), 0) + 1 FROM major_places
+        </selectKey>
+        INSERT INTO major_places (
+            major_id,
+            area_name,
+            gu,
+            dong
+        ) VALUES (
+            #{majorId},
+            #{areaName},
+            #{gu},
+            #{dong}
+        )
+    </insert>
+
+</mapper>
