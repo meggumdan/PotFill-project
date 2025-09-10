@@ -1,0 +1,181 @@
+@charset "UTF-8";
+
+html, body {
+    overflow: hidden;  /* 세로/가로 스크롤 둘 다 제거 */
+}
+
+/* --- 레이아웃 관련 --- */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #f5f6fa;
+}
+
+.admin-main {
+    margin-left: 160px; /* 사이드바 너비 */
+    margin-top: 50px;   /* 헤더 높이 */
+    padding: 60px;
+    height: calc(100vh - 50px);
+    width: calc(100% - 160px);
+    overflow: hidden;
+}
+
+/* --- 카드 레이아웃 --- */
+.top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.card-horizontal, .card-vertical {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.card-horizontal {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    gap: 30px;
+}
+
+.card-vertical {
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+/* --- 상태 박스 --- */
+.card-part {
+    position: relative;
+}
+
+.card-ing {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transform: translateY(-50%);
+}
+
+.status-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.horizontal-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #eee;
+    border-radius: 1px;
+    z-index: 0;
+}
+
+.minidot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    z-index: 1;
+    margin: 60px;
+}
+
+.status-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 130px;
+    gap: 20px;
+}
+
+.status-box span {
+    font-size: 20px;
+}
+
+.status-box p {
+    font-size: 15px;
+}
+
+/* --- 차트 --- */
+#circleChart {
+    width: 132px;
+    height: 132px;
+}
+
+#barChart {
+    width: 570px;
+    height: 239px;
+}
+
+/* --- 긴급 신고 테이블 --- */
+.emergencytable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.emergencytable th, .emergencytable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.emergencytable th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.emergencytable .sf_text_overflow {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.emergencytable .detail-row {
+    background-color: #fdfdfd;
+}
+
+.emergencytable .detail-row td {
+    text-align: left;
+    padding: 15px;
+}
+
+.emergencytable tr.clickable:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+/* --- 상세 textarea --- */
+.report-content {
+    width: 70px;
+    display: inline-block;
+    text-align: justify;
+    font-weight: 600;
+}
+
+.detail-textarea {
+    display: flex;
+    align-items: flex-start;
+}
+
+.detail-textarea textarea {
+    flex: 1;
+}

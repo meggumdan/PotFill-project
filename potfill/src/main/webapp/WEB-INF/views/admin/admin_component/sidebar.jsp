@@ -23,7 +23,7 @@
                         </a>
                     </li>
                     <li class="sub-item">
-                        <a href="${pageContext.request.contextPath}/admin/dashboard/detail" class="sub-link">
+                        <a href="${pageContext.request.contextPath}/admin/district" class="sub-link">
                             > 관할 보기
                         </a>
                     </li>

@@ -263,4 +263,16 @@ public class ComplaintController {
         }
     }
     
+    // 지민: 페이지에서 보낸 민원 id 매핑
+    @GetMapping("/admin/complaints/list")
+    public String complaintList(HttpSession session, Model model) {
+        Object selectedId = session.getAttribute("selectedComplaintId");
+
+        if (selectedId != null) {
+            model.addAttribute("selectedComplaintId", selectedId);
+            session.removeAttribute("selectedComplaintId"); // 1회성 사용 후 삭제
+        }
+
+        return "admin/complaints/list";
+    }
 }
