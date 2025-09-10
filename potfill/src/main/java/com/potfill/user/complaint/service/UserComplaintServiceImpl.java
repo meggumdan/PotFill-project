@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.potfill.user.common.ComplaintIdGenerator;
-import com.potfill.user.complaint.dao.ComplaintRepository;
+import com.potfill.user.complaint.dao.UserComplaintRepository;
 import com.potfill.user.complaint.model.Complaint;
 import com.potfill.user.complaint.model.ComplaintPhoto;
 
@@ -17,10 +17,10 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ComplaintServiceImpl implements ComplaintService {
+public class UserComplaintServiceImpl implements UserComplaintService {
 	
 	
-	private final ComplaintRepository complaintRepository; 
+	private final UserComplaintRepository userComplaintRepository; 
 
 	@Override
 	public void saveComplaint(Complaint complaint, List<MultipartFile> photoFiles) throws IOException {
@@ -30,7 +30,7 @@ public class ComplaintServiceImpl implements ComplaintService {
 		complaint.setComplaintId(complaintId);
 
 		// 2) 본문 저장
-		complaintRepository.insertComplaint(complaint);
+		userComplaintRepository.insertComplaint(complaint);
 
 		// 3) 파일 저장 (임시로 - 프로젝트 내부 /webapp/upload 사용)
 		if (photoFiles != null && !photoFiles.isEmpty()) {
@@ -77,7 +77,7 @@ public class ComplaintServiceImpl implements ComplaintService {
 					photo.setOriginalName(originalName); // 원본 파일명
 					photo.setStoredName(storedName); // 서버 저장된 파일명
 
-					complaintRepository.insertComplaintPhoto(photo);
+					userComplaintRepository.insertComplaintPhoto(photo);
 				}
 			}
 		}
@@ -86,7 +86,7 @@ public class ComplaintServiceImpl implements ComplaintService {
 	@Override
 	public List<Complaint> findByNameAndPhone(String reporterName, String reporterNumber) {
 	    // Repository 호출 (mapper.xml에 맞게 구현 필요)
-	    return complaintRepository.findByNameAndPhone(reporterName, reporterNumber);
+	    return userComplaintRepository.findByNameAndPhone(reporterName, reporterNumber);
 	}
 
 	

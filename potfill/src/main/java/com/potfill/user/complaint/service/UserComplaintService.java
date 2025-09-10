@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.potfill.user.complaint.model.Complaint;
 
-public interface ComplaintService {
+public interface UserComplaintService {
 
 	// 신고 등록
 	void saveComplaint(Complaint complaint, List<MultipartFile> photoFiles) throws IOException;

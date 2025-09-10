@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.potfill.user.complaint.model.Complaint;
-import com.potfill.user.complaint.service.ComplaintService;
+import com.potfill.user.complaint.service.UserComplaintService;
 
 import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/user/complaint")
-public class ComplaintController {
+public class UserComplaintController {
 
-	private final ComplaintService complaintService;
+	private final UserComplaintService userComplaintService;
 
 	// 신고 화면 이동
 	@GetMapping
@@ -35,7 +35,7 @@ public class ComplaintController {
 	public String registerComplaint(Complaint complaint, 
 			@RequestParam(value="photoFiles", required = false) List<MultipartFile> photoFiles) throws IOException {
 		
-		complaintService.saveComplaint(complaint, photoFiles);
+		userComplaintService.saveComplaint(complaint, photoFiles);
 		
 		
 		// 추후에 나의 신고 현황으로 바로가게 바꾸기
@@ -57,7 +57,7 @@ public class ComplaintController {
 	@PostMapping("/lookup")
 	public String getMyComplaint(@RequestParam String reporterName, @RequestParam String reporterNumber, Model model) throws IOException {
 
-		List<Complaint> list = complaintService.findByNameAndPhone(reporterName, reporterNumber);
+		List<Complaint> list = userComplaintService.findByNameAndPhone(reporterName, reporterNumber);
 		model.addAttribute("complaints", list);
 		model.addAttribute("inputName", reporterName);
 		model.addAttribute("inputPhone", reporterNumber);
