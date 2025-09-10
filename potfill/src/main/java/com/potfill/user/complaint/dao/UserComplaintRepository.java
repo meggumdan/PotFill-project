@@ -8,7 +8,7 @@ import com.potfill.user.complaint.model.Complaint;
 import com.potfill.user.complaint.model.ComplaintPhoto;
 
 @Mapper
-public interface ComplaintRepository {
+public interface UserComplaintRepository {
 
 	public void insertComplaint(Complaint complaint);
 	

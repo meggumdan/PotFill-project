@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.potfill.admin.complaints.model.Complaint;
 import com.potfill.admin.complaints.model.ComplaintHistory;
 import com.potfill.admin.complaints.model.ReportPhoto;
+
 @Mapper
 public interface ComplaintRepository {
     
