@@ -11,13 +11,11 @@
 		      , cp.lon
 		      , cp.report_count as reportCount
 		      , cp.district_code as districtCode
-		      , cp.risk_level as riskLevel
-		      , cpl.status_comment as statusComment
 		      , cpl.status 
 		  FROM complaints cp, complaint_histories cpl
 		 WHERE cp.complaint_id = cpl.complaint_id
-		   AND status != 'Completed' 
-		   AND status != 'Rejected'
+		   AND status != '완료' 
+		   AND status != '반려'
  	</select>
  	
  

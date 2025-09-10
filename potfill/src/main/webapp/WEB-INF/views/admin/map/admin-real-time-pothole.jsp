@@ -1,42 +1,45 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <spring:eval expression="@keyProps['kakao.js.apikey']" var="jsKey" />
-
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" type="text/css" href="<c:url value='/css/user/complaint.css'/>">
-		<link rel="stylesheet" type="text/css" href="<c:url value='/css/map/user-map-style.css'/>">
-		<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-		<title>POTFill</title>
-	</head>
-	<body>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POTFILL - 실시간 포트홀 현황</title>
+
+<!-- Bootstrap CSS -->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="<c:url value='/css/map/admin-map-style.css'/>">
+	<link
+	href="${pageContext.request.contextPath}/css/admin/admin-header.css"
+	rel="stylesheet">
+<link
+	href="${pageContext.request.contextPath}/css/admin/admin-sidebar.css"
+	rel="stylesheet">
+	<link
+	href="${pageContext.request.contextPath}/css/admin/admin-dashboard-overall.css"
+	rel="stylesheet">
+
+</head>
+<body>
+	<div class="admin-layout">
+		<!-- 헤더 Include -->
+		<%@ include file="../admin_component/header.jsp"%>
+
+		<!-- 사이드바 Include -->
+		<%@ include file="../admin_component/sidebar.jsp"%>
+		
+		<!-- 메인 컨텐츠 영역 -->
+		<div id="map" style="width:100%; "></div>
+
+	</div>
 	
-		<!-- 젤 큰 영역 -->
-		<div class="container">
-		
-			<div class="header">
-				<div id="intro" class="logo-small-box">
-					<h1 class="logo">POTFill</h1>
-				</div>
-			</div>
-			
-			<!-- 설명  -->
-			<div class="explain">
-				<h3>실시간 포트홀 현황</h3>
-				<p>아직 보수되지 않은 포트홀이 지도에 표시됩니다.</p>
-			</div>
-			
-			<div id="map" style="width:285;height:265px;"></div>
-			<div class="explain">
-			<div id="content" class="overlay-box"></div>
-			</div>
-		</div>
-		
-			<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${jsKey }&libraries=services,clusterer"></script>
+		<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${jsKey }&libraries=services,clusterer"></script>
 	<script>
 		// 1) 지도 먼저 생성
 		var mapContainer = document.getElementById('map');
@@ -50,7 +53,7 @@
 		var clusterer = new kakao.maps.MarkerClusterer({
 			map: map,
 			averageCenter: true,
-			minLevel: 5,
+			minLevel: 8,
 			disableClickZoom: true
 		}); //clusterer end
 
@@ -62,20 +65,12 @@
 					latlng: new kakao.maps.LatLng(${row['LAT']}, ${row['LON']}),
 				reportCount: ${row['REPORTCOUNT']},
 				content: '', // 초기 내용 필요시 채우기
-				status: getStatusLabel('${row['STATUS']}')
+				status: '${row['STATUS']}'
 				}); //positions.push end
 			</c:if>
 		</c:forEach>
 
-		function getStatusLabel(data) {
-			switch (data) {
-				case "Received": return "접수";
-				case "Processing": return "처리중";
-				case "Completed": return "완료";
-				case "Rejected": return "반려";
-				default: return "접수";
-			}
-		}; // getStatusLabel
+
 
 		// 4) 마커 이미지 공통 설정
 		var imageSize = new kakao.maps.Size(40, 40);
@@ -120,7 +115,7 @@
 			var overlay = new kakao.maps.CustomOverlay({
 				content: buildOverlayContent({
 					addressHtml: positions[i].content || '주소 로딩 중...',
-					idx: i,
+					i,
 					reportCount: positions[i].reportCount,
 					status: positions[i].status
 				}), //buildOverlayContent
@@ -139,8 +134,7 @@
 				if (activeOverlay !== null && overlays[activeOverlay]) {
 					overlays[activeOverlay].setMap(null);
 				} // if
-				
-				/* overlays[i].setMap(map); */
+				overlays[i].setMap(map);
 				activeOverlay = i;
 
 				// 역지오코딩
@@ -150,15 +144,14 @@
 						detailAddr = (result[0].road_address ? '도로명주소 : ' + result[0].road_address.address_name + '<br>' : '')
 							+ '지번 주소 : ' + result[0].address.address_name;
 					} // if
-
-	
-							showBelowOverlay({
+					overlay.setContent(
+						buildOverlayContent({
 							addressHtml: detailAddr || '주소 로딩 중...',
-							i,
+							idx: i,
 							reportCount: positions[i].reportCount,
-							riskLevel: positions[i].riskLevel,
 							status: positions[i].status
-						}); // buildOverlayContent
+						}), // buildOverlayContent
+					); // overlay.setContent
 				}); // searchDetailAddrFromCoords
 				map.setCenter(marker.getPosition());
 			}); // kakao.maps.event.addListener
@@ -182,12 +175,14 @@
 			return (
 				'<div class="wrap">' +
 				'  <div class="info">' +
-				'    <div class="title">포트홀 위치 </div>' +
+				'    <div class="title">포트홀 위치 ' +
+				'      <div class="close" onclick="closeOverlay(' + idx + ')" title="닫기"></div>' +
+				'    </div>' +
 				'    <div class="body">' +
 				'      <div class="desc">' +
 				'        <div class="ellipsis">' + (addressHtml || '') + '</div>' +
-				'        <div class="ellipsis"><b>상태</b>: ' + status + '</div>' +     // ← state 표시
-				'        <div class="ellipsis"><b>누적신고 수</b>: ' + reportCount + '</div>' +  // ← comment 표시
+				'        <div class="ellipsis"><b>상태</b>: ' + status + '</div>' +     
+				'        <div class="ellipsis"><b>누적신고 수</b>: ' + reportCount + '</div>' +  
 				'        <div class="jibun ellipsis">(관할) 0000행정복지센터</div>' +
 				'      </div>' +
 				'    </div>' +
@@ -195,35 +190,15 @@
 				'</div>'
 			);
 		} // buildOverlayContent
-		
-		
 
 		function searchDetailAddrFromCoords(coords, callback) {
 			geocoder.coord2Address(coords.getLng(), coords.getLat(), callback);
 		}
 
-		function showBelowOverlay(props){
-			  const box = document.getElementById('content');
-			  // buildOverlayContent는 그대로 재사용하되, 닫기용 식별자 idx를 'dom'으로 넘겨줌
-			  box.innerHTML = buildOverlayContent({ ...props, idx: 'dom' });
-			  box.hidden = false;
-			}
-		
-			function hideBelowOverlay(){
-			  const box = document.getElementById('content');
-			  box.hidden = true;
-			  box.innerHTML = '';
-			}
-			
-			// closeOverlay와 호환 (지도용 + DOM용 겸용)
-			const _closeOverlayOrig = window.closeOverlay;
-			window.closeOverlay = function(idx){
-			  if (idx === 'dom') { hideBelowOverlay(); return; }
-			  if (typeof _closeOverlayOrig === 'function') _closeOverlayOrig(idx);
-			};
+		function closeOverlay(idx) {
+			if (overlays[idx]) overlays[idx].setMap(null);
+			if (activeOverlay === idx) activeOverlay = null;
+		}
 	</script>
-			
-
-		
-	</body>
+</body>
 </html>
