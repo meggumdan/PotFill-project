@@ -37,29 +37,29 @@ $(document).ready(function() {
 
 
 	// '내보내기' 버튼 클릭 이벤트
-	    $('#exportBtn').on('click', function() {
-	        // 현재 필터와 검색 조건들을 가져옴
-	        const params = {
-	            period: $('#periodFilter').val(),
-	            status: $('#statusFilter').val(),
-	            risk: $('#riskFilter').val(),
-	            gu: $('#guFilter').val(),
-	            sort: $('#sortFilter').val(),
-	            searchType: $('#searchType').val(),
-	            searchKeyword: $('#searchKeyword').val()
-	        };
+	$('#exportBtn').on('click', function() {
+		// 현재 필터와 검색 조건들을 가져옴
+		const params = {
+			period: $('#periodFilter').val(),
+			status: $('#statusFilter').val(),
+			risk: $('#riskFilter').val(),
+			gu: $('#guFilter').val(),
+			sort: $('#sortFilter').val(),
+			searchType: $('#searchType').val(),
+			searchKeyword: $('#searchKeyword').val()
+		};
 
-	        // 쿼리 스트링으로 변환 (예: period=today&status=RECEIVED...)
-	        // 값이 없는 파라미터는 제외
-	        const queryString = Object.entries(params)
-	            .filter(([key, value]) => value !== null && value !== '')
-	            .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-	            .join('&');
-	            
-	        // 새로운 URL로 이동하여 파일 다운로드를 트리거
-	        window.location.href = `${CONTEXT_PATH}/admin/complaints/export?${queryString}`;
-	    });
-	
+		// 쿼리 스트링으로 변환 (예: period=today&status=RECEIVED...)
+		// 값이 없는 파라미터는 제외
+		const queryString = Object.entries(params)
+			.filter(([key, value]) => value !== null && value !== '')
+			.map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+			.join('&');
+
+		// 새로운 URL로 이동하여 파일 다운로드를 트리거
+		window.location.href = `${CONTEXT_PATH}/admin/complaints/export?${queryString}`;
+	});
+
 	//  상세 보기의 '정보 보기/숨기기' 버튼 클릭 이벤트
 	$(document).on('click', '#toggleInfoBtn', function() {
 		const $btn = $(this);
@@ -213,12 +213,18 @@ $(document).ready(function() {
 					alert('위치가 성공적으로 변경되었습니다.');
 					bootstrap.Modal.getInstance(document.getElementById('locationChangeModal')).hide();
 					loadComplaintDetail(complaintId); // 상세보기 새로고침
-				} else {
-					alert('위치 변경에 실패했습니다: ' + response.message);
-				}
-			},
-			error: () => alert('위치 변경 중 오류가 발생했습니다.')
-		});
+					// 좌측 리스트의 주소를 실시간으로 업데이트
+					const listItem = $(`.complaint-item[data-id="${complaintId}"]`);
+					if (listItem.length > 0) {
+						// 리스트 아이템 안에서 주소를 표시하는 <p> 태그를 찾아
+						// 새로 저장된 주소(address 변수)로 텍스트를 변경
+						listItem.find('p.text-truncate').text(address);
+					} else {
+						alert('위치 변경에 실패했습니다: ' + response.message);
+					}
+				},
+				error: () => alert('위치 변경 중 오류가 발생했습니다.')
+			});
 	});
 });
 
@@ -377,7 +383,7 @@ function renderSummaryTab(complaint) {
 	const fullNumber = escapeHtml(complaint.reporterNumber);
 
 	const riskBadgeHtml = `<span class="risk-badge risk-${currentRisk.toLowerCase()}">${getRiskText(currentRisk)}</span>`;
-	
+
 	// [수정] 히스토리 뱃지와 동일한 HTML 구조를 사용합니다.
 	const statusBadgeHtml = `<span class="badge status-badge status-${currentStatus.toLowerCase()}">${getStatusText(currentStatus)}</span>`;
 
