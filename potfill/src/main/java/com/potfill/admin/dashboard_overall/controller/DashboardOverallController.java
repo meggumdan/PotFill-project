@@ -12,22 +12,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.potfill.admin.dashboard_overall.service.MajorPlaceService;
+import com.potfill.admin.dashboard_overall.service.DashboardOverallService;
 import com.potfill.admin.dashboard_overall.model.MajorPlace;
 
 import org.apache.poi.ss.usermodel.*;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
 public class DashboardOverallController {
 
 	private static final Logger logger = LoggerFactory.getLogger(DashboardOverallController.class);
-
+	
 	@Autowired
-	private MajorPlaceService majorPlaceService;
+	private DashboardOverallService dashboardOverallService;
 
 	/**
 	 * 주요장소 업로드 페이지
@@ -63,7 +65,7 @@ public class DashboardOverallController {
 
 			for (MajorPlace place : places) {
 				try {
-					majorPlaceService.insertMajorPlace(place);
+					dashboardOverallService.insertMajorPlace(place);
 					savedCount++;
 					logger.info("저장 성공: {} -> {} {}", place.getAreaName(), place.getGu(), place.getDong());
 				} catch (Exception e) {
@@ -174,7 +176,7 @@ public class DashboardOverallController {
 		return null;
 	}
 
-	// 기존 메서드들...
+
 	@RequestMapping(value = "/dashboard", method = RequestMethod.GET)
 	public String dashboard(Model model) {
 		logger.info("관리자 대시보드 접근");
@@ -189,46 +191,54 @@ public class DashboardOverallController {
 		return "admin/test";
 	}
 
-	// 기존 API 메서드들도 그대로 유지...
+	
+	/**
+	 * KPI 데이터 API 
+	 */
 	@RequestMapping(value = "/api/dashboard/kpi", method = RequestMethod.GET)
 	@ResponseBody
-	public String getKPIData() {
-		logger.info("KPI 데이터 API 호출");
-
-		String jsonResponse = "{" + "\"totalReports\": 1247," + "\"processingReports\": 89,"
-				+ "\"completedReports\": 1158," + "\"dangerZones\": 23," + "\"trends\": {"
-				+ "\"totalReports\": \"+127(12%)\"," + "\"processingReports\": \"-5(-5%)\","
-				+ "\"completedReports\": \"+132(13%)\"," + "\"dangerZones\": \"+3(15%)\"" + "}" + "}";
-
-		return jsonResponse;
+	public ResponseEntity<Map<String, Object>> getKPIData() {
+	    Map<String, Object> kpiData = dashboardOverallService.getDashboardKPIData();
+	    return ResponseEntity.ok(kpiData);
 	}
+
 
 	@RequestMapping(value = "/api/dashboard/priority", method = RequestMethod.GET)
 	@ResponseBody
-	public String getPriorityRegionsData() {
-		logger.info("우선처리 지역 TOP 5 데이터 API 호출");
-
-		String jsonResponse = "["
-				+ "{\"rank\": 1, \"region\": \"강남구 역삼동\", \"pending\": 15, \"maxDays\": 7, \"repeat\": 3, \"majorLocation\": true, \"score\": 94.2},"
-				+ "{\"rank\": 2, \"region\": \"서초구 방배동\", \"pending\": 12, \"maxDays\": 14, \"repeat\": 8, \"majorLocation\": true, \"score\": 87.5},"
-				+ "{\"rank\": 3, \"region\": \"마포구 상암동\", \"pending\": 8, \"maxDays\": 6, \"repeat\": 7, \"majorLocation\": false, \"score\": 85.1},"
-				+ "{\"rank\": 4, \"region\": \"광진구 화양동\", \"pending\": 6, \"maxDays\": 5, \"repeat\": 10, \"majorLocation\": true, \"score\": 79.7},"
-				+ "{\"rank\": 5, \"region\": \"종로구 혜화동\", \"pending\": 5, \"maxDays\": 9, \"repeat\": 2, \"majorLocation\": false, \"score\": 70.8}"
-				+ "]";
-
-		return jsonResponse;
+	public ResponseEntity<List<Map<String, Object>>> getPriorityRegionsData() {
+	    try {
+	        List<Map<String, Object>> list = dashboardOverallService.getPriorityTop5();
+	        return ResponseEntity.ok(list);
+	    } catch (Exception e) {
+	        logger.error("우선처리 지역 TOP5 조회 실패", e);
+	        return ResponseEntity.ok(new ArrayList<>()); // 빈 리스트 반환
+	    }
 	}
+
+
+	// DashboardOverallController.java의 기존 메서드를 수정
 
 	@RequestMapping(value = "/api/dashboard/ranking", method = RequestMethod.GET)
 	@ResponseBody
-	public String getRegionRankingData() {
-		logger.info("지역별 우선도 랭킹 데이터 API 호출");
-
-		String jsonResponse = "{"
-				+ "\"labels\": [\"강남구\", \"서초구\", \"마포구\", \"송파구\", \"영등포구\", \"용산구\", \"종로구\", \"중구\", \"성동구\", \"광진구\"],"
-				+ "\"data\": [87.5, 78.3, 75.1, 68.9, 68.2, 65.4, 58.7, 52.3, 48.1, 42.5]" + "}";
-
-		return jsonResponse;
+	public ResponseEntity<Map<String, Object>> getRegionRankingData() {
+	    try {
+	        logger.info("지역별 우선도 랭킹 데이터 API 호출");
+	        
+	        // 실제 데이터 조회
+	        Map<String, Object> rankingData = dashboardOverallService.getAreaRanking();
+	        
+	        return ResponseEntity.ok(rankingData);
+	        
+	    } catch (Exception e) {
+	        logger.error("지역별 우선도 랭킹 조회 실패", e);
+	        
+	        // 오류 시 빈 데이터 반환
+	        Map<String, Object> emptyData = new HashMap<>();
+	        emptyData.put("labels", new ArrayList<>());
+	        emptyData.put("data", new ArrayList<>());
+	        
+	        return ResponseEntity.ok(emptyData);
+	    }
 	}
 
 	@RequestMapping(value = "/api/dashboard/regional", method = RequestMethod.GET)

@@ -1,38 +1,272 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.potfill.admin.dashboard_overall.dao.MajorPlaceRepository">
+<mapper
+	namespace="com.potfill.admin.dashboard_overall.dao.DashboardOverallRepository">
 
-    <!-- ResultMap 정의 -->
-    <resultMap id="majorPlaceResultMap" type="com.potfill.admin.dashboard_overall.model.MajorPlace">
-        <id property="majorId" column="major_id"/>
-        <result property="areaName" column="area_name"/>
-        <result property="gu" column="gu"/>
-        <result property="dong" column="dong"/>
-    </resultMap>
+	<!-- ResultMap -->
+	<resultMap id="majorPlaceResultMap"
+		type="com.potfill.admin.dashboard_overall.model.MajorPlace">
+		<id property="majorId" column="major_id" />
+		<result property="areaName" column="area_name" />
+		<result property="gu" column="gu" />
+		<result property="dong" column="dong" />
+	</resultMap>
 
-    <!-- 전체 주요장소 개수 조회 -->
-    <select id="getMajorPlacesCount" resultType="int">
-        SELECT NVL(COUNT(*), 0) FROM major_places
-    </select>
+	<!-- 전체 주요장소 개수 조회 -->
+	<select id="getMajorPlacesCount" resultType="int">
+        <![CDATA[
+        SELECT NVL(COUNT(*), 0) 
+        FROM major_places
+        ]]>
+	</select>
 
-    <!-- 주요장소 삽입 -->
-    <insert id="insertMajorPlace" parameterType="com.potfill.admin.dashboard_overall.model.MajorPlace">
-        <selectKey keyProperty="majorId" resultType="int" order="BEFORE">
-            SELECT NVL(MAX(major_id), 0) + 1 FROM major_places
-        </selectKey>
-        INSERT INTO major_places (
-            major_id,
-            area_name,
-            gu,
-            dong
-        ) VALUES (
-            #{majorId},
-            #{areaName},
-            #{gu},
-            #{dong}
+	<!-- 주요장소 삽입 -->
+	<insert id="insertMajorPlace"
+		parameterType="com.potfill.admin.dashboard_overall.model.MajorPlace">
+		<selectKey keyProperty="majorId" resultType="int"
+			order="BEFORE">
+            <![CDATA[
+            SELECT NVL(MAX(major_id), 0) + 1 
+            FROM major_places
+            ]]>
+		</selectKey>
+        <![CDATA[
+        INSERT INTO major_places (major_id, area_name, gu, dong)
+        VALUES (#{majorId}, #{areaName}, #{gu}, #{dong})
+        ]]>
+	</insert>
+
+	<!-- 1. 총 신고건수 -->
+	<select id="getTotalComplaints" resultType="int">
+        <![CDATA[
+        SELECT COUNT(*) 
+        FROM complaints
+        ]]>
+	</select>
+
+	<!-- 2. 처리중 건수 -->
+	<select id="getProcessingComplaints" resultType="int">
+        <![CDATA[
+        SELECT COUNT(*)
+        FROM complaints c
+        WHERE EXISTS (
+            SELECT 1
+            FROM complaint_histories ch
+            WHERE ch.complaint_id = c.complaint_id
+              AND ch.status = '처리중'
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM complaint_histories ch2
+                  WHERE ch2.complaint_id = c.complaint_id
+                    AND ch2.status = '완료'
+                    AND ch2.created_at > ch.created_at
+              )
         )
-    </insert>
+        ]]>
+	</select>
+
+	<!-- 3. 완료 건수 -->
+	<select id="getCompletedComplaints" resultType="int">
+        <![CDATA[
+        SELECT COUNT(*)
+        FROM complaints c
+        WHERE EXISTS (
+            SELECT 1
+            FROM complaint_histories ch
+            WHERE ch.complaint_id = c.complaint_id
+              AND ch.status = '완료'
+        )
+        ]]>
+	</select>
+
+	<!-- 4. 고위험지역 개수 (최근 90일, Oracle) -->
+	<select id="getDangerGuCount" resultType="int">
+        <![CDATA[
+        SELECT COUNT(*) AS danger_gu_count
+        FROM (
+            SELECT gu
+            FROM (
+                SELECT gu, dong
+                FROM complaints
+                WHERE created_at >= SYSTIMESTAMP - INTERVAL '90' DAY
+                GROUP BY gu, dong
+                HAVING COUNT(*) >= 3
+                   AND (MAX(created_at) - MIN(created_at)) <= NUMTODSINTERVAL(60,'DAY')
+            )
+            GROUP BY gu
+            HAVING COUNT(*) >= 2
+        )
+        ]]>
+	</select>
+
+	<!-- 총 신고건수 (전월) -->
+	<select id="getLastMonthTotalComplaints" resultType="int">
+        <![CDATA[
+        SELECT COUNT(*)
+        FROM complaints
+        WHERE created_at >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1)
+          AND created_at < TRUNC(SYSDATE, 'MM')
+        ]]>
+	</select>
+
+	<!-- 처리중 (전월) -->
+	<select id="getLastMonthProcessingComplaints" resultType="int">
+        <![CDATA[
+        SELECT COUNT(*)
+        FROM complaints c
+        WHERE EXISTS (
+            SELECT 1
+            FROM complaint_histories ch
+            WHERE ch.complaint_id = c.complaint_id
+              AND ch.status = '처리중'
+              AND ch.created_at >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1)
+              AND ch.created_at < TRUNC(SYSDATE, 'MM')
+        )
+        ]]>
+	</select>
+
+	<!-- 완료 (전월) -->
+	<select id="getLastMonthCompletedComplaints" resultType="int">
+        <![CDATA[
+        SELECT COUNT(*)
+        FROM complaints c
+        WHERE EXISTS (
+            SELECT 1
+            FROM complaint_histories ch
+            WHERE ch.complaint_id = c.complaint_id
+              AND ch.status = '완료'
+              AND ch.created_at >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1)
+              AND ch.created_at < TRUNC(SYSDATE, 'MM')
+        )
+        ]]>
+	</select>
+
+	<!-- 고위험구 개수 (전월) -->
+	<select id="getLastMonthDangerGuCount" resultType="int">
+        <![CDATA[
+        SELECT COUNT(*) AS danger_gu_count
+        FROM (
+            SELECT gu
+            FROM (
+                SELECT gu, dong
+                FROM complaints
+                WHERE created_at >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1)
+                  AND created_at < TRUNC(SYSDATE, 'MM')
+                GROUP BY gu, dong
+                HAVING COUNT(*) >= 3
+                   AND (MAX(created_at) - MIN(created_at)) <= NUMTODSINTERVAL(60,'DAY')
+            )
+            GROUP BY gu
+            HAVING COUNT(*) >= 2
+        )
+        ]]>
+	</select>
+
+	<!-- 우선처리 지역 TOP 5 (가중치 기반) -->
+	<!-- 우선처리 지역 TOP 5 (report_count 컬럼 사용) -->
+	<select id="getPriorityTop5" resultType="map">
+    <![CDATA[
+    WITH base AS (
+        SELECT
+            c.gu,
+            c.dong,
+            c.complaint_id,
+            CAST(c.created_at AS DATE) AS created_dt,
+            TRUNC(SYSDATE - CAST(c.created_at AS DATE)) AS elapsed_days,
+            NVL(c.report_count, 0) AS report_count,  /* DB의 report_count 컬럼 직접 사용 */
+            CASE
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM complaint_histories ch
+                    WHERE ch.complaint_id = c.complaint_id
+                      AND ch.status = '완료'
+                ) THEN 0
+                ELSE 1
+            END AS is_pending
+        FROM complaints c
+        WHERE c.created_at >= SYSTIMESTAMP - INTERVAL '90' DAY
+    ),
+    region_metrics AS (
+        SELECT
+            gu,
+            dong,
+            SUM(is_pending) AS pendingCount,                                         
+            NVL(MAX(CASE WHEN is_pending = 1 THEN elapsed_days END), 0) AS maxElapsedDays,
+            SUM(report_count) AS repeatCount  /* report_count 합계 */
+        FROM base
+        GROUP BY gu, dong
+    )
+    SELECT
+        (rm.gu || ' ' || rm.dong) AS regionName,
+        rm.pendingCount           AS pendingCount,
+        rm.maxElapsedDays         AS maxElapsedDays,
+        rm.repeatCount            AS repeatCount,
+        /* 주요장소 동일 동 존재 여부 */
+        CASE WHEN EXISTS (
+            SELECT 1 FROM major_places mp
+            WHERE mp.gu = rm.gu AND mp.dong = rm.dong
+        ) THEN 1 ELSE 0 END       AS isNearMajorLocation,
+        /* 가중치 점수: (미처리*1.0 + 경과일*0.8 + 반복*1.2) * (주요장소 1.3배) */
+        ROUND(
+            (rm.pendingCount * 1.0 + rm.maxElapsedDays * 0.8 + rm.repeatCount * 1.2) *
+            CASE WHEN EXISTS (
+                SELECT 1 FROM major_places mp WHERE mp.gu = rm.gu AND mp.dong = rm.dong
+            ) THEN 1.3 ELSE 1.0 END
+        , 1)                      AS priorityScore
+    FROM region_metrics rm
+    WHERE rm.pendingCount > 0    
+    ORDER BY priorityScore DESC
+    FETCH FIRST 5 ROWS ONLY
+    ]]>
+	</select>
+
+	<!-- 지역구별 우선도 랭킹 (구 단위 집계) -->
+	<select id="getAreaRanking" resultType="map">
+    <![CDATA[
+    WITH gu_metrics AS (
+        SELECT 
+            c.gu,
+            COUNT(*) AS total_complaints,                    -- 전체 신고 건수
+            SUM(CASE 
+                WHEN NOT EXISTS (
+                    SELECT 1 FROM complaint_histories ch 
+                    WHERE ch.complaint_id = c.complaint_id 
+                    AND ch.status = '완료'
+                ) THEN 1 ELSE 0 
+            END) AS pending_count,                           -- 미처리 건수
+            AVG(NVL(c.report_count, 0)) AS avg_repeat,      -- 평균 반복 신고
+            COUNT(DISTINCT c.dong) AS affected_dongs        -- 영향받은 동 개수
+        FROM complaints c
+        WHERE c.created_at >= SYSTIMESTAMP - INTERVAL '90' DAY
+        GROUP BY c.gu
+    ),
+    gu_major_places AS (
+        SELECT 
+            gu,
+            COUNT(*) AS major_place_count
+        FROM major_places
+        GROUP BY gu
+    )
+    SELECT 
+        gm.gu AS guName,
+        /* 우선도 점수 계산: 
+           (전체신고*0.5 + 미처리*1.5 + 평균반복*2.0 + 영향동수*1.0) * 주요장소 가중치 */
+        ROUND(
+            (gm.total_complaints * 0.5 + 
+             gm.pending_count * 1.5 + 
+             gm.avg_repeat * 2.0 + 
+             gm.affected_dongs * 1.0) *
+            (1.0 + NVL(mp.major_place_count, 0) * 0.1),  -- 주요장소 1개당 10% 가중
+        1) AS priorityScore
+    FROM gu_metrics gm
+    LEFT JOIN gu_major_places mp ON gm.gu = mp.gu
+    ORDER BY priorityScore DESC
+    FETCH FIRST 10 ROWS ONLY
+    ]]>
+	</select>
+
 
 </mapper>

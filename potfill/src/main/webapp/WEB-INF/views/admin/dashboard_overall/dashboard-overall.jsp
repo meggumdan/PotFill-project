@@ -11,6 +11,10 @@
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
 	rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+	rel="stylesheet">
+
 
 <!-- Google Fonts -->
 <link
@@ -55,52 +59,77 @@
 				<!-- 대시보드 컨텐츠 -->
 				<div class="dashboard-content">
 					<!-- 핵심 지표 카드 (상단) -->
+					<!-- 핵심 지표 카드 (상단) -->
 					<div class="metrics-section">
-						<div class="metric-card">
+						<!-- 총 신고 건수 -->
+						<div class="metric-card" id="totalCard">
 							<div class="metric-header">
 								<div class="metric-icon">📊</div>
 								<div class="metric-title">총 신고 건수</div>
 							</div>
-							<div class="metric-value">1,247 건</div>
+							<div class="metric-value"></div>
+							<!-- JS로 채워짐 -->
 							<div>
-								<div class="metric-change">+127(12%)</div>
+								<div class="metric-change"></div>
+								<!-- JS로 채워짐 -->
 								<div class="metric-period">전월 대비</div>
 							</div>
 						</div>
-						<div class="metric-card">
+
+						<!-- 처리 중 -->
+						<div class="metric-card" id="processingCard">
 							<div class="metric-header">
 								<div class="metric-icon">⏳</div>
 								<div class="metric-title">처리 중</div>
 							</div>
-							<div class="metric-value">89 건</div>
+							<div class="metric-value"></div>
+							<!-- JS로 채워짐 -->
 							<div>
-								<div class="metric-change">-5(-5%)</div>
+								<div class="metric-change"></div>
+								<!-- JS로 채워짐 -->
 								<div class="metric-period">전월 대비</div>
 							</div>
 						</div>
-						<div class="metric-card">
+
+						<!-- 완료 -->
+						<div class="metric-card" id="completedCard">
 							<div class="metric-header">
 								<div class="metric-icon">✅</div>
 								<div class="metric-title">완료</div>
 							</div>
-							<div class="metric-value">1,158 건</div>
+							<div class="metric-value"></div>
+							<!-- JS로 채워짐 -->
 							<div>
-								<div class="metric-change">+132(13%)</div>
+								<div class="metric-change"></div>
+								<!-- JS로 채워짐 -->
 								<div class="metric-period">전월 대비</div>
 							</div>
 						</div>
-						<div class="metric-card">
+
+						<!-- 고위험 지역 -->
+						<div class="metric-card" id="dangerCard">
 							<div class="metric-header">
 								<div class="metric-icon">🚨</div>
-								<div class="metric-title">고위험 지역</div>
+								<div class="metric-title">
+									고위험 지역 <span tabindex="0" data-bs-toggle="popover"
+										data-bs-trigger="hover focus" data-bs-placement="bottom"
+										title="고위험 지역 기준"
+										data-bs-content="최근 90일 내 동일 동에서 3건 이상의 신고와 최초~최종 신고가 60일이내이며, 구 내에 이런 동이 2개 이상일 때 고위험 구로 분류됩니다.">
+										<i class="bi bi-question-circle"
+										style="font-size: 13px; color: #C4CEFE; cursor: pointer;"></i>
+									</span>
+								</div>
 							</div>
-							<div class="metric-value">23개 구역</div>
+							<div class="metric-value"></div>
+							<!-- JS로 채워짐 -->
 							<div>
-								<div class="metric-change">+3(15%)</div>
+								<div class="metric-change"></div>
+								<!-- JS로 채워짐 -->
 								<div class="metric-period">전월 대비</div>
 							</div>
 						</div>
 					</div>
+
 
 					<!-- 하단 그리드 레이아웃 -->
 					<div class="dashboard-grid">
@@ -122,54 +151,9 @@
 											<th>우선순위 점수</th>
 										</tr>
 									</thead>
-									<tbody>
-										<tr>
-											<td>1</td>
-											<td>강남구 역삼동</td>
-											<td>15 건</td>
-											<td>7일</td>
-											<td>9회</td>
-											<td><span class="check-icon">✓</span></td>
-											<td class="priority-score">94.2</td>
-										</tr>
-										<tr>
-											<td>2</td>
-											<td>서초구 방배동</td>
-											<td>12 건</td>
-											<td>14일</td>
-											<td>8회</td>
-											<td><span class="check-icon">✓</span></td>
-											<td class="priority-score">87.5</td>
-										</tr>
-										<tr>
-											<td>3</td>
-											<td>마포구 상암동</td>
-											<td>8 건</td>
-											<td>6일</td>
-											<td>7회</td>
-											<td><span class="cross-icon">X</span></td>
-											<td class="priority-score">85.1</td>
-										</tr>
-										<tr>
-											<td>4</td>
-											<td>광진구 화양동</td>
-											<td>6 건</td>
-											<td>5일</td>
-											<td>10회</td>
-											<td><span class="check-icon">✓</span></td>
-											<td class="priority-score">79.7</td>
-										</tr>
-										<tr>
-											<td>5</td>
-											<td>종로구 혜화동</td>
-											<td>5 건</td>
-											<td>9일</td>
-											<td>2회</td>
-											<td><span class="cross-icon">X</span></td>
-											<td class="priority-score">70.8</td>
-										</tr>
-									</tbody>
+									<tbody></tbody>
 								</table>
+
 							</div>
 						</div>
 
@@ -210,12 +194,12 @@
 									<!-- 완료 -->
 									<div class="legend-entry">
 										<div class="color-box"
-											style="background-color: #D4DFB8; width: 18px; height: 18px; border-radius: 0px; flex-shrink: 0; margin-bottom:15px;'"></div>
+											style="background-color: #D4DFB8; width: 18px; height: 18px; border-radius: 0px; flex-shrink: 0; margin-bottom: 15px;'"></div>
 										<div class="legend-details">
 											<div class="status-label"
 												style="font-size: 12px; color: #364A63; font-weight: 500;">완료</div>
 											<div class="status-value"
-												style="font-size: 13px; font-weight: 600; color: #8094AE; margin-top:3px">
+												style="font-size: 13px; font-weight: 600; color: #8094AE; margin-top: 3px">
 												<span class="completed-count">1,158</span>건 <span
 													class="status-percentage"
 													style="font-size: 9px; color: #8094AE; margin-left: 3px;">51%</span>
@@ -226,12 +210,12 @@
 									<!-- 처리중 -->
 									<div class="legend-entry">
 										<div class="color-box"
-											style="background-color: #3D70C3; width: 18px; height: 18px; border-radius: 0px; flex-shrink: 0; margin-bottom:15px;"></div>
+											style="background-color: #3D70C3; width: 18px; height: 18px; border-radius: 0px; flex-shrink: 0; margin-bottom: 15px;"></div>
 										<div class="legend-details">
 											<div class="status-label"
 												style="font-size: 12px; color: #364A63; font-weight: 500;">처리중</div>
 											<div class="status-value"
-												style="font-size: 13px; font-weight: 600; color: #8094AE; margin-top:3px">
+												style="font-size: 13px; font-weight: 600; color: #8094AE; margin-top: 3px">
 												<span class="processing-count">500</span>건 <span
 													class="status-percentage"
 													style="font-size: 9px; color: #8094AE; margin-left: 3px;">22%</span>
@@ -242,12 +226,12 @@
 									<!-- 접수 -->
 									<div class="legend-entry">
 										<div class="color-box"
-											style="background-color: #FFB97D; width: 18px; height: 18px; border-radius: 0px; flex-shrink: 0;  margin-bottom:15px;"></div>
+											style="background-color: #FFB97D; width: 18px; height: 18px; border-radius: 0px; flex-shrink: 0; margin-bottom: 15px;"></div>
 										<div class="legend-details">
 											<div class="status-label"
 												style="font-size: 12px; color: #364A63; font-weight: 500;">접수</div>
 											<div class="status-value"
-												style="font-size: 13px; font-weight: 600; color: #8094AE;margin-top:3px">
+												style="font-size: 13px; font-weight: 600; color: #8094AE; margin-top: 3px">
 												<span class="received-count">341</span>건 <span
 													class="status-percentage"
 													style="font-size: 9px; color: #8094AE; margin-left: 3px;">15%</span>
@@ -258,12 +242,12 @@
 									<!-- 반려 -->
 									<div class="legend-entry">
 										<div class="color-box"
-											style="background-color: #868EA1; width: 18px; height: 18px; border-radius: 0px; flex-shrink: 0; margin-bottom:15px;"></div>
+											style="background-color: #868EA1; width: 18px; height: 18px; border-radius: 0px; flex-shrink: 0; margin-bottom: 15px;"></div>
 										<div class="legend-details">
 											<div class="status-label"
 												style="font-size: 12px; color: #364A63; font-weight: 500;">반려</div>
 											<div class="status-value"
-												style="font-size: 13px; font-weight: 600; color: #8094AE;margin-top:3px">
+												style="font-size: 13px; font-weight: 600; color: #8094AE; margin-top: 3px">
 												<span class="rejected-count">272</span>건 <span
 													class="status-percentage"
 													style="font-size: 9px; color: #8094AE; margin-left: 3px;">12%</span>
@@ -284,24 +268,24 @@
 							</div>
 							<!-- 테이블 스타일을 위한 CSS 추가 -->
 							<style>
-								#mainStatusTable tbody td {
-									font-size: 11px !important;
-									padding: 8px 4px !important;
-									color: #364A63 !important;
-								}
-								
-								/* 순위 컬럼 (첫 번째 컬럼) */
-								#mainStatusTable tbody td:nth-child(1) {
-									color: #798BFF !important;
-									font-weight: 600 !important;
-								}
-								
-								/* 평균 처리시간 컬럼 (다섯 번째 컬럼) */
-								#mainStatusTable tbody td:nth-child(5) {
-									color: #E85347 !important;
-									font-weight: 600 !important;
-								}
-							</style>
+#mainStatusTable tbody td {
+	font-size: 11px !important;
+	padding: 8px 4px !important;
+	color: #364A63 !important;
+}
+
+/* 순위 컬럼 (첫 번째 컬럼) */
+#mainStatusTable tbody td:nth-child(1) {
+	color: #798BFF !important;
+	font-weight: 600 !important;
+}
+
+/* 평균 처리시간 컬럼 (다섯 번째 컬럼) */
+#mainStatusTable tbody td:nth-child(5) {
+	color: #E85347 !important;
+	font-weight: 600 !important;
+}
+</style>
 
 						</div>
 					</div>
@@ -317,11 +301,20 @@
 	<!-- jQuery -->
 	<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 
+
 	<!-- DataTables -->
 	<script
 		src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 	<!-- Chart.js CDN -->
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+	<!-- 공통 js(kpi 포함) -->
+	<script>
+		const contextPath = "${pageContext.request.contextPath}";
+	</script>
+	
+	<script
+		src="${pageContext.request.contextPath}/js/admin/admin-dashboard-overall.js"></script>
 
 	<!-- 우선 처리 지역 TOP 5 테이블 JavaScript -->
 	<script
@@ -332,5 +325,15 @@
 	<!-- 포트홀 신고 현황 JavaScript -->
 	<script
 		src="${pageContext.request.contextPath}/js/admin/admin-dashboard-overall-status.js"></script>
+	<!-- ❓ 팝오버 초기화 코드 (맨 마지막에 추가) -->
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			const popoverTriggerList = [].slice.call(document
+					.querySelectorAll('[data-bs-toggle="popover"]'))
+			popoverTriggerList.map(function(popoverTriggerEl) {
+				return new bootstrap.Popover(popoverTriggerEl)
+			})
+		});
+	</script>
 </body>
 </html>

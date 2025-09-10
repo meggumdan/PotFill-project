@@ -2,17 +2,23 @@
  * 우선처리 지역 TOP 5 테이블 전용 JavaScript
  */
 
-$(document).ready(function() {
-    // 우선처리 지역 TOP 5 테이블 초기화
+let priorityTable = null;
+
+$(document).ready(function () {
     initPriorityTable();
+    fetchPriorityData(); // 최초 로드
 });
 
-/**
- * 우선처리 지역 TOP 5 테이블 초기화
- */
+/** 테이블 초기화 */
 function initPriorityTable() {
     try {
-        $('#priorityTable').DataTable({
+        if ($.fn.DataTable.isDataTable('#priorityTable')) {
+            priorityTable = $('#priorityTable').DataTable();
+            priorityTable.clear().draw(); // 기존 데이터 클리어
+            return;
+        }
+
+        priorityTable = $('#priorityTable').DataTable({
             paging: false,
             searching: false,
             info: false,
@@ -29,144 +35,83 @@ function initPriorityTable() {
                 { className: "score-column", targets: 6, width: "80px" }
             ]
         });
-        
+
+        // 초기화 직후 테이블 비우기
+        priorityTable.clear().draw();
+
         console.log('우선처리 지역 TOP 5 테이블 초기화 완료');
     } catch (error) {
         console.error('우선처리 지역 TOP 5 테이블 초기화 실패:', error);
     }
 }
 
-/**
- * 우선처리 지역 데이터 업데이트
- */
-function updatePriorityTableData(data) {
+/** API 데이터로 테이블 갱신 */
+function updatePriorityTableData(items) {
     try {
-        const table = $('#priorityTable').DataTable();
+        if (!priorityTable) {
+            initPriorityTable();
+        }
         
-        // 기존 데이터 클리어
-        table.clear();
-        
-        // 새로운 데이터 추가
-        data.forEach(function(item, index) {
-            const checkIcon = item.isNearMajorLocation ? 
-                '<span class="check-icon">✓</span>' : 
-                '<span class="cross-icon">✗</span>';
-                
-            table.row.add([
-                index + 1,
-                item.regionName,
-                item.pendingCount + ' 건',
-                item.maxElapsedDays + '일',
-                item.repeatCount + '회',
+        priorityTable.clear();
+
+        items.forEach((item, idx) => {
+            const checkIcon = item.isNearMajorLocation
+                ? '<span class="check-icon">✓</span>'
+                : '<span class="cross-icon">✗</span>';
+
+            priorityTable.row.add([
+                idx + 1,
+                item.regionName || '-',
+                (item.pendingCount || 0) + ' 건',
+                (item.maxElapsedDays || 0) + '일',
+                (item.repeatCount || 0) + '회',
                 checkIcon,
-                '<span class="priority-score">' + item.priorityScore + '</span>'
+                '<span class="priority-score">' + Number(item.priorityScore || 0).toFixed(1) + '</span>'
             ]);
         });
-        
-        // 테이블 다시 그리기
-        table.draw();
-        
-        console.log('우선처리 지역 데이터 업데이트 완료');
+
+        priorityTable.draw();
+        console.log('우선처리 지역 데이터 업데이트 완료:', items.length + '개 항목');
     } catch (error) {
         console.error('우선처리 지역 데이터 업데이트 실패:', error);
     }
 }
 
-/**
- * 샘플 데이터로 테이블 업데이트 (테스트용)
- */
-function loadSamplePriorityData() {
-    const sampleData = [
-        {
-            regionName: '강남구 역삼동',
-            pendingCount: 15,
-            maxElapsedDays: 7,
-            repeatCount: 9,
-            isNearMajorLocation: true,
-            priorityScore: 94.2
-        },
-        {
-            regionName: '영등포구 방배동',
-            pendingCount: 12,
-            maxElapsedDays: 14,
-            repeatCount: 8,
-            isNearMajorLocation: true,
-            priorityScore: 87.5
-        },
-        {
-            regionName: '마포구 상암동',
-            pendingCount: 8,
-            maxElapsedDays: 6,
-            repeatCount: 7,
-            isNearMajorLocation: false,
-            priorityScore: 85.1
-        },
-        {
-            regionName: '광진구 화양동',
-            pendingCount: 6,
-            maxElapsedDays: 5,
-            repeatCount: 10,
-            isNearMajorLocation: true,
-            priorityScore: 79.7
-        },
-        {
-            regionName: '종로구 혜화동',
-            pendingCount: 5,
-            maxElapsedDays: 9,
-            repeatCount: 2,
-            isNearMajorLocation: false,
-            priorityScore: 70.8
-        }
-    ];
-    
-    updatePriorityTableData(sampleData);
-}
-
-/**
- * 우선처리 지역 데이터 실시간 업데이트
- */
+/** 백엔드에서 실데이터 가져오기 */
 function fetchPriorityData() {
-    // TODO: 실제 API 호출로 대체
-    /*
+    const url = contextPath + '/admin/api/dashboard/priority';
+    
+    console.log('우선처리 TOP5 API 호출:', url);
+
     $.ajax({
-        url: '/api/admin/priority-regions',
+        url: url,
         method: 'GET',
-        success: function(response) {
-            updatePriorityTableData(response.data);
+        dataType: 'json',
+        success: function (resp) {
+            console.log('우선처리 TOP5 응답:', resp);
+            
+            // Oracle JDBC는 컬럼명을 대문자로 반환하므로 대소문자 모두 처리
+            const normalized = (Array.isArray(resp) ? resp : []).map(r => ({
+                regionName: r.REGIONNAME || r.regionName || '',
+                pendingCount: Number(r.PENDINGCOUNT || r.pendingCount || 0),
+                maxElapsedDays: Number(r.MAXELAPSEDDAYS || r.maxElapsedDays || 0),
+                repeatCount: Number(r.REPEATCOUNT || r.repeatCount || 0),
+                isNearMajorLocation: Number(r.ISNEARMAJORLOCATION || r.isNearMajorLocation || 0) === 1,
+                priorityScore: Number(r.PRIORITYSCORE || r.priorityScore || 0)
+            }));
+
+            updatePriorityTableData(normalized);
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
             console.error('우선처리 지역 데이터 로드 실패:', error);
+            console.error('응답:', xhr.responseText);
+            // 실패 시 빈 테이블 표시
+            updatePriorityTableData([]);
         }
     });
-    */
-    
-    // 임시로 샘플 데이터 로드
-    loadSamplePriorityData();
 }
 
-/**
- * 테이블 새로고침
- */
+/** 외부에서 강제 새로고침할 때 사용 */
 function refreshPriorityTable() {
     fetchPriorityData();
-}
-
-/**
- * 테이블 데이터 엑셀 내보내기
- */
-function exportPriorityTableToExcel() {
-    const table = $('#priorityTable').DataTable();
-    const data = table.data().toArray();
-    
-    // TODO: 엑셀 내보내기 구현
-    console.log('우선처리 지역 데이터 엑셀 내보내기:', data);
-}
-
-/**
- * 테이블 초기화 확인
- */
-function checkTableInitialization() {
-    console.log('DataTables 로드 여부:', typeof $.fn.DataTable !== 'undefined');
-    console.log('테이블 요소 존재 여부:', $('#priorityTable').length > 0);
-    console.log('테이블 초기화 여부:', $.fn.DataTable.isDataTable('#priorityTable'));
 }

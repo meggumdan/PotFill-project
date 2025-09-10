@@ -4,6 +4,15 @@
 
 let rankingChart = null;
 
+// 서울시 25개구 고정 리스트
+const SEOUL_25_GU = [
+    '강남', '강동', '강북', '강서', '관악', 
+    '광진', '구로', '금천', '노원', '도봉', 
+    '동대문', '동작', '마포', '서대문', '서초', 
+    '성동', '성북', '송파', '양천', '영등포', 
+    '용산', '은평', '종로', '중구', '중랑'
+];
+
 $(document).ready(function() {
     // 지역별 우선도 랭킹 차트 초기화
     setTimeout(initRankingChart, 100);
@@ -25,28 +34,15 @@ function initRankingChart() {
             rankingChart.destroy();
         }
 
-        // 서울 25개 구 데이터
-        const seoulDistricts = [
-            '강남', '강동', '강북', '강서', '관악', '광진', '구로', '금천', 
-            '노원', '도봉', '동대문', '동작', '마포', '서대문', '서초', 
-            '성동', '성북', '송파', '양천', '영등포', '용산', '은평', 
-            '종로', '중구', '중랑'
-        ];
-
-        // 샘플 우선도 점수 데이터
-        const priorityScores = [
-            85, 78, 65, 82, 70, 88, 75, 60, 
-            73, 55, 90, 77, 95, 68, 92, 
-            72, 80, 87, 65, 83, 70, 75, 
-            58, 62, 69
-        ];
-
+        // 초기 25개구 데이터 (모두 0으로 시작)
+        const initialData = new Array(25).fill(0);
+        
         // 번갈아가며 색상 적용
-        const backgroundColors = priorityScores.map((_, index) => {
+        const backgroundColors = SEOUL_25_GU.map((_, index) => {
             return index % 2 === 0 ? '#7DA5EB' : '#5B88D6';
         });
-
-        const borderColors = priorityScores.map((_, index) => {
+        
+        const borderColors = SEOUL_25_GU.map((_, index) => {
             return index % 2 === 0 ? '#6B94D6' : '#4A77C5';
         });
 
@@ -54,17 +50,17 @@ function initRankingChart() {
         const config = {
             type: 'bar',
             data: {
-                labels: seoulDistricts,
+                labels: SEOUL_25_GU,
                 datasets: [{
                     label: '우선도 점수',
-                    data: priorityScores,
+                    data: initialData,
                     backgroundColor: backgroundColors,
                     borderColor: borderColors,
                     borderWidth: 1,
                     borderRadius: 2,
                     borderSkipped: false,
-					maxBarThickness: 15,  // 막대 최대 두께 (픽셀 단위)
-					barThickness: 10,     // 막대 고정 두께 (픽셀 단위)
+                    maxBarThickness: 15,  // 막대 최대 두께 (픽셀 단위)
+                    barThickness: 10,     // 막대 고정 두께 (픽셀 단위)
                 }]
             },
             options: {
@@ -88,7 +84,7 @@ function initRankingChart() {
                                 return context[0].label + '구';
                             },
                             label: function(context) {
-                                return '우선도 점수: ' + context.parsed.y;
+                                return '우선도 점수: ' + context.parsed.y.toFixed(1);
                             }
                         }
                     }
@@ -103,7 +99,7 @@ function initRankingChart() {
                         ticks: {
                             color: '#364A63',
                             font: {
-                                size: 12,  // 글자 크기
+                                size: 12,
                                 family: 'Noto Sans KR'
                             },
                             maxRotation: 0,
@@ -163,34 +159,67 @@ function initRankingChart() {
         
         console.log('지역별 우선도 랭킹 차트 초기화 완료');
         
+        // 실제 데이터 로드
+        fetchRankingData();
+        
     } catch (error) {
         console.error('지역별 우선도 랭킹 차트 초기화 실패:', error);
     }
 }
 
 /**
- * 차트 데이터 업데이트
+ * 실제 API에서 데이터를 가져오는 함수
  */
-function updateRankingChartData(newData) {
+function fetchRankingData() {
+    $.ajax({
+        url: contextPath + '/admin/api/dashboard/ranking',
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            console.log('지역구별 랭킹 데이터:', response);
+            
+            if (response && response.labels && response.data) {
+                updateRankingChartWithAPIData(response.labels, response.data);
+            } else {
+                console.error('응답 데이터 형식이 올바르지 않습니다:', response);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('지역구별 랭킹 데이터 로드 실패:', error);
+            // 오류 시 모든 구가 0점으로 표시됨
+        }
+    });
+}
+
+/**
+ * API 데이터로 차트 업데이트 (25개구는 모두 유지)
+ */
+function updateRankingChartWithAPIData(apiLabels, apiData) {
     try {
         if (!rankingChart) {
             console.error('차트가 초기화되지 않았습니다.');
             return;
         }
 
-        rankingChart.data.datasets[0].data = newData;
+        // 25개구 데이터 배열 초기화 (모두 0)
+        const chartData = new Array(25).fill(0);
         
-        const backgroundColors = newData.map((_, index) => {
-            return index % 2 === 0 ? '#7DA5EB' : '#5B88D6';
-        });
-        
-        const borderColors = newData.map((_, index) => {
-            return index % 2 === 0 ? '#6B94D6' : '#4A77C5';
-        });
-        
-        rankingChart.data.datasets[0].backgroundColor = backgroundColors;
-        rankingChart.data.datasets[0].borderColor = borderColors;
-        
+        // API에서 받은 데이터를 매칭
+        for (let i = 0; i < apiLabels.length; i++) {
+            // 구 이름 정규화 (강남구 -> 강남)
+            const guName = apiLabels[i].replace('구', '');
+            
+            // SEOUL_25_GU 배열에서 해당 구의 인덱스 찾기
+            const index = SEOUL_25_GU.indexOf(guName);
+            
+            if (index !== -1) {
+                // 해당 인덱스에 점수 설정
+                chartData[index] = apiData[i] || 0;
+            }
+        }
+
+        // 차트 데이터만 업데이트 (라벨과 색상은 유지)
+        rankingChart.data.datasets[0].data = chartData;
         rankingChart.update();
         
         console.log('지역별 우선도 랭킹 차트 데이터 업데이트 완료');
@@ -218,18 +247,4 @@ function resizeRankingChart() {
     if (rankingChart) {
         rankingChart.resize();
     }
-}
-
-/**
- * 실제 API에서 데이터를 가져오는 함수
- */
-function fetchRankingData() {
-    const sampleData = [
-        85, 78, 65, 82, 70, 88, 75, 60, 
-        73, 55, 90, 77, 95, 68, 92, 
-        72, 80, 87, 65, 83, 70, 75, 
-        58, 62, 69
-    ];
-    
-    updateRankingChartData(sampleData);
 }
