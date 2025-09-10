@@ -193,41 +193,46 @@ $(document).ready(function() {
 	});
 
 	// 위치 '저장' 버튼 클릭 이벤트 (모달)
-	$('#saveLocationBtn').on('click', function() {
-		const complaintId = selectedComplaintId;
-		const lat = $('#newLat').val();
-		const lon = $('#newLon').val();
-		const address = $('#newAddress').val();
+		$('#saveLocationBtn').on('click', function() {
+			const complaintId = selectedComplaintId;
+			const lat = $('#newLat').val();
+			const lon = $('#newLon').val();
+			const address = $('#newAddress').val();
 
-		if (!address || address === "주소를 찾을 수 없습니다.") {
-			alert("유효한 주소를 찾을 수 없습니다. 마커를 다른 위치로 옮겨보세요.");
-			return;
-		}
+			if (!address || address === "주소를 찾을 수 없습니다.") {
+				alert("유효한 주소를 찾을 수 없습니다. 마커를 다른 위치로 옮겨보세요.");
+				return;
+			}
 
-		$.ajax({
-			url: `${CONTEXT_PATH}/admin/complaints/api/location`,
-			method: 'POST',
-			data: { complaintId, lat, lon, address },
-			success: function(response) {
-				if (response.success) {
-					alert('위치가 성공적으로 변경되었습니다.');
-					bootstrap.Modal.getInstance(document.getElementById('locationChangeModal')).hide();
-					loadComplaintDetail(complaintId); // 상세보기 새로고침
-					// 좌측 리스트의 주소를 실시간으로 업데이트
-					const listItem = $(`.complaint-item[data-id="${complaintId}"]`);
-					if (listItem.length > 0) {
-						// 리스트 아이템 안에서 주소를 표시하는 <p> 태그를 찾아
-						// 새로 저장된 주소(address 변수)로 텍스트를 변경
-						listItem.find('p.text-truncate').text(address);
+			$.ajax({
+				url: `${CONTEXT_PATH}/admin/complaints/api/location`,
+				method: 'POST',
+				data: { complaintId, lat, lon, address },
+				success: function(response) {
+
+					if (response.success) {
+						alert('위치가 성공적으로 변경되었습니다.');
+						bootstrap.Modal.getInstance(document.getElementById('locationChangeModal')).hide();
+						loadComplaintDetail(complaintId); // 상세보기 새로고침
+						
+						//  리스트 새록고침
+						const listItem = $(`.complaint-item[data-id="${complaintId}"]`);
+						if (listItem.length > 0) {
+							listItem.find('p.text-truncate').text(address);
+						}
 					} else {
+					
 						alert('위치 변경에 실패했습니다: ' + response.message);
 					}
 				},
-				error: () => alert('위치 변경 중 오류가 발생했습니다.')
+				
+				error: function() {
+					
+					alert('위치 변경 중 서버 오류가 발생했습니다.');
+				}
 			});
-	});
-});
-
+		}); 
+		});
 // --- 3. 데이터 로딩 및 렌더링 함수 ---
 
 function loadComplaintList() {
