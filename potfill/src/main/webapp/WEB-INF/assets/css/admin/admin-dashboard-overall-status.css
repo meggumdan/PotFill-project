@@ -1,0 +1,230 @@
+/* 지역별 포트홀 신고현황 전용 스타일 - 피그마 디자인 맞춤 */
+
+/* ========== 메인 컨테이너 ========== */
+.status-content-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    background: white;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+/* ========== 전체 처리 현황 제목 ========== */
+.chart-main-title {
+    font-size: 10px;
+    font-weight: 400;
+    color: #8094AE;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* ========== 상단 차트 영역 ========== */
+.chart-display-area {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    height: 180px;
+    margin-bottom: 20px;
+}
+
+/* 도넛차트 (왼쪽 상단) */
+.chart-canvas-container {
+    width: 170px;
+    height: 170px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+#statusDonutChart {
+    width: 170px !important;
+    height: 170px !important;
+}
+
+/* 범례 (오른쪽) */
+.chart-legend-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 15px 20px;
+    padding-top: 20px;
+}
+
+.legend-entry {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.color-box {
+    width: 12px;
+    height: 12px;
+    border-radius: 0px; /* 정사각형으로 변경 */
+    flex-shrink: 0;
+}
+
+.legend-details {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.legend-details {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.status-label {
+    font-size: 10px;
+    color: #364A63;
+    font-weight: 500;
+    line-height: 1;
+}
+
+.status-value {
+    font-size: 11px;
+    font-weight: 600;
+    color: #8094AE; /* 피그마 디자인에 맞게 색상 변경 */
+    line-height: 1;
+}
+
+.status-percentage {
+    font-size: 9px;
+    color: #8094AE;
+    margin-left: 3px;
+}
+
+/* ========== 구별 상세 현황 제목 ========== */
+.table-main-title {
+    font-size: 10px;
+    font-weight: 400;
+    color: #8094AE;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.table-sub-title {
+    font-size: 9px;
+    color: #8094AE;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* ========== 테이블 영역 ========== */
+.table-display-wrapper {
+    height: calc(100% - 220px); /* 260px에서 220px로 줄여서 테이블 높이 증가 */
+    overflow: hidden;
+}
+
+.main-status-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+    background-color: white;
+    table-layout: fixed;
+}
+
+.main-status-table thead th {
+    background-color: transparent;
+    color: #8094AE;
+    font-weight: 600;
+    font-size: 9px;
+    padding: 6px 4px;
+    text-align: center;
+    border: none;
+    border-bottom: 1px solid #E9ECEF;
+    line-height: 1.2;
+    height: 25px;
+    vertical-align: middle;
+}
+
+.main-status-table tbody td {
+    padding: 6px 4px;
+    text-align: center;
+    border-bottom: 1px solid #F1F3F4;
+    color: #364A63;
+    font-size: 10px;
+    line-height: 1.2;
+    height: 28px;
+    vertical-align: middle;
+    overflow: hidden;
+}
+
+/* 컬럼별 너비 */
+.main-status-table th:nth-child(1),
+.main-status-table td:nth-child(1) { width: 15%; }
+.main-status-table th:nth-child(2),
+.main-status-table td:nth-child(2) { width: 25%; }
+.main-status-table th:nth-child(3),
+.main-status-table td:nth-child(3) { width: 20%; }
+.main-status-table th:nth-child(4),
+.main-status-table td:nth-child(4) { width: 20%; }
+.main-status-table th:nth-child(5),
+.main-status-table td:nth-child(5) { width: 20%; }
+
+/* 순위 컬럼 (798BFF 색상으로 변경) */
+.main-status-table tbody td:nth-child(1) {
+    color: #798BFF !important;
+    font-weight: 600;
+}
+
+/* 평균 처리시간 컬럼 (E85347 색상으로 변경) */
+.main-status-table tbody td:nth-child(5) {
+    color: #E85347 !important;
+    font-weight: 600;
+}
+
+/* DataTables 스타일 */
+.main-status-table_wrapper {
+    width: 100%;
+    height: 100%;
+}
+
+.main-status-table_wrapper .dataTables_length,
+.main-status-table_wrapper .dataTables_filter,
+.main-status-table_wrapper .dataTables_info,
+.main-status-table_wrapper .dataTables_paginate {
+    display: none !important;
+}
+
+.main-status-table_wrapper .dataTables_scrollBody {
+    height: calc(100% - 30px) !important;
+    overflow-y: auto !important;
+    scrollbar-width: thin;
+    scrollbar-color: #8094AE #F5F5F7;
+}
+
+.main-status-table_wrapper .dataTables_scrollBody::-webkit-scrollbar {
+    width: 6px;
+}
+
+.main-status-table_wrapper .dataTables_scrollBody::-webkit-scrollbar-track {
+    background: #F5F5F7;
+    border-radius: 3px;
+}
+
+.main-status-table_wrapper .dataTables_scrollBody::-webkit-scrollbar-thumb {
+    background: #8094AE;
+    border-radius: 3px;
+}
+
+.main-status-table tbody tr:hover {
+    background-color: #F8F9FA;
+}
+
+/* DataTables 정렬 화살표 제거 */
+.main-status-table thead th.sorting,
+.main-status-table thead th.sorting_asc,
+.main-status-table thead th.sorting_desc {
+    background-image: none !important;
+    cursor: default !important;
+}
+
+.main-status-table thead th.sorting:after,
+.main-status-table thead th.sorting_asc:after,
+.main-status-table thead th.sorting_desc:after {
+    display: none !important;
+}

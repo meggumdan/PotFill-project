@@ -1,0 +1,37 @@
+/* 지역별(구별) 우선도 랭킹 차트 전용 스타일 */
+
+/* ========== 차트 컨테이너 ========== */
+.ranking-chart-container {
+    width: 100%;
+    height: calc(100% - 30px);
+    position: relative;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+.ranking-chart-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    min-height: 250px;
+}
+
+#rankingChart {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 250px !important;
+}
+
+/* ========== 차트 스타일 커스터마이징 ========== */
+.ranking-chart-container canvas {
+    border-radius: 4px;
+}
+
+/* 차트 툴팁 스타일 */
+.chartjs-tooltip {
+    background-color: rgba(0, 0, 0, 0.8) !important;
+    border-radius: 6px !important;
+    color: white !important;
+    font-size: 11px !important;
+    padding: 8px 10px !important;
+}
