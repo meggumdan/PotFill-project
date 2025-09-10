@@ -13,7 +13,5 @@ public class PotholeList {
     private Double lon;                    // 경도(y)
     private Integer reportCount;           // 누적 신고수
     private String districtCode;           // 행정관할
-    private String riskLevel;              // 위험 등급
-    private String statusComment;
     private String status;
 }
