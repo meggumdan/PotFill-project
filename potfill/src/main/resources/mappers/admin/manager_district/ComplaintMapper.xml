@@ -1,0 +1,137 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.potfill.admin.managerdistrict.dao.ComplaintRepository">
+
+	<resultMap id="ComplaintResultMap"
+		type="com.potfill.admin.managerdistrict.model.Complaint">
+		<result property="complaintId" column="COMPLAINT_ID" />
+		<result property="reporterName" column="REPORTER_NAME" />
+		<result property="reporterNumber" column="REPORTER_NUMBER" />
+		<result property="incidentAddress" column="INCIDENT_ADDRESS" />
+		<result property="districtCode" column="DISTRICT_CODE" />
+		<result property="gu" column="GU" />
+		<result property="dong" column="DONG" />
+		<result property="lat" column="LAT" />
+		<result property="lon" column="LON" />
+		<result property="radius" column="RADIUS" />
+		<result property="h3Index" column="H3_INDEX" />
+		<result property="h3Res" column="H3_RES" />
+		<result property="reportContent" column="REPORT_CONTENT" />
+		<result property="createdAt" column="CREATED_AT" />
+		<result property="assignedAdminId" column="ASSIGNED_ADMIN_ID" />
+		<result property="assignedDepartment"
+			column="ASSIGNED_DEPARTMENT" />
+		<result property="reportCount" column="REPORT_COUNT" />
+	</resultMap>
+
+	<!-- 1. 신규 건수 -->
+	<select id="getNewCount" resultType="int">
+		SELECT COUNT(*)
+		FROM
+		COMPLAINTS C
+		WHERE EXISTS (
+		SELECT 1
+		FROM COMPLAINT_HISTORIES CH
+		WHERE
+		CH.COMPLAINT_ID = C.COMPLAINT_ID
+		AND CH.CREATED_AT = (
+		SELECT
+		MAX(CH2.CREATED_AT)
+		FROM COMPLAINT_HISTORIES CH2
+		WHERE CH2.COMPLAINT_ID
+		= C.COMPLAINT_ID
+		)
+		AND CH.STATUS = '접수'
+		)
+	</select>
+
+	<!-- 2. 진행중 건수 -->
+	<select id="getProcessingCount" resultType="int">
+		SELECT COUNT(*)
+		FROM
+		COMPLAINTS C
+		WHERE EXISTS (
+		SELECT 1
+		FROM COMPLAINT_HISTORIES CH
+		WHERE
+		CH.COMPLAINT_ID = C.COMPLAINT_ID
+		AND CH.CREATED_AT = (
+		SELECT
+		MAX(CH2.CREATED_AT)
+		FROM COMPLAINT_HISTORIES CH2
+		WHERE CH2.COMPLAINT_ID
+		= C.COMPLAINT_ID
+		)
+		AND CH.STATUS = '처리중'
+		)
+	</select>
+
+	<!-- 3. 완료/반려 건수 -->
+	<select id="getCompletedCount" resultType="int">
+		SELECT COUNT(*)
+		FROM
+		COMPLAINTS C
+		WHERE EXISTS (
+		SELECT 1
+		FROM COMPLAINT_HISTORIES CH
+		WHERE
+		CH.COMPLAINT_ID = C.COMPLAINT_ID
+		AND CH.CREATED_AT = (
+		SELECT
+		MAX(CH2.CREATED_AT)
+		FROM COMPLAINT_HISTORIES CH2
+		WHERE CH2.COMPLAINT_ID
+		= C.COMPLAINT_ID
+		)
+		AND CH.STATUS IN ('완료', '반려')
+		)
+	</select>
+
+	<!-- 4. 긴급 민원 리스트 (상위 신고건수 5개) -->
+	<select id="getEmergencyList" resultMap="ComplaintResultMap">
+		SELECT *
+		FROM (
+		SELECT *
+		FROM COMPLAINTS
+		ORDER BY REPORT_COUNT DESC
+		)
+		WHERE ROWNUM &lt;= 5
+	</select>
+
+	<!-- 5. 최근 7일 일자별 건수 -->
+	<resultMap id="dailyCountMap"
+		type="com.potfill.admin.managerdistrict.model.DailyCount">
+		<result property="date" column="CREATED_DATE" />
+		<result property="newCount" column="NEWCOUNT" />
+		<result property="completedCount" column="COMPLETEDCOUNT" />
+	</resultMap>
+
+	<select id="getDailyCounts" resultMap="dailyCountMap">
+		WITH last7days AS (
+		SELECT TRUNC(SYSDATE) - LEVEL + 1 AS CREATED_DATE
+		FROM dual
+		CONNECT BY LEVEL &lt;= 7
+		),
+		latest_complaint_histories AS (
+		SELECT
+		ch.*,
+		ROW_NUMBER() OVER (PARTITION BY ch.COMPLAINT_ID ORDER BY ch.CREATED_AT DESC) as rn
+		FROM COMPLAINT_HISTORIES ch
+		)
+		SELECT
+		d.CREATED_DATE AS CREATED_DATE,
+		NVL(SUM(CASE WHEN lch.STATUS = '접수' THEN 1 ELSE 0 END), 0) AS NEWCOUNT,
+		NVL(SUM(CASE WHEN lch.STATUS IN ('완료', '반려') THEN 1 ELSE 0 END), 0) AS
+		COMPLETEDCOUNT
+		FROM last7days d
+		LEFT JOIN latest_complaint_histories lch
+		ON TRUNC(lch.CREATED_AT) = d.CREATED_DATE
+		AND lch.rn = 1
+		LEFT JOIN COMPLAINTS c
+		ON lch.COMPLAINT_ID = c.COMPLAINT_ID
+		GROUP BY d.CREATED_DATE
+		ORDER BY d.CREATED_DATE
+	</select>
+
+</mapper>
