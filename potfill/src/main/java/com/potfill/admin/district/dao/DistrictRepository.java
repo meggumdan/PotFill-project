@@ -1,11 +1,11 @@
-package com.potfill.admin.managerdistrict.dao;
+package com.potfill.admin.district.dao;
 
 import java.util.List;
 
-import com.potfill.admin.managerdistrict.model.Complaint;
-import com.potfill.admin.managerdistrict.model.DailyCount;
+import com.potfill.admin.district.model.Complaint;
+import com.potfill.admin.district.model.DailyCount;
 
-public interface ComplaintRepository {
+public interface DistrictRepository {
 
 	int getNewCount();
 	int getProcessingCount();
