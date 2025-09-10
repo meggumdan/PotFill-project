@@ -3,6 +3,7 @@ package com.potfill.user.complaint.dao;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.potfill.user.complaint.model.Complaint;
 import com.potfill.user.complaint.model.ComplaintPhoto;
@@ -14,6 +15,6 @@ public interface UserComplaintRepository {
 	
 	void insertComplaintPhoto(ComplaintPhoto photo);
 
-	public List<Complaint> findByNameAndPhone(String reporterName, String reporterNumber);
+	public List<Complaint> findByNameAndPhone(@Param("reporterName") String reporterName, @Param("reporterNumber")String reporterNumber);
 
 }
