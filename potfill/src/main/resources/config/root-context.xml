@@ -48,13 +48,6 @@
     <tx:annotation-driven/>
     <!-- dataSource, jdbcTemplate, transactionManager 는 기본 id로 하는 걸 권장함. -->
 
-<<<<<<< Updated upstream
-	<context:component-scan	base-package="com.potfill" />
 	<mybatis-spring:scan base-package="com.potfill.**.dao" />
 
-=======
-	<mybatis-spring:scan base-package="com.potfill.admin.managerdistrict.dao"/>
-	<context:component-scan base-package="com.potfill.admin.managerdistrict.service" />
-	
->>>>>>> Stashed changes
 </beans>
