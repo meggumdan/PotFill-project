@@ -18,9 +18,9 @@ public class MapController {
 		return "user/map/map";
 	}
 	
-	@GetMapping(value = "map2")
-	public String home2(Model model) {
+	@GetMapping(value = "user/map")
+	public String userMap(Model model) {
 		model.addAttribute("holeList", mapService.getPotholeLists());
-		return "user/map/map2";
+		return "user/real-time-pothole";
 	}
 }
