@@ -4,8 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.potfill.admin.district.service.DistrictService;
+
+import jakarta.servlet.http.HttpSession;
+
 
 @Controller
 public class ManagerDistrictController {
@@ -26,5 +31,14 @@ public class ManagerDistrictController {
         model.addAttribute("emergencyList", districtService.getEmergencyList());
 
         return "admin/district/district";
+    }
+    
+    @PostMapping("/admin/complaints/setSession")
+    public String setComplaintSession(@RequestParam("id") Long id, HttpSession session) {
+        // 세션에 클릭한 민원 ID 저장
+        session.setAttribute("selectedComplaintId", id);
+
+        // 민원 조회 페이지로 redirect
+        return "redirect:/admin/complaints/list";
     }
 }

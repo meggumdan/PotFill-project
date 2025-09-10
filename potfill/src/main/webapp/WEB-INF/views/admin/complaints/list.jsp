@@ -20,6 +20,11 @@
     <link href="<c:url value='/css/admin/complaints.css'/>" rel="stylesheet">
     
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${jsKey}&libraries=services"></script>
+
+<script>
+	const SELECTED_COMPLAINT_ID = "${selectedComplaintId}";
+</script>
+<script src="/assets/js/admin/complaints.js"></script>
 </head>
 <body>
 
@@ -104,7 +109,10 @@
                                             <option value="reporterNumber">전화번호</option>
                                             <option value="address">주소</option>
                                         </select>
-                                        <input type="text" class="form-control" id="searchKeyword" placeholder="검색어를 입력하세요" onkeypress="handleEnterKey(event)">
+                                       
+                                        <!-- 지민  value="${selectedComplaintId}" 만 추가 -->
+                                        <input type="text" class="form-control" id="searchKeyword" placeholder="검색어를 입력하세요" onkeypress="handleEnterKey(event)" value="${selectedComplaintId}">
+                                                                               
                                         <button class="btn btn-primary" id="searchBtn">
                                             <i class="fas fa-search"></i> 검색
                                         </button>
