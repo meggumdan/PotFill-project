@@ -166,6 +166,12 @@ $(document).ready(function() {
             error: () => alert('위치 변경 중 오류가 발생했습니다.')
         });
     });
+	
+	// --- 세션에서 넘어온 selectedComplaintId 처리 ---
+	if (typeof SELECTED_COMPLAINT_ID !== "undefined" && SELECTED_COMPLAINT_ID) {
+		selectedComplaintId = SELECTED_COMPLAINT_ID; // 전역 변수에도 저장
+		loadComplaintDetail(SELECTED_COMPLAINT_ID);  // 상세 호출 실행
+	}
 });
 
 // --- 3. 데이터 로딩 및 렌더링 함수 ---
@@ -559,4 +565,10 @@ function formatDate(dateValue) {
 function formatDateTime(dateValue) {
     if (!dateValue) return '';
     return new Date(dateValue).toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+// --- 세션에서 넘어온 selectedComplaintId 처리 ---
+if (typeof SELECTED_COMPLAINT_ID !== "undefined" && SELECTED_COMPLAINT_ID) {
+    selectedComplaintId = SELECTED_COMPLAINT_ID;  // 전역 변수에도 저장
+    loadComplaintDetail(SELECTED_COMPLAINT_ID);  // 상세 호출 실행
 }
