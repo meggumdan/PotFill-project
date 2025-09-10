@@ -18,11 +18,11 @@ public class UserMainController {
 	
 	
 	// 신고화면 
-	@GetMapping("/user/complaint")
-	public String complaint() {
-		
-		return "user/complaint";
-	}
+//	@GetMapping("/user/complaint")
+//	public String complaint() {
+//		
+//		return "user/complaint";
+//	}
 	
 	
 	// 실시간 포트홀 지도

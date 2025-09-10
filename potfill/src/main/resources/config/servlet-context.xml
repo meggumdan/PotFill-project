@@ -13,6 +13,9 @@
 	<resources mapping="/js/**" location="/WEB-INF/assets/js/" />
 	<resources mapping="/css/**" location="/WEB-INF/assets/css/" />
 	<resources mapping="/images/**" location="/WEB-INF/assets/images/" />
+	
+	<!--  이미지 업로드 임시로 사용하기 -->
+	<resources mapping="/upload/**" location="/upload/" />
 
 
 	<!-- View Resolver 설정 -->
@@ -35,6 +38,11 @@
 			</beans:list>
 		</beans:property>
 	</beans:bean>
+	
+	<!-- 파일관련(multipart)  -->
+	<beans:bean id="multipartResolver"
+            class="org.springframework.web.multipart.support.StandardServletMultipartResolver" />
+	
 		
 	<context:component-scan	base-package="com.potfill" />
 
