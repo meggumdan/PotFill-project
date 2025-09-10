@@ -85,12 +85,12 @@
 				reportCount: ${row['REPORTCOUNT']},
 				content: '', // 초기 내용 필요시 채우기
 				riskLevel: '${row['RISKLEVEL']}',
-				status: getStatus('${row['STATUS']}')
+				status: getStatusLabel('${row['STATUS']}')
 				}); //positions.push end
 			</c:if>
 		</c:forEach>
 
-		function getStatus(data) {
+		function getStatusLabel(data) {
 			switch (data) {
 				case "Received": return "접수";
 				case "Processing": return "처리중";
@@ -106,7 +106,13 @@
 
 		// 5) 클러스터러에 넣을 마커들 생성 (map 지정 X)
 		var clusterMarkers = positions.map(function (position) {
-			var imageName = getImageNameByreportCount(position.reportCount);
+			let imageName;
+			if(position.status === '처리중') {
+				imageName = 'location-blue-check';
+			} else {
+				imageName = getImageNameByReportCount(position.reportCount);
+				
+			}
 			var imageSrc = '${pageContext.request.contextPath}/images/' + imageName + '.png';
 			var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
 
@@ -190,7 +196,7 @@
 			} // if
 		}); // kakao.maps.event.addListener
 
-		function getImageNameByreportCount(expr) {
+		function getImageNameByReportCount(expr) {
 			switch (expr) {
 				case 1: return "location-green";
 				case 2: return "location-yellow";

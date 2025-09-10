@@ -16,8 +16,8 @@
 		      , cpl.status 
 		  FROM complaints cp, complaint_histories cpl
 		 WHERE cp.complaint_id = cpl.complaint_id
-		   AND status != 'COMPLETED' 
-		   AND status != 'REJECTED'
+		   AND status != 'Completed' 
+		   AND status != 'Rejected'
  	</select>
  	
  
