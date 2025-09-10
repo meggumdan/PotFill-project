@@ -36,6 +36,30 @@ $(document).ready(function() {
 	});
 
 
+	// '내보내기' 버튼 클릭 이벤트
+	$('#exportBtn').on('click', function() {
+		// 현재 필터와 검색 조건들을 가져옴
+		const params = {
+			period: $('#periodFilter').val(),
+			status: $('#statusFilter').val(),
+			risk: $('#riskFilter').val(),
+			gu: $('#guFilter').val(),
+			sort: $('#sortFilter').val(),
+			searchType: $('#searchType').val(),
+			searchKeyword: $('#searchKeyword').val()
+		};
+
+		// 쿼리 스트링으로 변환 (예: period=today&status=RECEIVED...)
+		// 값이 없는 파라미터는 제외
+		const queryString = Object.entries(params)
+			.filter(([key, value]) => value !== null && value !== '')
+			.map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+			.join('&');
+
+		// 새로운 URL로 이동하여 파일 다운로드를 트리거
+		window.location.href = `${CONTEXT_PATH}/admin/complaints/export?${queryString}`;
+	});
+
 	//  상세 보기의 '정보 보기/숨기기' 버튼 클릭 이벤트
 	$(document).on('click', '#toggleInfoBtn', function() {
 		const $btn = $(this);
@@ -169,35 +193,46 @@ $(document).ready(function() {
 	});
 
 	// 위치 '저장' 버튼 클릭 이벤트 (모달)
-	$('#saveLocationBtn').on('click', function() {
-		const complaintId = selectedComplaintId;
-		const lat = $('#newLat').val();
-		const lon = $('#newLon').val();
-		const address = $('#newAddress').val();
+		$('#saveLocationBtn').on('click', function() {
+			const complaintId = selectedComplaintId;
+			const lat = $('#newLat').val();
+			const lon = $('#newLon').val();
+			const address = $('#newAddress').val();
 
-		if (!address || address === "주소를 찾을 수 없습니다.") {
-			alert("유효한 주소를 찾을 수 없습니다. 마커를 다른 위치로 옮겨보세요.");
-			return;
-		}
+			if (!address || address === "주소를 찾을 수 없습니다.") {
+				alert("유효한 주소를 찾을 수 없습니다. 마커를 다른 위치로 옮겨보세요.");
+				return;
+			}
 
-		$.ajax({
-			url: `${CONTEXT_PATH}/admin/complaints/api/location`,
-			method: 'POST',
-			data: { complaintId, lat, lon, address },
-			success: function(response) {
-				if (response.success) {
-					alert('위치가 성공적으로 변경되었습니다.');
-					bootstrap.Modal.getInstance(document.getElementById('locationChangeModal')).hide();
-					loadComplaintDetail(complaintId); // 상세보기 새로고침
-				} else {
-					alert('위치 변경에 실패했습니다: ' + response.message);
+			$.ajax({
+				url: `${CONTEXT_PATH}/admin/complaints/api/location`,
+				method: 'POST',
+				data: { complaintId, lat, lon, address },
+				success: function(response) {
+
+					if (response.success) {
+						alert('위치가 성공적으로 변경되었습니다.');
+						bootstrap.Modal.getInstance(document.getElementById('locationChangeModal')).hide();
+						loadComplaintDetail(complaintId); // 상세보기 새로고침
+						
+						//  리스트 새록고침
+						const listItem = $(`.complaint-item[data-id="${complaintId}"]`);
+						if (listItem.length > 0) {
+							listItem.find('p.text-truncate').text(address);
+						}
+					} else {
+					
+						alert('위치 변경에 실패했습니다: ' + response.message);
+					}
+				},
+				
+				error: function() {
+					
+					alert('위치 변경 중 서버 오류가 발생했습니다.');
 				}
-			},
-			error: () => alert('위치 변경 중 오류가 발생했습니다.')
+			});
+		}); 
 		});
-	});
-});
-
 // --- 3. 데이터 로딩 및 렌더링 함수 ---
 
 function loadComplaintList() {
@@ -239,34 +274,40 @@ function renderComplaintList(complaints) {
 	} else {
 		complaints.forEach(function(complaint) {
 			const riskClass = complaint.riskLevel?.toLowerCase() || 'low';
-			const statusClass = complaint.status?.toLowerCase() || 'received';
 			const statusText = getStatusText(complaint.status);
 			const riskText = getRiskText(complaint.riskLevel);
-
 			const safeAddress = escapeHtml(complaint.incidentAddress || '주소 없음');
 			const maskedName = maskName(escapeHtml(complaint.reporterName));
 
-			const duplicateBadge = complaint.reportCount > 1
-				? `<span class="badge bg-warning text-dark">중복 ${complaint.reportCount}건</span>`
+			// [유지] 누적 신고 뱃지는 그대로 둡니다.
+			const countBadge = complaint.reportCount > 1
+				? `<span class="badge rounded-pill bg-warning text-dark ms-2">누적${complaint.reportCount}건</span>`
 				: '';
+
+			// [복원] 위험도/상태 뱃지를 다시 묶어서 관리합니다.
+			const statusBadgesHtml = `
+				<div class="d-flex align-items-center gap-2">
+					<span class="badge risk-badge risk-${riskClass}">${riskText}</span>
+					
+					<span class="badge list-status-badge">${statusText}</span>
+				</div>
+			`;
 
 			html += `
                 <div class="complaint-item p-3 border-bottom" data-id="${complaint.complaintId}" 
                     onclick="selectComplaint(${complaint.complaintId})">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
+
+                    <div class="d-flex justify-content-between align-items-center"> 
                         <div>
                             <h6 class="mb-1">#${complaint.complaintId}</h6>
-                            <small class="text-muted">${formatDate(complaint.createdAt)}</small>
+                            <p class="mb-1 text-truncate" style="max-width: 300px;">${safeAddress}</p>
+                            <small class="text-muted">
+                                ${formatDate(complaint.createdAt)} / 신고자: ${maskedName}
+                                ${countBadge}
+                            </small>
                         </div>
-                        <div class="text-end">
-                            <span class="badge risk-${riskClass} risk-badge me-1">${riskText}</span>
-                            <span class="badge status-${statusClass}">${statusText}</span>
-                        </div>
-                    </div>
-                    <p class="mb-2 text-truncate">${safeAddress}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">신고자: ${maskedName}</small>
-                        ${duplicateBadge}
+                        
+                        ${statusBadgesHtml}
                     </div>
                 </div>
             `;
@@ -274,6 +315,7 @@ function renderComplaintList(complaints) {
 	}
 	$('#complaintList').html(html);
 }
+
 
 function loadComplaintDetail(complaintId) {
 	$('#detailPanel').html('<div class="text-center py-5"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>');
@@ -338,41 +380,41 @@ function renderComplaintDetail(data) {
 }
 
 function renderSummaryTab(complaint) {
-
-	//console.log("renderSummaryTab에 전달된 complaint 객체:", complaint);
-
 	const currentStatus = complaint.status || 'RECEIVED';
 	const currentRisk = complaint.riskLevel || 'LOW';
-	// 마스킹된 값과 원본 값을 변수로 
 	const maskedName = maskName(escapeHtml(complaint.reporterName));
 	const maskedNumber = maskPhone(complaint.reporterNumber);
 	const fullName = escapeHtml(complaint.reporterName);
 	const fullNumber = escapeHtml(complaint.reporterNumber);
 
+	const riskBadgeHtml = `<span class="risk-badge risk-${currentRisk.toLowerCase()}">${getRiskText(currentRisk)}</span>`;
+
+	// [수정] 히스토리 뱃지와 동일한 HTML 구조를 사용합니다.
+	const statusBadgeHtml = `<span class="badge status-badge status-${currentStatus.toLowerCase()}">${getStatusText(currentStatus)}</span>`;
+
 	return `
         <h5>민원 기본 정보</h5>
-        <table class="table table-bordered">
+        <table class="table table-bordered align-middle">
             <tbody>
                 <tr><th style="width:25%;">민원 ID</th><td>${complaint.complaintId}</td></tr>
                 <tr>
 				<th>신고자</th>
-				                    <td>
-				                        <span id="reporterInfoText">${maskedName} (${maskedNumber})</span>
-				                        
-				                        <button type="button" class="btn btn-sm btn-outline-secondary ms-2" id="toggleInfoBtn"
-										data-full-name="${fullName}"
-										                                data-full-number="${fullNumber}"
-										                                data-masked-name="${maskedName}"
-										                                data-masked-number="${maskedNumber}"
-										                                data-state="masked">
-				                            <i class="fas fa-eye"></i> 정보 보기
-				                        </button>
-				                        
-				                    </td>				</tr>
+				    <td>
+				        <span id="reporterInfoText">${maskedName} (${maskedNumber})</span>
+				        <button type="button" class="btn btn-sm btn-outline-secondary ms-2" id="toggleInfoBtn"
+								data-full-name="${fullName}"
+                                data-full-number="${fullNumber}"
+                                data-masked-name="${maskedName}"
+                                data-masked-number="${maskedNumber}"
+                                data-state="masked">
+				            <i class="fas fa-eye"></i> 정보 보기
+				        </button>
+				    </td>
+				</tr>
                 <tr><th>접수일시</th><td>${formatDateTime(complaint.createdAt)}</td></tr>
                 <tr><th>주소</th><td>${escapeHtml(complaint.incidentAddress)}</td></tr>
-                <tr><th>상태</th><td><span class="badge status-${currentStatus.toLowerCase()}">${getStatusText(currentStatus)}</span></td></tr>
-                <tr><th>위험도</th><td><span class="badge risk-${currentRisk.toLowerCase()}">${getRiskText(currentRisk)}</span></td></tr>
+                <tr><th>상태</th><td>${statusBadgeHtml}</td></tr>
+                <tr><th>위험도</th><td>${riskBadgeHtml}</td></tr>
             </tbody>
         </table>
         
@@ -380,9 +422,9 @@ function renderSummaryTab(complaint) {
         <div class="p-3 bg-light border rounded" style="white-space: pre-wrap;">${escapeHtml(complaint.reportContent || '내용 없음')}</div>
         
         <div class="d-flex justify-content-end gap-2 mt-4" id="actionButtons">
-            <button class="btn btn-info btn-sm" onclick="changeStatus('${currentStatus}')"><i class="fas fa-edit"></i> 상태 변경</button>
-            <button class="btn btn-warning btn-sm" onclick="changeRisk('${complaint.complaintId}', '${currentRisk}')"><i class="fas fa-exclamation-triangle"></i> 위험도 수정</button>
-            <button class="btn btn-secondary btn-sm" onclick="editLocation()"><i class="fas fa-map-marker-alt"></i> 위치 수정</button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="changeStatus('${currentStatus}')"><i class="fas fa-edit"></i> 상태 변경</button>
+            <button class="btn btn-outline-warning btn-sm" onclick="changeRisk('${complaint.complaintId}', '${currentRisk}')"><i class="fas fa-exclamation-triangle"></i> 위험도 수정</button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="editLocation()"><i class="fas fa-map-marker-alt"></i> 위치 수정</button>
         </div>
 
         <div class="card mt-3" id="statusUpdateDiv" style="display: none;">

@@ -1,5 +1,7 @@
 package com.potfill.admin.complaints.service;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +13,11 @@ import com.potfill.admin.complaints.dao.ComplaintRepository;
 import com.potfill.admin.complaints.model.Complaint;
 import com.potfill.admin.complaints.model.ComplaintHistory;
 import com.potfill.admin.complaints.model.ReportPhoto;
-
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 @Service
 public class ComplaintServiceImpl implements ComplaintService {
     
@@ -133,5 +139,58 @@ public class ComplaintServiceImpl implements ComplaintService {
     @Override
     public Map<String, Object> getDashboardStatistics(Long adminId) {
         return complaintRepository.getDashboardStats(adminId);
+    }
+//실제로 데이터를 조회하고 Apache POI를 이용해 엑셀 파일을 만드는
+    @Override
+    public void exportComplaintsToExcel(Map<String, Object> searchParams, OutputStream outputStream) throws IOException {
+        // 1. 페이징 없이 모든 데이터 조회 (새로 만든 Repository 메소드 호출)
+        List<Complaint> complaints = complaintRepository.getComplaintListForExport(searchParams);
+        
+        // 2. 엑셀 워크북 생성
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("민원 목록");
+
+            // 3. 헤더 셀 스타일 정의
+            CellStyle headerCellStyle = workbook.createCellStyle();
+            headerCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerCellStyle.setFont(headerFont);
+            headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
+
+            // 4. 헤더 행 생성 (엑셀에 포함시킬 컬럼들)
+            String[] headers = {"민원ID", "상태", "위험도", "신고자명", "연락처", "주소", "신고건수", "접수일"};
+            Row headerRow = sheet.createRow(0);
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(headerCellStyle);
+            }
+
+            // 5. 데이터 행 생성
+            int rowNum = 1;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            for (Complaint complaint : complaints) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(complaint.getComplaintId());
+                row.createCell(1).setCellValue(complaint.getStatus());
+                row.createCell(2).setCellValue(complaint.getRiskLevel());
+                row.createCell(3).setCellValue(complaint.getReporterName());
+                row.createCell(4).setCellValue(complaint.getReporterNumber());
+                row.createCell(5).setCellValue(complaint.getIncidentAddress());
+                row.createCell(6).setCellValue(complaint.getReportCount());
+                // 날짜(Timestamp)는 포맷팅해서 넣어주는 것이 좋음
+                row.createCell(7).setCellValue(sdf.format(complaint.getCreatedAt()));
+            }
+
+            // 6. 컬럼 너비 자동 조정
+            for (int i = 0; i < headers.length; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            // 7. OutputStream에 워크북 쓰기 (Controller로 전달됨)
+            workbook.write(outputStream);
+        }
     }
 }

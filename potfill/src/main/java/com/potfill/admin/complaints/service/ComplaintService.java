@@ -5,6 +5,8 @@ import java.util.Map;
 import com.potfill.admin.complaints.model.Complaint;
 import com.potfill.admin.complaints.model.ComplaintHistory;
 import com.potfill.admin.complaints.model.ReportPhoto;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public interface ComplaintService {
     
@@ -28,4 +30,7 @@ public interface ComplaintService {
     
     // 대시보드 통계 데이터 조회
     Map<String, Object> getDashboardStatistics(Long adminId);
+    
+ // 엑셀 파일 생성 및 출력 스트림에 쓰기
+    void exportComplaintsToExcel(Map<String, Object> searchParams, OutputStream outputStream) throws IOException;
 }

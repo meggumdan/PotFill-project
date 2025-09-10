@@ -49,4 +49,7 @@ public interface ComplaintRepository {
     
     // 대시보드 통계용 메서드들
     Map<String, Object> getDashboardStats(@Param("adminId") Long adminId);
+    
+ // 엑셀 내보내기용 민원 리스트 조회 (페이징 없음)
+    List<Complaint> getComplaintListForExport(@Param("searchParams") Map<String, Object> searchParams);
 }

@@ -6,15 +6,31 @@
 }
 
 .main-content {
-	min-height: 100vh;
+    /* 헤더와 사이드바가 차지하는 공간만큼 바깥 여백을 줘서 밀어냄 */
+    margin-top: 77px;    /* 헤더 높이 */
+    margin-left: 202px;  /* 사이드바 너비 */
+    
+    /* 실제 컨텐츠가 차지할 너비를 계산. */
+    width: calc(100% - 202px);
+    
+    /* 컨텐츠의 최소 높이를 확보. */
+    min-height: calc(100vh - 77px);
+    
+    /* 기존 내부 여백은 그대로 유지 */
+    padding: 24px;
 }
-
+/* 민원 상세 보기 탭의 비활성 상태 글자색을 항상 보이도록 수정 */
+#detailPanel .nav-tabs .nav-link {
+    color: #495057; /* 부트스트랩 기본 본문 색상 (어두운 회색) */
+}
 .complaint-item {
 	cursor: pointer;
 	border-left: 4px solid transparent;
 	transition: all 0.3s;
 }
 
+
+/* --- 목록 아이템 호버(hover) 및 선택(selected) 스타일 
 .complaint-item:hover {
 	background-color: #f8f9fa;
 	border-left-color: #007bff;
@@ -25,6 +41,18 @@
 	border-left-color: #2196f3;
 }
 
+--- */
+
+/* 1. 마우스 호버(Hover) 시: 연한 회색 배경으로 변경 */
+.complaint-item:hover {
+    background-color: #F5F5F7; /* 대표 색상(배경) */
+}
+
+/* 2. 클릭/선택(Selected) 시: 포인트 색상의 연한 틴트 배경으로 변경 */
+.complaint-item.selected {
+    background-color: #FFF4E8; /* 주황색(#FA8C2D)의 연한 틴트(tint) 색상 */
+    /* border-left-color는 그대로 유지되어 위험도 표시는 사라지지 않습니다. */
+}
 .risk-badge {
 	font-size: 0.75rem;
 }
@@ -70,3 +98,61 @@
     width: 120px; /* 버튼 너비를 고정하여 텍스트 변경 시 UI가 흔들리지 않도록 함 */
     transition: all 0.2s;
 }
+.btn-primary {
+    background-color: #FA8C2D; /* 대표 주황색 */
+    border-color: #FA8C2D;
+}
+
+/* 마우스를 올렸을 때 약간 더 어두운 색으로 변경 */
+.btn-primary:hover {
+    background-color: #e17c21;
+    border-color: #e17c21;
+}
+/* --- 뱃지 스타일 (클래스 분리 최종본) --- */
+
+/* [1] 위험도 뱃지 (공용) */
+.risk-badge {
+    display: inline-block;
+    min-width: 70px;
+    text-align: center;
+    font-size: 0.9rem;
+    padding: 0.6em 1em;
+    font-weight: 600;
+    border-radius: 1rem;
+    color: white;
+}
+.risk-badge.risk-high { background-color: #dc3545; }
+.risk-badge.risk-medium { background-color: #fd7e14; }
+.risk-badge.risk-low { background-color: #28a745; }
+
+
+/* [2] 민원 목록용 상태 뱃지 (회색 테두리) */
+.list-status-badge {
+    display: inline-block;
+    min-width: 70px;
+    text-align: center;
+    font-size: 0.9rem;
+    padding: 0.6em 1em;
+    font-weight: 600;
+    border-radius: 1rem;
+    color: #6c757d;
+    background-color: transparent;
+    border: 1px solid #dee2e6;
+}
+
+
+/* [3] 상세 보기용 상태 뱃지 (색상 채움) */
+.detail-status-badge {
+    display: inline-block;
+    min-width: 70px;
+    text-align: center;
+    font-size: 0.9rem;
+    padding: 0.6em 1em;
+    font-weight: 600;
+    border-radius: 1rem;
+    color: white;
+}
+.detail-status-badge.status-received { background-color: #6c757d; }
+.detail-status-badge.status-processing { background-color: #17a2b8; }
+.detail-status-badge.status-completed { background-color: #28a745; }
+.detail-status-badge.status-rejected { background-color: #dc3545; }
