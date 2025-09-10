@@ -1,4 +1,4 @@
-package com.potfill.admin.managerdistrict.model;
+package com.potfill.admin.district.model;
 
 import java.time.LocalDate;
 
