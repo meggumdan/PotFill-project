@@ -1,6 +1,9 @@
 /*
  * 작성자 : 김슬기
  * 작성일 : 2025.09.09
+ 
+ 
+ 쪼꼼만 건들게요~  -메꿈4-
  */
 package com.potfill.admin.login.controller;
 
@@ -43,10 +46,7 @@ public class LoginController {
 			HttpSession session = request.getSession();
 			session.setAttribute("adminInfo", adminInfo);
 			
-			String view = adminInfo.getAdminRole() == ROLE_ZERO 
-					? "admin/login/all" 
-					: "admin/login/normal";
-			return view;
+			return "redirect:/admin/dashboard";
 		}
 		
 	}
