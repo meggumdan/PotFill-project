@@ -16,6 +16,7 @@
 	
 	<!--  이미지 업로드 임시로 사용하기 -->
 	<resources mapping="/upload/**" location="/upload/" />
+	
 	<interceptors>
 		<interceptor>
 			<mapping path="/admin/**" />
