@@ -2,11 +2,13 @@ package com.potfill.user.complaint.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +30,22 @@ public class UserComplaintController {
 	public String complaint() {
 
 		return "user/complaint";
+	}
+	
+	// 신고 중복 확인
+	@PostMapping("/check-duplicate")
+	public Map<String, Object> checkDuplicate(@RequestBody Map<String, String> req) {
+		String address = req.get("address");
+
+		// 1. 주소 -> 위도/경도 변환 (예: 카카오 API)
+		double[] coords = userComplaintService.getCoordinatesFromAddress(address);
+		double lat = coords[0];
+		double lon = coords[1];
+
+		// 2. 중복 여부 확인 (H3)
+		boolean duplicate = userComplaintService.isDuplicateLocation(lat, lon);
+
+		return Map.of("duplicate", duplicate);
 	}
 
 	// 신고 내용 저장

@@ -29,27 +29,27 @@
 	
 			<!-- 입력 폼  -->
 			<div class="complaint-form">
-				<form action="<c:url value='/user/complaint'/>" method="post"
-					enctype="multipart/form-data">
+				<form action="<c:url value='/user/complaint'/>" method="post" enctype="multipart/form-data">
 					<div>
-						<label>성명 <span class="required">*</span></label> <input
-							type="text" id="name" name="reporterName" required>
-					</div>
-	
-					<div>
-						<label>연락처 <span class="required">*</span></label> <input
-							type="text" id="phonenumber" name="reporterNumber"
-							placeholder="-없이 입력해주세요" required>
-					</div>
-	
-					<div>
-						<label>포트홀 위치 <span class="required">*</span></label> <input
-							type="text" id="place" name="incidentAddress" required>
-	
+						<label>포트홀 위치 <span class="required">*</span></label> <input type="text" id="place" name="incidentAddress" required>
 						<div class="button-box">
-							<button type="button">현재 위치 저장</button>
-							<button type="button">위치 검색</button>
+							<button type="button" id="check-btn")>위치 중복 확인</button>
 						</div>
+					</div>
+					
+					<div>
+						<label>성명 <span class="required">*</span></label> 
+						<input type="text" id="name" name="reporterName" required>
+					</div>
+	
+					<div>
+						<label>연락처 <span class="required">*</span></label> 
+						<input type="text" id="phonenumber" name="reporterNumber" placeholder="-없이 입력해주세요" required>
+					</div>
+	
+					<div>
+						<label>상세 설명 </label> 
+						<input type="text" id="content" name="reportContent" placeholder="포트홀에  설명해 주세요." >
 					</div>
 	
 					<div class="photo-section">
@@ -68,6 +68,39 @@
 					</div>
 				</form>
 			</div>
-		</div>
+			</div>
+	
+	
+		<script>
+			$(document).ready(function() {
+				$("#check-btn").click(function() {
+					let address = $("#place").val();
+	
+					if (!address) {
+						alert("주소를 입력해 주세요.");
+						return;
+					}
+	
+					$.ajax({
+						url : "<c:url value='/user/complaint/check-duplicate'/>",
+						type : "POST",
+						contentType : "application/json",
+						data : JSON.stringify({
+							"address" : address
+						}),
+						success : function(res) {
+							if (res.duplicate) {
+								alert("이미 신고된 위치입니다 ❌");
+							} else {
+								alert("신고 가능한 위치입니다 ✅");
+							}
+						},
+						error : function() {
+							alert("위치 확인 중 오류가 발생했습니다.");
+						}
+					});
+				});
+			});
+		</script>
 	</body>
 </html>
