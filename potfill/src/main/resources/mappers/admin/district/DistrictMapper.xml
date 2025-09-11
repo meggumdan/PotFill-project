@@ -23,6 +23,11 @@
 		<result property="assignedDepartment"
 			column="ASSIGNED_DEPARTMENT" />
 		<result property="reportCount" column="REPORT_COUNT" />
+
+		<!-- 상태, 위험도 추가 -->
+		<result property="status" column="STATUS"/>
+		<result property="riskGrade" column="RISK_GRADE"/>
+
 	</resultMap>
 
 	<!-- 1. 신규 건수 -->
@@ -88,15 +93,53 @@
 		)
 	</select>
 
-	<!-- 4. 긴급 민원 리스트 (상위 신고건수 5개) -->
+	<!-- 4. 긴급 민원 리스트 (리스크 등급 5이상)-->
 	<select id="getEmergencyList" resultMap="ComplaintResultMap">
 		SELECT *
 		FROM (
-		SELECT *
-		FROM COMPLAINTS
-		ORDER BY REPORT_COUNT DESC
+		SELECT
+		c.COMPLAINT_ID,
+		c.REPORTER_NAME,
+		c.REPORTER_NUMBER,
+		c.INCIDENT_ADDRESS,
+		c.DISTRICT_CODE,
+		c.GU,
+		c.DONG,
+		c.LAT,
+		c.LON,
+		c.RADIUS,
+		c.H3_INDEX,
+		c.H3_RES,
+		c.REPORT_CONTENT,
+		c.CREATED_AT,
+		c.ASSIGNED_ADMIN_ID,
+		c.ASSIGNED_DEPARTMENT,
+		c.REPORT_COUNT,
+
+		-- 최신 상태
+		lch.STATUS,
+
+		-- 위험도
+		r.RISK_GRADE
+
+		FROM COMPLAINTS c
+		JOIN COMPLAINT_RISK r
+		ON c.COMPLAINT_ID = r.COMPLAINT_ID
+		LEFT JOIN (
+		SELECT ch.COMPLAINT_ID,
+		ch.STATUS
+		FROM COMPLAINT_HISTORIES ch
+		WHERE ch.CREATED_AT = (
+		SELECT MAX(ch2.CREATED_AT)
+		FROM COMPLAINT_HISTORIES ch2
+		WHERE ch2.COMPLAINT_ID = ch.COMPLAINT_ID
 		)
-		WHERE ROWNUM &lt;= 5
+		) lch ON c.COMPLAINT_ID = lch.COMPLAINT_ID
+
+		WHERE r.RISK_GRADE &gt;= 5
+		ORDER BY r.RISK_GRADE DESC, c.CREATED_AT DESC
+		)
+		WHERE ROWNUM &lt;= 10
 	</select>
 
 	<!-- 5. 최근 7일 일자별 건수 -->

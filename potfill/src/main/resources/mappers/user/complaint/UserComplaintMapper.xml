@@ -16,4 +16,66 @@
         VALUES (COMPLAINT_PHOTOS_SEQ.NEXTVAL, #{complaintId}, #{fileUrl}, #{originalName}, #{storedName}, SYSDATE)
     </insert>
 
+	<!-- Complaint VO 매핑 -->
+	<resultMap id="ComplaintResultMap" type="com.potfill.user.complaint.model.Complaint">
+		<id property="complaintId" column="COMPLAINT_ID" />
+		<result property="reporterName" column="REPORTER_NAME" />
+		<result property="reporterNumber" column="REPORTER_NUMBER" />
+		<result property="incidentAddress" column="INCIDENT_ADDRESS" />
+		<result property="districtCode" column="DISTRICT_CODE" />
+		<result property="gu" column="GU" />
+		<result property="dong" column="DONG" />
+		<result property="lat" column="LAT" />
+		<result property="lon" column="LON" />
+		<result property="radius" column="RADIUS" />
+		<result property="h3Index" column="H3_INDEX" />
+		<result property="h3Res" column="H3_RES" />
+		<result property="reportContent" column="REPORT_CONTENT" />
+		<result property="createdAt" column="CREATED_AT" />
+		<result property="assignedAdminId" column="ASSIGNED_ADMIN_ID" />
+		<result property="assignedDepartment"
+			column="ASSIGNED_DEPARTMENT" />
+		<result property="reportCount" column="REPORT_COUNT" />
+	</resultMap>
+
+
+	<insert id="insertComplaint" parameterType="com.potfill.user.complaint.model.Complaint">
+		INSERT INTO complaints
+		(complaint_id, reporter_name, reporter_number, incident_address, created_at)
+		VALUES (#{complaintId}, #{reporterName}, #{reporterNumber},
+		#{incidentAddress}, SYSDATE)
+	</insert>
+
+	<insert id="insertComplaintPhoto" parameterType="com.potfill.user.complaint.model.ComplaintPhoto">
+		INSERT INTO complaint_photos
+		(photo_id, complaint_id, file_url, original_name, stored_name, created_at)
+		VALUES (COMPLAINT_PHOTOS_SEQ.NEXTVAL, #{complaintId}, #{fileUrl},
+		#{originalName}, #{storedName}, SYSDATE)
+	</insert>
+
+	<!-- 이름 + 연락처로 신고 조회 -->
+	<select id="findByNameAndPhone" parameterType="map" resultMap="ComplaintResultMap">
+		SELECT
+			COMPLAINT_ID,
+			REPORTER_NAME,
+			REPORTER_NUMBER,
+			INCIDENT_ADDRESS,
+			DISTRICT_CODE,
+			GU,
+			DONG,
+			LAT,
+			LON,
+			RADIUS,
+			H3_INDEX,
+			H3_RES,
+			REPORT_CONTENT,
+			CREATED_AT,
+			ASSIGNED_ADMIN_ID,
+			ASSIGNED_DEPARTMENT,
+			REPORT_COUNT
+		FROM COMPLAINTS
+		WHERE REPORTER_NAME = #{reporterName}
+		AND REPORTER_NUMBER = #{reporterNumber}
+	</select>
+
 </mapper>
