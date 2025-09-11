@@ -13,14 +13,15 @@ public class MapController {
 	@Autowired
 	MapService mapService;
 	
-	@GetMapping(value = "map")
-	public String home() {
-		return "user/map/map";
+	@GetMapping(value = "admin/map")
+	public String adminMap(Model model) {
+		model.addAttribute("holeList", mapService.getPotholeLists());
+		return "admin/map/admin-real-time-pothole";
 	}
 	
-	@GetMapping(value = "map2")
-	public String home2(Model model) {
+	@GetMapping(value = "user/map")
+	public String userMap(Model model) {
 		model.addAttribute("holeList", mapService.getPotholeLists());
-		return "user/map/map2";
+		return "user/real-time-pothole";
 	}
 }
