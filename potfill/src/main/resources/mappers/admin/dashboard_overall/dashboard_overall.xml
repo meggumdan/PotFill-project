@@ -39,6 +39,15 @@
         ]]>
 	</insert>
 
+	<!-- areaName 기준 삭제 -->
+	<delete id="deleteByAreaName" parameterType="string">
+    <![CDATA[
+    DELETE FROM major_places
+    WHERE area_name = #{areaName}
+    ]]>
+	</delete>
+
+
 	<!-- 1. 총 신고건수 -->
 	<select id="getTotalComplaints" resultType="int">
     <![CDATA[

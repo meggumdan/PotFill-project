@@ -29,9 +29,13 @@ public class DashboardOverallServiceImpl implements DashboardOverallService {
 
     @Override
     public int insertMajorPlace(MajorPlace majorPlace) {
-        logger.info("주요장소 저장: {}", majorPlace.toString());
-        return dashboardOverallRepository.insertMajorPlace(majorPlace);
+        logger.info("주요장소 저장 전 기존 데이터 삭제: {}", majorPlace.getAreaName());
+        dashboardOverallRepository.deleteByAreaName(majorPlace.getAreaName()); // 같은 이름 있으면 삭제
+        return dashboardOverallRepository.insertMajorPlace(majorPlace); // 새로 삽입
     }
+
+    
+    
 
     @Override
     public Map<String, Object> getDashboardKPIData() {
