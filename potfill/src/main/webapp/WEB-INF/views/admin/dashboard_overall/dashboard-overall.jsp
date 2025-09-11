@@ -160,7 +160,7 @@
 						<!-- 지역별(구별) 우선도 랭킹 (좌하단) -->
 						<div class="ranking-section">
 							<h3 class="section-title">
-								<span class="section-icon">📊</span> 지역구별 우선도 랭킹
+								<span class="section-icon">📊</span> 지역구별 우선순위 지수
 							</h3>
 							<!-- 지역별(구별) 우선도 랭킹 (좌하단) 섹션 내부에 추가 -->
 							<div class="ranking-chart-container">

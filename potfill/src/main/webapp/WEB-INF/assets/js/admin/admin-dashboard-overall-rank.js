@@ -204,17 +204,30 @@ function updateRankingChartWithAPIData(apiLabels, apiData) {
         // 25개구 데이터 배열 초기화 (모두 0)
         const chartData = new Array(25).fill(0);
         
+        // 디버깅용 로그
+        console.log('API 라벨:', apiLabels);
+        console.log('차트 라벨:', SEOUL_25_GU);
+        
         // API에서 받은 데이터를 매칭
         for (let i = 0; i < apiLabels.length; i++) {
-            // 구 이름 정규화 (강남구 -> 강남)
-            const guName = apiLabels[i].replace('구', '');
+            let guName = apiLabels[i];
+            let index = -1;
             
-            // SEOUL_25_GU 배열에서 해당 구의 인덱스 찾기
-            const index = SEOUL_25_GU.indexOf(guName);
+            // 특수 케이스 처리
+            if (guName === '구로구') {
+                index = SEOUL_25_GU.indexOf('구로');
+            } else if (guName === '중구') {
+                index = SEOUL_25_GU.indexOf('중구');
+            } else {
+                // 일반적인 경우: "구" 제거
+                guName = guName.replace('구', '');
+                index = SEOUL_25_GU.indexOf(guName);
+            }
             
             if (index !== -1) {
-                // 해당 인덱스에 점수 설정
                 chartData[index] = apiData[i] || 0;
+            } else {
+                console.warn('매칭 실패:', apiLabels[i], '→', guName);
             }
         }
 
@@ -223,6 +236,7 @@ function updateRankingChartWithAPIData(apiLabels, apiData) {
         rankingChart.update();
         
         console.log('지역별 우선도 랭킹 차트 데이터 업데이트 완료');
+        console.log('최종 차트 데이터:', chartData);
         
     } catch (error) {
         console.error('차트 데이터 업데이트 실패:', error);

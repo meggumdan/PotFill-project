@@ -216,7 +216,7 @@ public class DashboardOverallController {
 	}
 
 
-	// DashboardOverallController.java의 기존 메서드를 수정
+	// 지역별 우선도 랭킹 데이터 API
 
 	@RequestMapping(value = "/api/dashboard/ranking", method = RequestMethod.GET)
 	@ResponseBody

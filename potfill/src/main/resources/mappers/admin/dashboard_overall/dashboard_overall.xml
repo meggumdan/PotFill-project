@@ -165,8 +165,8 @@
         ]]>
 	</select>
 
-	<!-- 우선처리 지역 TOP 5 (가중치 기반) -->
-	<!-- 우선처리 지역 TOP 5 (report_count 컬럼 사용) -->
+
+	<!-- 우선처리 지역 TOP 5 (가중치 기반, report_count 컬럼 사용) -->
 	<select id="getPriorityTop5" resultType="map">
     <![CDATA[
     WITH base AS (
@@ -223,7 +223,7 @@
     ]]>
 	</select>
 
-	<!-- 지역구별 우선도 랭킹 (구 단위 집계) -->
+	<!-- 지역구별 우선도 랭킹 (구 단위 집계) -->	
 	<select id="getAreaRanking" resultType="map">
     <![CDATA[
     WITH gu_metrics AS (
@@ -264,7 +264,7 @@
     FROM gu_metrics gm
     LEFT JOIN gu_major_places mp ON gm.gu = mp.gu
     ORDER BY priorityScore DESC
-    FETCH FIRST 10 ROWS ONLY
+    /* FETCH FIRST 10 ROWS ONLY 제거 - 모든 구 반환 */
     ]]>
 	</select>
 
