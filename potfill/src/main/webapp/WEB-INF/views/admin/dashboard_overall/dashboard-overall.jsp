@@ -49,10 +49,10 @@
 	<div class="admin-layout">
 		<!-- 헤더 Include -->
 		<%@ include file="../admin_component/header.jsp"%>
-
+		
 		<!-- 사이드바 Include -->
 		<%@ include file="../admin_component/sidebar.jsp"%>
-
+		
 		<!-- 메인 컨텐츠 영역 -->
 		<main class="admin-main">
 			<div class="dashboard-container">
@@ -113,8 +113,11 @@
 								<div class="metric-title">
 									고위험 지역 <span tabindex="0" data-bs-toggle="popover"
 										data-bs-trigger="hover focus" data-bs-placement="bottom"
-										title="고위험 지역 기준"
-										data-bs-content="최근 90일 내 동일 동에서 3건 이상의 신고와 최초~최종 신고가 60일이내이며, 구 내에 이런 동이 2개 이상일 때 고위험 구로 분류됩니다.">
+										title="고위험 지역 기준" data-bs-html="true"
+										data-bs-content="<strong>조건:</strong><br>
+                • 90일 내 3건 이상 신고<br>
+                • 60일 이내 재발생<br>
+                • 위 조건이 구 내 2개 동 이상 해당">
 										<i class="bi bi-question-circle"
 										style="font-size: 13px; color: #C4CEFE; cursor: pointer;"></i>
 									</span>
@@ -126,8 +129,8 @@
 								<div class="metric-change"></div>
 								<!-- JS로 채워짐 -->
 								<div class="metric-period">전월 대비</div>
-							</div>
-						</div>
+							</div>							
+						</div>						
 					</div>
 
 
@@ -137,6 +140,11 @@
 						<div class="priority-section">
 							<h3 class="section-title">
 								<span class="section-icon">🚨</span> 우선 처리 지역 TOP 5
+								    <a href="${pageContext.request.contextPath}/admin/majorPlaceUpload" 
+								       class="btn btn-sm btn-primary me-3"
+								       style="background-color: #798BFF;border-color: #798BFF;font-size:9px;margin-left: 1%; font-size:8px">
+								        <i class="bi bi-pin-map-fill"></i> 주요장소 업로드
+								    </a>
 							</h3>
 							<div class="priority-table-container">
 								<table id="priorityTable" class="priority-table">
@@ -148,7 +156,16 @@
 											<th>최대 경과일</th>
 											<th>반복 신고</th>
 											<th>주요장소 근접 여부</th>
-											<th>우선순위 점수</th>
+											<th>우선순위 점수 <span tabindex="0" data-bs-toggle="popover"
+												data-bs-trigger="hover focus" data-bs-placement="top"
+												title="우선순위 점수 산정 기준" data-bs-html="true"
+												data-bs-content="(미처리 건수×1.0) + (최대 경과일×0.8)<br>
+												 + (반복 신고×1.2)<br>
+												 주요장소 근접 시 총점×1.3 가중치 적용">
+													<i class="bi bi-question-circle"
+													style="font-size: 11px; color: #C4CEFE; cursor: pointer; margin-left: 3px;"></i>
+											</span>
+											</th>
 										</tr>
 									</thead>
 									<tbody></tbody>
@@ -160,7 +177,16 @@
 						<!-- 지역별(구별) 우선도 랭킹 (좌하단) -->
 						<div class="ranking-section">
 							<h3 class="section-title">
-								<span class="section-icon">📊</span> 지역구별 우선순위 지수
+								<span class="section-icon">📊</span> 지역구별 우선순위 지수 <span
+									tabindex="0" data-bs-toggle="popover"
+									data-bs-trigger="hover focus" data-bs-placement="right"
+									title="지역구별 우선순위 지수 산정" data-bs-html="true"
+									data-bs-content="(전체 신고 × 0.5) + (미처리 × 1.5)<br>
+									 + (평균 반복 × 2.0) + (영향 동 수 × 1.0) <br>
+									 주요장소 1개당 10% 추가 가중치 적용">
+									<i class="bi bi-question-circle"
+									style="font-size: 13px; color: #C4CEFE; cursor: pointer; margin-left: 5px;"></i>
+								</span>
 							</h3>
 							<!-- 지역별(구별) 우선도 랭킹 (좌하단) 섹션 내부에 추가 -->
 							<div class="ranking-chart-container">
@@ -285,6 +311,33 @@
 	color: #E85347 !important;
 	font-weight: 600 !important;
 }
+
+/* Popover 커스터마이징 */
+.popover {
+	background-color: rgba(255, 255, 255, 0.95); /* 반투명 배경 */
+	backdrop-filter: blur(10px);
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.popover-header {
+	background-color: rgba(62, 70, 83, 0.9); /* #3E4653 반투명 */
+	color: white;
+	font-weight: 600;
+	font-size: 13px;
+}
+
+.popover-body {
+	background-color: rgba(255, 255, 255, 0.95);
+	color: #364A63;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+/* 물음표 아이콘 호버 효과 */
+.bi-question-circle:hover {
+	transform: scale(1.1);
+	transition: transform 0.2s ease;
+}
 </style>
 
 						</div>
@@ -312,7 +365,7 @@
 	<script>
 		const contextPath = "${pageContext.request.contextPath}";
 	</script>
-	
+
 	<script
 		src="${pageContext.request.contextPath}/js/admin/admin-dashboard-overall.js"></script>
 

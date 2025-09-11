@@ -18,6 +18,12 @@ public interface DashboardOverallRepository {
      * 주요장소 삽입
      */
     int insertMajorPlace(MajorPlace majorPlace);
+    /**
+     * 주요장소 삭제
+     */
+    
+    int deleteByAreaName(String areaName);
+
     
     /**
      * 총 신고건수 (현재월)
