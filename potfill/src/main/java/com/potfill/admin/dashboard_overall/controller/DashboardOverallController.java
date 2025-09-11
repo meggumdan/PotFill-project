@@ -18,6 +18,7 @@ import com.potfill.admin.dashboard_overall.model.MajorPlace;
 import org.apache.poi.ss.usermodel.*;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -243,17 +244,28 @@ public class DashboardOverallController {
 
 	@RequestMapping(value = "/api/dashboard/regional", method = RequestMethod.GET)
 	@ResponseBody
-	public String getRegionalStatusData() {
-		logger.info("지역별 포트홀 신고현황 데이터 API 호출");
-
-		String jsonResponse = "{" + "\"statusChart\": {" + "\"labels\": [\"완료\", \"처리중\", \"미처리\"],"
-				+ "\"data\": [1158, 89, 223]" + "}," + "\"regionalDetails\": ["
-				+ "{\"no\": 1, \"district\": \"종로구\", \"reports\": 127, \"rate\": 92, \"avgTime\": 7.2},"
-				+ "{\"no\": 2, \"district\": \"은평구\", \"reports\": 111, \"rate\": 89, \"avgTime\": 7.1},"
-				+ "{\"no\": 3, \"district\": \"강북구\", \"reports\": 108, \"rate\": 76, \"avgTime\": 6.7},"
-				+ "{\"no\": 4, \"district\": \"강서구\", \"reports\": 96, \"rate\": 75, \"avgTime\": 5.9},"
-				+ "{\"no\": 5, \"district\": \"광진구\", \"reports\": 89, \"rate\": 73, \"avgTime\": 5.5}" + "]" + "}";
-
-		return jsonResponse;
+	public ResponseEntity<Map<String, Object>> getRegionalStatusData() {
+	    try {
+	        logger.info("지역별 포트홀 신고현황 데이터 API 호출");
+	        
+	        // 실제 데이터 조회
+	        Map<String, Object> regionalData = dashboardOverallService.getRegionalStatus();
+	        
+	        return ResponseEntity.ok(regionalData);
+	        
+	    } catch (Exception e) {
+	        logger.error("지역별 포트홀 신고현황 조회 실패", e);
+	        
+	        // 오류 시 빈 데이터 반환
+	        Map<String, Object> emptyData = new HashMap<>();
+	        Map<String, Object> emptyChart = new HashMap<>();
+	        emptyChart.put("labels", Arrays.asList("완료", "처리중", "접수", "반려"));
+	        emptyChart.put("data", Arrays.asList(0, 0, 0, 0));
+	        
+	        emptyData.put("statusChart", emptyChart);
+	        emptyData.put("regionalDetails", new ArrayList<>());
+	        
+	        return ResponseEntity.ok(emptyData);
+	    }
 	}
 }

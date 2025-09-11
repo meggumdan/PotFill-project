@@ -9,6 +9,7 @@ import com.potfill.admin.dashboard_overall.dao.DashboardOverallRepository;
 import com.potfill.admin.dashboard_overall.model.MajorPlace;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -177,6 +178,103 @@ public class DashboardOverallServiceImpl implements DashboardOverallService {
             // 오류 시 빈 데이터 반환
             result.put("labels", new ArrayList<>());
             result.put("data", new ArrayList<>());
+        }
+        
+        return result;
+    }
+    
+    @Override
+    public Map<String, Object> getRegionalStatus() {
+        Map<String, Object> result = new HashMap<>();
+        
+        try {
+            // 1. 도넛차트 데이터 (전체 처리 현황)
+            List<Map<String, Object>> statusList = dashboardOverallRepository.getOverallStatus();
+            
+            // 상태별 집계
+            int completed = 0;
+            int processing = 0;
+            int received = 0;
+            int rejected = 0;
+            
+            for (Map<String, Object> item : statusList) {
+                String status = (String) item.get("STATUS");
+                if (status == null) {
+                    status = (String) item.get("status");
+                }
+                
+                Object countObj = item.get("COUNT");
+                if (countObj == null) {
+                    countObj = item.get("count");
+                }
+                
+                int count = 0;
+                if (countObj != null) {
+                    if (countObj instanceof Number) {
+                        count = ((Number) countObj).intValue();
+                    }
+                }
+                
+                if ("완료".equals(status)) {
+                    completed = count;
+                } else if ("처리중".equals(status)) {
+                    processing = count;
+                } else if ("접수".equals(status)) {
+                    received = count;
+                } else if ("반려".equals(status)) {
+                    rejected = count;
+                }
+            }
+            
+            // 도넛차트용 데이터
+            Map<String, Object> statusChart = new HashMap<>();
+            statusChart.put("labels", Arrays.asList("완료", "처리중", "접수", "반려"));
+            statusChart.put("data", Arrays.asList(completed, processing, received, rejected));
+            
+            // 2. 구별 상세 현황 (테이블용)
+            List<Map<String, Object>> districtList = dashboardOverallRepository.getDistrictDetails();
+            
+            // Oracle 대문자 키를 소문자로 변환
+            List<Map<String, Object>> regionalDetails = new ArrayList<>();
+            int rank = 1;
+            for (Map<String, Object> item : districtList) {
+                Map<String, Object> detail = new HashMap<>();
+                detail.put("no", rank++);
+                
+                String district = (String) item.get("DISTRICT");
+                if (district == null) district = (String) item.get("district");
+                detail.put("district", district);
+                
+                Object reports = item.get("REPORTS");
+                if (reports == null) reports = item.get("reports");
+                detail.put("reports", reports);
+                
+                Object rate = item.get("RATE");
+                if (rate == null) rate = item.get("rate");
+                detail.put("rate", rate);
+                
+                Object avgTime = item.get("AVGTIME");
+                if (avgTime == null) avgTime = item.get("avgtime");
+                detail.put("avgTime", avgTime);
+                
+                regionalDetails.add(detail);
+            }
+            
+            result.put("statusChart", statusChart);
+            result.put("regionalDetails", regionalDetails);
+            
+            logger.info("지역별 포트홀 신고현황 조회 완료");
+            
+        } catch (Exception e) {
+            logger.error("지역별 포트홀 신고현황 조회 실패", e);
+            
+            // 오류 시 빈 데이터 반환
+            Map<String, Object> emptyChart = new HashMap<>();
+            emptyChart.put("labels", Arrays.asList("완료", "처리중", "접수", "반려"));
+            emptyChart.put("data", Arrays.asList(0, 0, 0, 0));
+            
+            result.put("statusChart", emptyChart);
+            result.put("regionalDetails", new ArrayList<>());
         }
         
         return result;

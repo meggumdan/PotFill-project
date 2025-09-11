@@ -41,45 +41,40 @@
 
 	<!-- 1. 총 신고건수 -->
 	<select id="getTotalComplaints" resultType="int">
-        <![CDATA[
-        SELECT COUNT(*) 
-        FROM complaints
-        ]]>
+    <![CDATA[
+    SELECT COUNT(*) 
+    FROM complaints
+    ]]>
 	</select>
 
-	<!-- 2. 처리중 건수 -->
+	<!-- 2. 처리중 건수 (최신 상태 기준) -->
 	<select id="getProcessingComplaints" resultType="int">
-        <![CDATA[
-        SELECT COUNT(*)
-        FROM complaints c
-        WHERE EXISTS (
-            SELECT 1
-            FROM complaint_histories ch
-            WHERE ch.complaint_id = c.complaint_id
-              AND ch.status = '처리중'
-              AND NOT EXISTS (
-                  SELECT 1
-                  FROM complaint_histories ch2
-                  WHERE ch2.complaint_id = c.complaint_id
-                    AND ch2.status = '완료'
-                    AND ch2.created_at > ch.created_at
-              )
-        )
-        ]]>
+    <![CDATA[
+    WITH latest_status AS (
+        SELECT ch.complaint_id, ch.status,
+               ROW_NUMBER() OVER (PARTITION BY ch.complaint_id ORDER BY ch.created_at DESC) rn
+        FROM complaint_histories ch
+    )
+    SELECT COUNT(*)
+    FROM complaints c
+    LEFT JOIN latest_status ls ON c.complaint_id = ls.complaint_id AND ls.rn = 1
+    WHERE NVL(ls.status, '접수') = '처리중'
+    ]]>
 	</select>
 
-	<!-- 3. 완료 건수 -->
+	<!-- 3. 완료 건수 (최신 상태 기준) -->
 	<select id="getCompletedComplaints" resultType="int">
-        <![CDATA[
-        SELECT COUNT(*)
-        FROM complaints c
-        WHERE EXISTS (
-            SELECT 1
-            FROM complaint_histories ch
-            WHERE ch.complaint_id = c.complaint_id
-              AND ch.status = '완료'
-        )
-        ]]>
+    <![CDATA[
+    WITH latest_status AS (
+        SELECT ch.complaint_id, ch.status,
+               ROW_NUMBER() OVER (PARTITION BY ch.complaint_id ORDER BY ch.created_at DESC) rn
+        FROM complaint_histories ch
+    )
+    SELECT COUNT(*)
+    FROM complaints c
+    LEFT JOIN latest_status ls ON c.complaint_id = ls.complaint_id AND ls.rn = 1
+    WHERE NVL(ls.status, '접수') = '완료'
+    ]]>
 	</select>
 
 	<!-- 4. 고위험지역 개수 (최근 90일, Oracle) -->
@@ -112,37 +107,49 @@
         ]]>
 	</select>
 
-	<!-- 처리중 (전월) -->
+	<!-- 처리중 (전월, 최신 상태 기준) -->
 	<select id="getLastMonthProcessingComplaints" resultType="int">
-        <![CDATA[
-        SELECT COUNT(*)
-        FROM complaints c
-        WHERE EXISTS (
-            SELECT 1
-            FROM complaint_histories ch
-            WHERE ch.complaint_id = c.complaint_id
-              AND ch.status = '처리중'
-              AND ch.created_at >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1)
-              AND ch.created_at < TRUNC(SYSDATE, 'MM')
-        )
-        ]]>
+    <![CDATA[
+    WITH latest_status AS (
+        SELECT 
+            ch.complaint_id,
+            ch.status,
+            ch.created_at,
+            ROW_NUMBER() OVER (PARTITION BY ch.complaint_id ORDER BY ch.created_at DESC) rn
+        FROM complaint_histories ch
+    )
+    SELECT COUNT(*)
+    FROM complaints c
+    LEFT JOIN latest_status ls 
+        ON c.complaint_id = ls.complaint_id AND ls.rn = 1
+    WHERE c.created_at >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1)
+      AND c.created_at < TRUNC(SYSDATE, 'MM')
+      AND NVL(ls.status, '접수') = '처리중'
+    ]]>
 	</select>
 
-	<!-- 완료 (전월) -->
+
+	<!-- 완료 (전월, 최신 상태 기준) -->
 	<select id="getLastMonthCompletedComplaints" resultType="int">
-        <![CDATA[
-        SELECT COUNT(*)
-        FROM complaints c
-        WHERE EXISTS (
-            SELECT 1
-            FROM complaint_histories ch
-            WHERE ch.complaint_id = c.complaint_id
-              AND ch.status = '완료'
-              AND ch.created_at >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1)
-              AND ch.created_at < TRUNC(SYSDATE, 'MM')
-        )
-        ]]>
+    <![CDATA[
+    WITH latest_status AS (
+        SELECT 
+            ch.complaint_id,
+            ch.status,
+            ch.created_at,
+            ROW_NUMBER() OVER (PARTITION BY ch.complaint_id ORDER BY ch.created_at DESC) rn
+        FROM complaint_histories ch
+    )
+    SELECT COUNT(*)
+    FROM complaints c
+    LEFT JOIN latest_status ls 
+        ON c.complaint_id = ls.complaint_id AND ls.rn = 1
+    WHERE c.created_at >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1)
+      AND c.created_at < TRUNC(SYSDATE, 'MM')
+      AND NVL(ls.status, '접수') = '완료'
+    ]]>
 	</select>
+
 
 	<!-- 고위험구 개수 (전월) -->
 	<select id="getLastMonthDangerGuCount" resultType="int">
@@ -223,7 +230,7 @@
     ]]>
 	</select>
 
-	<!-- 지역구별 우선도 랭킹 (구 단위 집계) -->	
+	<!-- 지역구별 우선순위 지수 (구 단위 집계) -->
 	<select id="getAreaRanking" resultType="map">
     <![CDATA[
     WITH gu_metrics AS (
@@ -265,6 +272,60 @@
     LEFT JOIN gu_major_places mp ON gm.gu = mp.gu
     ORDER BY priorityScore DESC
     /* FETCH FIRST 10 ROWS ONLY 제거 - 모든 구 반환 */
+    ]]>
+	</select>
+
+	<!-- 전체 처리 현황 (도넛차트용) -->
+	<select id="getOverallStatus" resultType="map">
+    <![CDATA[
+    WITH latest_status AS (
+        SELECT 
+            ch.complaint_id,
+            ch.status,
+            ROW_NUMBER() OVER (PARTITION BY ch.complaint_id ORDER BY ch.created_at DESC) as rn
+        FROM complaint_histories ch
+    )
+    SELECT 
+        NVL(ls.status, '접수') as status,
+        COUNT(*) as count
+    FROM complaints c
+    LEFT JOIN latest_status ls ON c.complaint_id = ls.complaint_id AND ls.rn = 1
+    GROUP BY NVL(ls.status, '접수')
+    ]]>
+	</select>
+
+	<!-- 구별 상세 현황 (테이블용) -->
+	<select id="getDistrictDetails" resultType="map">
+    <![CDATA[
+    WITH latest_status AS (
+        SELECT 
+            ch.complaint_id,
+            ch.status,
+            ch.created_at as status_date,
+            ROW_NUMBER() OVER (PARTITION BY ch.complaint_id ORDER BY ch.created_at DESC) as rn
+        FROM complaint_histories ch
+    ),
+    district_stats AS (
+        SELECT 
+            c.gu,
+            COUNT(*) as total_reports,
+            SUM(CASE WHEN ls.status = '완료' THEN 1 ELSE 0 END) as completed,
+            AVG(CASE 
+                WHEN ls.status = '완료' 
+                THEN (CAST(ls.status_date AS DATE) - CAST(c.created_at AS DATE)) 
+                ELSE NULL 
+            END) as avg_process_time
+        FROM complaints c
+        LEFT JOIN latest_status ls ON c.complaint_id = ls.complaint_id AND ls.rn = 1
+        GROUP BY c.gu
+    )
+    SELECT 
+        gu as district,
+        total_reports as reports,
+        ROUND((completed * 100.0 / NULLIF(total_reports, 0)), 0) as rate,
+        NVL(ROUND(avg_process_time, 1), 0) as avgTime
+    FROM district_stats
+    ORDER BY total_reports DESC
     ]]>
 	</select>
 
