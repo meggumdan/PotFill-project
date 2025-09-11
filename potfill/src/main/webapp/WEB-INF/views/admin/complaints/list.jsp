@@ -24,7 +24,7 @@
 <script>
 	const SELECTED_COMPLAINT_ID = "${selectedComplaintId}";
 </script>
-<script src="/assets/js/admin/complaints.js"></script>
+
 </head>
 <body>
 
@@ -215,5 +215,6 @@
     </script>
     
     <script src="<c:url value='/js/admin/complaints.js'/>"></script>
+     <script src="<c:url value='/js/admin/admin-header.js'/>"></script>
 </body>
 </html>
