@@ -531,11 +531,16 @@ function renderPhotosTab(photos) {
 	}
 	let photosHtml = '<div class="row g-2">';
 	photos.forEach(p => {
+		// <a> 태그와 <img> 태그는 이미 완벽합니다.
+		// alt 속성의 변수 이름만 photoName -> originalName 으로 변경합니다.
 		photosHtml += `
-            <div class="col-md-6">
-                <a href="${p.fileUrl}" target="_blank">
-                    <img src="${p.fileUrl}" class="img-fluid rounded" alt="${escapeHtml(p.photoName)}">
-                </a>
+            <div class="col-md-6 col-lg-4">
+                <figure class="figure">
+                    <a href="${CONTEXT_PATH}${p.fileUrl}" target="_blank" title="새 탭에서 이미지 열기">
+                        <img src="${CONTEXT_PATH}${p.fileUrl}" class="figure-img img-fluid rounded shadow-sm" alt="${escapeHtml(p.originalName)}">
+                    </a>
+                    <figcaption class="figure-caption text-center">${escapeHtml(p.originalName)}</figcaption>
+                </figure>
             </div>
         `;
 	});

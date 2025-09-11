@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.potfill.user.common.ComplaintIdGenerator;
@@ -23,6 +24,7 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 	private final UserComplaintRepository userComplaintRepository; 
 
 	@Override
+	@Transactional
 	public void saveComplaint(Complaint complaint, List<MultipartFile> photoFiles) throws IOException {
 
 		// 1) 민원번호 직접 생성
