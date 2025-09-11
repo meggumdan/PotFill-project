@@ -13,36 +13,37 @@
 		<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 		<title>POTFill</title>
 	</head>
-	<body>
-	
-		<!-- 젤 큰 영역 -->
-		<div class="container">
-		
-			<div class="header">
-				<div id="intro" class="logo-small-box">
-					<h1 class="logo">POTFill</h1>
-				</div>
-			</div>
-			
-			<!-- 설명  -->
-			<div class="explain">
-				<h3>실시간 포트홀 현황</h3>
-				<p>아직 보수되지 않은 포트홀이 지도에 표시됩니다.</p>
-			</div>
-			
-			<div id="map" style="width:285;height:265px;"></div>
-			<div class="explain">
-			<div id="content" class="overlay-box"></div>
-			</div>
-		</div>
-		
-			<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${jsKey }&libraries=services,clusterer"></script>
+<body>
+
+    <!-- 젤 큰 영역 -->
+    <div class="container">
+
+        <div class="header">
+            <div id="intro" class="logo-small-box">
+                <h1 class="logo">POTFill</h1>
+            </div>
+        </div>
+
+        <!-- 설명  -->
+        <div class="explain">
+            <h3>실시간 포트홀 현황</h3>
+            <p>아직 보수되지 않은 포트홀이 지도에 표시됩니다.</p>
+        </div>
+        <div class="map-wrap">
+            <div id="map" style="width:375;height:314px;   border: 1px solid red; posi"></div>
+            <div class="content-wrap" id="content">
+            </div>
+            <!-- <div id="content" class="overlay-box"></div> -->
+        </div>
+    </div>
+
+	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${jsKey }&libraries=services,clusterer"></script>
 	<script>
 		// 1) 지도 먼저 생성
 		var mapContainer = document.getElementById('map');
 		var mapOption = {
 			center: new kakao.maps.LatLng(37.5642135, 127.0016985),
-			level: 10
+			level: 8
 		};
 		var map = new kakao.maps.Map(mapContainer, mapOption);
 
@@ -50,7 +51,7 @@
 		var clusterer = new kakao.maps.MarkerClusterer({
 			map: map,
 			averageCenter: true,
-			minLevel: 5,
+			minLevel: 6,
 			disableClickZoom: true
 		}); //clusterer end
 
@@ -62,26 +63,17 @@
 					latlng: new kakao.maps.LatLng(${row['LAT']}, ${row['LON']}),
 				reportCount: ${row['REPORTCOUNT']},
 				content: '', // 초기 내용 필요시 채우기
-				status: getStatusLabel('${row['STATUS']}')
+				status: '${row['STATUS']}'
 				}); //positions.push end
 			</c:if>
 		</c:forEach>
 
-		function getStatusLabel(data) {
-			switch (data) {
-				case "Received": return "접수";
-				case "Processing": return "처리중";
-				case "Completed": return "완료";
-				case "Rejected": return "반려";
-				default: return "접수";
-			}
-		}; // getStatusLabel
 
 		// 4) 마커 이미지 공통 설정
 		var imageSize = new kakao.maps.Size(40, 40);
-		var imageOption = { offset: new kakao.maps.Point(20, 40) };
+ 		var imageOption = { offset: new kakao.maps.Point(20, 40) };
 
-		// 5) 클러스터러에 넣을 마커들 생성 (map 지정 X)
+ 		// 5) 클러스터러에 넣을 마커들 생성 (map 지정 X)
 		var clusterMarkers = positions.map(function (position) {
 			let imageName;
 			if(position.status === '처리중') {
@@ -109,9 +101,7 @@
 			map.setLevel(level, { anchor: cluster.getCenter() });
 		}); // kakao.maps.event.addListener
 
-		// 8) 오버레이/지오코더 등 부가 기능 (선택)
-		// 오버레이는 마커 클릭 이벤트를 마커 생성 시에 함께 달아주면 됩니다.
-		// 아래는 예시로, contentText 대신 content 사용:
+		// 8) 오버레이/지오코더
 		var overlays = [];
 		var activeOverlay = null;
 		var geocoder = new kakao.maps.services.Geocoder();
@@ -147,14 +137,39 @@
 				searchDetailAddrFromCoords(marker.getPosition(), function (result, status) {
 					var detailAddr = '주소를 불러오지 못했습니다.';
 					if (status === kakao.maps.services.Status.OK && Array.isArray(result) && result.length > 0) {
-						detailAddr = (result[0].road_address ? '도로명주소 : ' + result[0].road_address.address_name + '<br>' : '')
-							+ '지번 주소 : ' + result[0].address.address_name;
+						detailAddr = (
+								result[0].road_address ?
+								'		<strong class="icon">' +
+							    '          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">' +
+							    '            <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6" />' +
+							    '          </svg>' +
+							    '        </strong>' +
+							    '        <div class="info-address-title">' +
+							    '          <span class="address-road-title">도로명 주소</span>' +
+							    '        </div>' +
+							    '        <div class="info-address-content">' +
+							    '          <span class="address-road-content">' + result[0].road_address.address_name + '</span>' +
+							    '        </div>' +
+							    '      </div>'
+							    : '') +
+							    '<strong class="icon">' +
+							    '        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">' +
+							    '          <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6" />' +
+							    '        </svg>' +
+							    '      </strong>' +
+							    '      <div class="info-address-title">' +
+							    '        <span class="address-road-title">지번 주소</span>' +
+							    '      </div>' +
+							    '      <div class="info-address-content">' +
+							    '        <span class="address-road-content">' + result[0].address.address_name + '</span>' +
+							    '      </div>' +
+							    '    </div>';
 					} // if
 
 	
 							showBelowOverlay({
 							addressHtml: detailAddr || '주소 로딩 중...',
-							i,
+							idx: i,
 							reportCount: positions[i].reportCount,
 							riskLevel: positions[i].riskLevel,
 							status: positions[i].status
@@ -170,6 +185,7 @@
 			} // if
 		}); // kakao.maps.event.addListener
 
+		
 		function getImageNameByReportCount(expr) {
 			switch (expr) {
 				case 1: return "location-green";
@@ -180,19 +196,31 @@
 
 		function buildOverlayContent({ addressHtml = '', idx, status = '', reportCount = '' } = {}) {
 			return (
-				'<div class="wrap">' +
-				'  <div class="info">' +
-				'    <div class="title">포트홀 위치 </div>' +
-				'    <div class="body">' +
-				'      <div class="desc">' +
-				'        <div class="ellipsis">' + (addressHtml || '') + '</div>' +
-				'        <div class="ellipsis"><b>상태</b>: ' + status + '</div>' +     // ← state 표시
-				'        <div class="ellipsis"><b>누적신고 수</b>: ' + reportCount + '</div>' +  // ← comment 표시
-				'        <div class="jibun ellipsis">(관할) 0000행정복지센터</div>' +
-				'      </div>' +
-				'    </div>' +
-				'  </div>' +
-				'</div>'
+					   '<div class="out-box">' +
+					    '  <div class="inline-box">' +
+					    '    <h2 class="title-box">' +
+					    '      <span class="info-title">포트홀 정보</span>' +
+					    '    </h2>' +
+					    '    <div class="info-warp">' +
+					    '      <div class="info-box">' +
+					    			addressHtml +
+ 					    '    <strong class="icon">' +
+					    '      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">' +
+					    '        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />' +
+					    '      </svg>' +
+					    '    </strong>' +
+					    '    <div class="info-state-title">' +
+					    '      <span class="state-title">상태</span>' +
+					    '      <span class="colons">:</span>' +
+					    '      <span class="state-content">' + status + '</span>' +
+					    '    </div>' +
+					    '    <div class="info-address-content">' +
+					    '      <span class="state-title">누적신고 수</span>' +
+					    '      <span class="colons">:</span>' +
+					    '      <span class="state-content">' + reportCount + '</span>' +
+					    '    </div>' +
+					    '  </div>' +
+					    '</div>'
 			);
 		} // buildOverlayContent
 		
@@ -221,6 +249,7 @@
 			  if (idx === 'dom') { hideBelowOverlay(); return; }
 			  if (typeof _closeOverlayOrig === 'function') _closeOverlayOrig(idx);
 			};
+			
 	</script>
 			
 
