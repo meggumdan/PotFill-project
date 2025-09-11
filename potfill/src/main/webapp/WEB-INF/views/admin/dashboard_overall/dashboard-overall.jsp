@@ -200,9 +200,9 @@
 												style="font-size: 12px; color: #364A63; font-weight: 500;">완료</div>
 											<div class="status-value"
 												style="font-size: 13px; font-weight: 600; color: #8094AE; margin-top: 3px">
-												<span class="completed-count">1,158</span>건 <span
+												<span class="completed-count">0</span>건 <span
 													class="status-percentage"
-													style="font-size: 9px; color: #8094AE; margin-left: 3px;">51%</span>
+													style="font-size: 9px; color: #8094AE; margin-left: 3px;">0%</span>
 											</div>
 										</div>
 									</div>
@@ -216,9 +216,9 @@
 												style="font-size: 12px; color: #364A63; font-weight: 500;">처리중</div>
 											<div class="status-value"
 												style="font-size: 13px; font-weight: 600; color: #8094AE; margin-top: 3px">
-												<span class="processing-count">500</span>건 <span
+												<span class="processing-count">0</span>건 <span
 													class="status-percentage"
-													style="font-size: 9px; color: #8094AE; margin-left: 3px;">22%</span>
+													style="font-size: 9px; color: #8094AE; margin-left: 3px;">0%</span>
 											</div>
 										</div>
 									</div>
@@ -232,9 +232,9 @@
 												style="font-size: 12px; color: #364A63; font-weight: 500;">접수</div>
 											<div class="status-value"
 												style="font-size: 13px; font-weight: 600; color: #8094AE; margin-top: 3px">
-												<span class="received-count">341</span>건 <span
+												<span class="received-count">0</span>건 <span
 													class="status-percentage"
-													style="font-size: 9px; color: #8094AE; margin-left: 3px;">15%</span>
+													style="font-size: 9px; color: #8094AE; margin-left: 3px;">0%</span>
 											</div>
 										</div>
 									</div>
@@ -248,9 +248,9 @@
 												style="font-size: 12px; color: #364A63; font-weight: 500;">반려</div>
 											<div class="status-value"
 												style="font-size: 13px; font-weight: 600; color: #8094AE; margin-top: 3px">
-												<span class="rejected-count">272</span>건 <span
+												<span class="rejected-count"></span>건 <span
 													class="status-percentage"
-													style="font-size: 9px; color: #8094AE; margin-left: 3px;">12%</span>
+													style="font-size: 9px; color: #8094AE; margin-left: 3px;">%</span>
 											</div>
 										</div>
 									</div>

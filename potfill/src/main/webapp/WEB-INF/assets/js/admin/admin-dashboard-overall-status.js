@@ -8,6 +8,9 @@ let mainStatusTable = null;
 $(document).ready(function() {
 	// 신고현황 컴포넌트 초기화
 	initMainStatusComponents();
+	
+	// 실제 데이터 로드
+	loadRealData();
 });
 
 /**
@@ -34,15 +37,15 @@ function initMainDonutChart() {
 			mainDonutChart.destroy();
 		}
 
-		// 샘플 데이터
+		// 초기 데이터 (나중에 실제 데이터로 업데이트됨)
 		const statusData = {
-			completed: 1158,
-			processing: 500,
-			received: 341,
-			rejected: 272
+			completed: 0,
+			processing: 0,
+			received: 0,
+			rejected: 0
 		};
 
-		const total = statusData.completed + statusData.processing + statusData.received + statusData.rejected;
+		const total = 1; // 0으로 나누기 방지
 
 		// 도넛차트 설정 (작은 크기) - 피그마 디자인 색상 적용
 		const config = {
@@ -81,7 +84,8 @@ function initMainDonutChart() {
 						bodyFont: { size: 8 },
 						callbacks: {
 							label: function(context) {
-								const percentage = ((context.parsed / total) * 100).toFixed(0);
+								const total = context.dataset.data.reduce((a, b) => a + b, 0);
+								const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(0) : 0;
 								return context.label + ': ' + context.parsed + '건 (' + percentage + '%)';
 							}
 						}
@@ -113,9 +117,6 @@ function initMainDonutChart() {
 			container.style.maxHeight = '170px';
 		}
 
-		// 범례 정보 업데이트
-		updateMainLegend(statusData, total);
-
 		console.log('메인 도넛차트 초기화 완료 (작은 크기)');
 
 	} catch (error) {
@@ -127,34 +128,48 @@ function initMainDonutChart() {
  * 메인 범례 업데이트 (작은 크기) - 피그마 디자인 적용
  */
 function updateMainLegend(data, total) {
-	// HTML에서 직접 정의된 범례의 값만 업데이트
+	// 완료
 	const completedCount = document.querySelector('.completed-count');
-	const processingCount = document.querySelector('.processing-count');
-	const receivedCount = document.querySelector('.received-count');
-	const rejectedCount = document.querySelector('.rejected-count');
-	
 	if (completedCount) {
 		completedCount.textContent = data.completed.toLocaleString();
-		const completedPercentage = ((data.completed / total) * 100).toFixed(0);
-		completedCount.nextElementSibling.nextElementSibling.textContent = completedPercentage + '%';
+		const completedPercentage = total > 0 ? ((data.completed / total) * 100).toFixed(0) : 0;
+		const percentElement = completedCount.parentElement.querySelector('.status-percentage');
+		if (percentElement) {
+			percentElement.textContent = completedPercentage + '%';
+		}
 	}
 	
+	// 처리중
+	const processingCount = document.querySelector('.processing-count');
 	if (processingCount) {
 		processingCount.textContent = data.processing.toLocaleString();
-		const processingPercentage = ((data.processing / total) * 100).toFixed(0);
-		processingCount.nextElementSibling.nextElementSibling.textContent = processingPercentage + '%';
+		const processingPercentage = total > 0 ? ((data.processing / total) * 100).toFixed(0) : 0;
+		const percentElement = processingCount.parentElement.querySelector('.status-percentage');
+		if (percentElement) {
+			percentElement.textContent = processingPercentage + '%';
+		}
 	}
 	
+	// 접수
+	const receivedCount = document.querySelector('.received-count');
 	if (receivedCount) {
 		receivedCount.textContent = data.received.toLocaleString();
-		const receivedPercentage = ((data.received / total) * 100).toFixed(0);
-		receivedCount.nextElementSibling.nextElementSibling.textContent = receivedPercentage + '%';
+		const receivedPercentage = total > 0 ? ((data.received / total) * 100).toFixed(0) : 0;
+		const percentElement = receivedCount.parentElement.querySelector('.status-percentage');
+		if (percentElement) {
+			percentElement.textContent = receivedPercentage + '%';
+		}
 	}
 	
+	// 반려
+	const rejectedCount = document.querySelector('.rejected-count');
 	if (rejectedCount) {
 		rejectedCount.textContent = data.rejected.toLocaleString();
-		const rejectedPercentage = ((data.rejected / total) * 100).toFixed(0);
-		rejectedCount.nextElementSibling.nextElementSibling.textContent = rejectedPercentage + '%';
+		const rejectedPercentage = total > 0 ? ((data.rejected / total) * 100).toFixed(0) : 0;
+		const percentElement = rejectedCount.parentElement.querySelector('.status-percentage');
+		if (percentElement) {
+			percentElement.textContent = rejectedPercentage + '%';
+		}
 	}
 }
 
@@ -163,37 +178,9 @@ function updateMainLegend(data, total) {
  */
 function initMainStatusTable() {
 	try {
-		// 25개 구 샘플 데이터
-		const districtData = [
-			{ rank: 1, district: '중랑구', reports: 127, rate: 92, avgDays: 7.2 },
-			{ rank: 2, district: '은평구', reports: 111, rate: 89, avgDays: 7.1 },
-			{ rank: 3, district: '강북구', reports: 108, rate: 76, avgDays: 6.7 },
-			{ rank: 4, district: '강서구', reports: 96, rate: 75, avgDays: 5.9 },
-			{ rank: 5, district: '광진구', reports: 89, rate: 73, avgDays: 5.5 },
-			{ rank: 6, district: '마포구', reports: 88, rate: 69, avgDays: 5.3 },
-			{ rank: 7, district: '용산구', reports: 81, rate: 68, avgDays: 4.7 },
-			{ rank: 8, district: '성동구', reports: 76, rate: 64, avgDays: 4.6 },
-			{ rank: 9, district: '서초구', reports: 75, rate: 60, avgDays: 4.0 },
-			{ rank: 10, district: '성북구', reports: 71, rate: 52, avgDays: 3.6 },
-			{ rank: 11, district: '강남구', reports: 68, rate: 55, avgDays: 4.2 },
-			{ rank: 12, district: '강동구', reports: 65, rate: 58, avgDays: 3.8 },
-			{ rank: 13, district: '관악구', reports: 62, rate: 65, avgDays: 5.1 },
-			{ rank: 14, district: '구로구', reports: 59, rate: 62, avgDays: 4.5 },
-			{ rank: 15, district: '금천구', reports: 57, rate: 67, avgDays: 3.9 },
-			{ rank: 16, district: '노원구', reports: 54, rate: 70, avgDays: 4.8 },
-			{ rank: 17, district: '도봉구', reports: 52, rate: 72, avgDays: 5.2 },
-			{ rank: 18, district: '동대문구', reports: 49, rate: 68, avgDays: 4.1 },
-			{ rank: 19, district: '동작구', reports: 47, rate: 74, avgDays: 3.7 },
-			{ rank: 20, district: '서대문구', reports: 45, rate: 71, avgDays: 4.3 },
-			{ rank: 21, district: '송파구', reports: 43, rate: 66, avgDays: 3.5 },
-			{ rank: 22, district: '양천구', reports: 41, rate: 69, avgDays: 4.4 },
-			{ rank: 23, district: '영등포구', reports: 39, rate: 63, avgDays: 5.0 },
-			{ rank: 24, district: '종로구', reports: 37, rate: 61, avgDays: 4.9 },
-			{ rank: 25, district: '중구', reports: 35, rate: 59, avgDays: 3.3 }
-		];
-
+		// 초기 빈 데이터로 테이블 생성
 		mainStatusTable = $('#mainStatusTable').DataTable({
-			data: districtData,
+			data: [],
 			columns: [
 				{
 					title: '순위',
@@ -238,7 +225,7 @@ function initMainStatusTable() {
 			scrollY: '225px',
 			scrollCollapse: true,
 			language: {
-				emptyTable: "표시할 데이터가 없습니다."
+				emptyTable: "데이터를 불러오는 중..."
 			}
 		});
 
@@ -247,6 +234,71 @@ function initMainStatusTable() {
 	} catch (error) {
 		console.error('메인 상태 테이블 초기화 실패:', error);
 	}
+}
+
+/**
+ * 실제 데이터 로드
+ */
+function loadRealData() {
+	$.ajax({
+		url: contextPath + '/admin/api/dashboard/regional',
+		type: 'GET',
+		dataType: 'json',
+		success: function(response) {
+			console.log('지역별 신고현황 데이터 로드:', response);
+			
+			// 도넛차트 데이터 업데이트
+			if (response.statusChart) {
+				const data = response.statusChart.data || [0, 0, 0, 0];
+				const statusData = {
+					completed: data[0] || 0,
+					processing: data[1] || 0,
+					received: data[2] || 0,
+					rejected: data[3] || 0
+				};
+				const total = statusData.completed + statusData.processing + statusData.received + statusData.rejected;
+				
+				// 차트 업데이트
+				if (mainDonutChart) {
+					mainDonutChart.data.datasets[0].data = [
+						statusData.completed,
+						statusData.processing,
+						statusData.received,
+						statusData.rejected
+					];
+					mainDonutChart.update();
+				}
+				
+				// 범례 업데이트
+				updateMainLegend(statusData, total);
+			}
+			
+			// 테이블 데이터 업데이트
+			if (response.regionalDetails && Array.isArray(response.regionalDetails)) {
+				const tableData = response.regionalDetails.map((item, index) => ({
+					rank: item.no || (index + 1),
+					district: item.district || '',
+					reports: item.reports || 0,
+					rate: item.rate || 0,
+					avgDays: item.avgTime || 0
+				}));
+				
+				updateMainStatusTable(tableData);
+			}
+		},
+		error: function(xhr, status, error) {
+			console.error('데이터 로드 실패:', error);
+			
+			// 에러 시 기본값 표시
+			const defaultData = {
+				completed: 0,
+				processing: 0,
+				received: 0,
+				rejected: 0
+			};
+			updateMainLegend(defaultData, 0);
+		}
+	});
 }
 
 /**
@@ -312,4 +364,5 @@ function refreshMainStatusComponents() {
 		mainStatusTable = null;
 	}
 	setTimeout(initMainStatusComponents, 100);
+	setTimeout(loadRealData, 200);
 }
