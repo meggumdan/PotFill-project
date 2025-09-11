@@ -388,8 +388,6 @@ function renderSummaryTab(complaint) {
 	const fullNumber = escapeHtml(complaint.reporterNumber);
 
 	const riskBadgeHtml = `<span class="risk-badge risk-${currentRisk.toLowerCase()}">${getRiskText(currentRisk)}</span>`;
-
-	// [수정] 히스토리 뱃지와 동일한 HTML 구조를 사용합니다.
 	const statusBadgeHtml = `<span class="badge status-badge status-${currentStatus.toLowerCase()}">${getStatusText(currentStatus)}</span>`;
 
 	return `
@@ -419,8 +417,20 @@ function renderSummaryTab(complaint) {
         </table>
         
         <h5 class="mt-4">신고 내용</h5>
-        <div class="p-3 bg-light border rounded" style="white-space: pre-wrap;">${escapeHtml(complaint.reportContent || '내용 없음')}</div>
         
+        <div id="reportContent" class="p-3 bg-light border rounded" style="white-space: pre-wrap;">${escapeHtml(complaint.reportContent || '내용 없음')}</div>
+        
+       
+        <div class="mt-2 d-flex justify-content-end">
+            <button class="btn btn-outline-primary btn-sm" id="aiSummaryBtn">
+                <i class="fas fa-robot"></i> AI 요약 보기
+            </button>
+        </div>
+        <div id="aiSummaryResult" class="mt-2" style="display: none;">
+            <!-- 여기에 요약 결과가 표시됩니다 -->
+        </div>
+        
+
         <div class="d-flex justify-content-end gap-2 mt-4" id="actionButtons">
             <button class="btn btn-outline-secondary btn-sm" onclick="changeStatus('${currentStatus}')"><i class="fas fa-edit"></i> 상태 변경</button>
             <button class="btn btn-outline-warning btn-sm" onclick="changeRisk('${complaint.complaintId}', '${currentRisk}')"><i class="fas fa-exclamation-triangle"></i> 위험도 수정</button>
@@ -449,6 +459,50 @@ function renderSummaryTab(complaint) {
         </div>
     `;
 }
+// AI 요약 버튼 클릭 이벤트
+$(document).on('click', '#aiSummaryBtn', function() {
+    const content = $('#reportContent').text(); // 원본 민원 내용 가져오기
+    const $resultDiv = $('#aiSummaryResult');
+    const $btn = $(this);
+
+    if (content.trim() === '내용 없음' || content.trim() === '') {
+        alert('요약할 내용이 없습니다.');
+        return;
+    }
+
+    // 로딩 상태 표시 (버튼 비활성화 및 스피너 아이콘)
+    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 요약 중...');
+    $resultDiv.hide();
+
+    $.ajax({
+        url: CONTEXT_PATH + '/admin/complaints/api/summarize',
+        method: 'POST',
+        data: { content: content },
+        success: function(response) {
+            if (response.success) {
+                // 성공 시, 결과를 예쁘게 포장해서 보여줌
+                const summaryHtml = `
+                    <div class="p-3 border-primary border-start border-4 bg-light">
+                        <h6>🤖 AI 요약</h6>
+                        <p class="mb-0" style="white-space: pre-wrap;">${escapeHtml(response.summary)}</p>
+                    </div>
+                `;
+                $resultDiv.html(summaryHtml).slideDown();
+            } else {
+                // 실패 시, 에러 메시지 표시
+                $resultDiv.html(`<div class="alert alert-danger mb-0">${escapeHtml(response.message)}</div>`).slideDown();
+            }
+        },
+        error: function() {
+            // 통신 자체에 실패했을 때 에러 메시지 표시
+            $resultDiv.html('<div class="alert alert-danger mb-0">요청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</div>').slideDown();
+        },
+        complete: function() {
+            // 요청 완료 시 (성공/실패 무관) 버튼 상태를 원래대로 복구
+            $btn.prop('disabled', false).html('<i class="fas fa-robot"></i> AI 요약 보기');
+        }
+    });
+});
 
 function renderHistoryTab(histories) {
 	if (!histories || histories.length === 0) {
