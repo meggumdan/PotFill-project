@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 /**
  * /assets/js/admin/complaints.js
  * 민원 관리 페이지 클라이언트 사이드 스크립트

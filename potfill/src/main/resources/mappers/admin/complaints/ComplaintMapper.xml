@@ -183,12 +183,14 @@
     </select>
 
     <!-- 민원 상태 변경 -->
-    <update id="updateComplaintStatus">
-        UPDATE complaints 
-        SET assigned_admin_id = COALESCE(assigned_admin_id, 
-            (SELECT admin_id FROM admins WHERE district_code = district_code AND ROWNUM = 1))
-        WHERE complaint_id = #{complaintId}
-    </update>
+<update id="updateComplaintStatus">
+    UPDATE complaints c
+    SET c.assigned_admin_id = COALESCE(c.assigned_admin_id, 
+        (SELECT a.admin_id 
+         FROM admins a 
+         WHERE a.district_code = c.district_code AND ROWNUM = 1))
+    WHERE c.complaint_id = #{complaintId}
+</update>
 
     <!-- 민원 위험도 수정 (실제로는 report_count 기반이므로 임시 구현) -->
     <update id="updateComplaintRisk">
@@ -221,7 +223,7 @@
             #{adminId}, 
             #{status}, 
             #{statusComment}, 
-            #{createdAt}
+            SYSTIMESTAMP
         )
     </insert>
 
