@@ -4,6 +4,18 @@
 
 <mapper namespace="com.potfill.user.complaint.dao.UserComplaintRepository">
 
+    <insert id="insertComplaint" parameterType="com.potfill.user.complaint.model.Complaint">
+        INSERT INTO complaints
+        (complaint_id, reporter_name, reporter_number, incident_address, created_at)
+        VALUES (#{complaintId}, #{reporterName}, #{reporterNumber}, #{incidentAddress}, SYSDATE)
+    </insert>
+
+    <insert id="insertComplaintPhoto" parameterType="com.potfill.user.complaint.model.ComplaintPhoto">
+        INSERT INTO complaint_photos
+            (photo_id, complaint_id, file_url, original_name, stored_name, created_at)
+        VALUES (COMPLAINT_PHOTOS_SEQ.NEXTVAL, #{complaintId}, #{fileUrl}, #{originalName}, #{storedName}, SYSDATE)
+    </insert>
+
 	<!-- Complaint VO 매핑 -->
 	<resultMap id="ComplaintResultMap" type="com.potfill.user.complaint.model.Complaint">
 		<id property="complaintId" column="COMPLAINT_ID" />

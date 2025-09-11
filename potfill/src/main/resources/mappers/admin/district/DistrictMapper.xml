@@ -23,9 +23,11 @@
 		<result property="assignedDepartment"
 			column="ASSIGNED_DEPARTMENT" />
 		<result property="reportCount" column="REPORT_COUNT" />
+
 		<!-- 상태, 위험도 추가 -->
 		<result property="status" column="STATUS"/>
 		<result property="riskGrade" column="RISK_GRADE"/>
+
 	</resultMap>
 
 	<!-- 1. 신규 건수 -->
@@ -139,7 +141,6 @@
 		)
 		WHERE ROWNUM &lt;= 10
 	</select>
-	
 
 	<!-- 5. 최근 7일 일자별 건수 -->
 	<resultMap id="dailyCountMap"

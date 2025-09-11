@@ -20,9 +20,7 @@
 	href="${pageContext.request.contextPath}/css/admin/admin-sidebar.css"
 	rel="stylesheet">
 <!-- dstrict css -->
-<link
-	href="${pageContext.request.contextPath}/css/admin/admin-district.css"
-	rel="stylesheet">
+<link href="${pageContext.request.contextPath}/css/admin/admin-district.css" rel="stylesheet">
 
 </head>
 <body>
@@ -110,11 +108,6 @@
 								<td class="sf_text_overflow">${complaint.reportContent}</td>
 								<td><fmt:formatDate value="${complaint.createdAt}"
 										pattern="yyyy-MM-dd HH:mm" /></td>
-								<!-- <td
-									style="color: ${complaint.reportCount > 0 ? 'red' : 'green'};">
-									${complaint.reportCount > 0 ? '신규' : '완료'}</td>
-									
-								-->
 
 								<td><c:set var="isNew"
 										value="${now.time - complaint.createdAt.time <= 7*24*60*60*1000}" />
@@ -124,7 +117,6 @@
 									</c:if> <c:if test="${complaint.status eq '처리중'}">
 										<span class="status-label status-processing">처리중</span>
 									</c:if></td>
-
 
 							</tr>
 							<!-- 상세행 -->
@@ -183,7 +175,6 @@
 	<!-- Bootstrap -->
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-	<script
-		src="${pageContext.request.contextPath}/js/admin/admin-district.js"></script>
+	<script src="${pageContext.request.contextPath}/js/admin/admin-district.js"></script>
 </body>
 </html>

@@ -17,8 +17,5 @@
 		   AND status != '완료' 
 		   AND status != '반려'
  	</select>
- 	
- 	
- 	
  
  </mapper>
