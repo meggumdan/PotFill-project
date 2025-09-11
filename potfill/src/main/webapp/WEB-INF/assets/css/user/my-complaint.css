@@ -36,7 +36,7 @@
     background-color: #3E4653;
     color: #F5F5F7;
     text-align: center;
-
+	z-index: 999;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -161,3 +161,70 @@
     margin: 20px auto;
 }
 
+.complaint-list {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	padding: 20px;
+}
+
+.complaint-card {
+	background: rgba(255, 255, 255, 0.9); /* 반투명 */
+	border-radius: 16px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+	padding: 30px 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+/* 진행 상태 표시 */
+.status {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 40px;
+	font-size: 16px;
+	font-weight: bold;
+	color: #888;
+	padding: 30px 0;
+}
+
+.status-step {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	border: 2px solid #FA8C2D;
+	opacity: 0.5;
+	transition: all 0.3s ease-in-out;
+}
+
+.status-step.active {
+	background-color: #FA8C2D;
+	color: #fff;
+	opacity: 1;
+	transform: scale(1.1);
+}
+
+/* 상세 정보 */
+.complaint-info {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	font-size: 15px;
+	color: #333;
+}
+
+.complaint-info div {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.complaint-label {
+	font-weight: bold;
+	width: 100px;
+}
