@@ -11,7 +11,7 @@ public interface DistrictRepository {
 	int getProcessingCount();
 	int getCompletedCount();
 	
-	// 긴급건수 출력(일단은 카운트 높은순 limit 5 출력)
+	// 긴급건수 출력
 	List<Complaint> getEmergencyList();
 	// 최근 7일 일자별 건수
     List<DailyCount> getDailyCounts();

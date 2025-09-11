@@ -46,7 +46,7 @@ public class UserComplaintController {
 	}
 	
 	// 나의 신고 화면 이동
-	@GetMapping("/lookup")
+	@GetMapping("/list")
 	public String myComplaint() {
 
 		return "user/my-complaint";
@@ -54,7 +54,7 @@ public class UserComplaintController {
 
 
 	// 나의 신고 화면 이동
-	@PostMapping("/lookup")
+	@PostMapping("/list")
 	public String getMyComplaint(@RequestParam String reporterName, @RequestParam String reporterNumber, Model model) throws IOException {
 
 		List<Complaint> list = userComplaintService.findByNameAndPhone(reporterName, reporterNumber);
