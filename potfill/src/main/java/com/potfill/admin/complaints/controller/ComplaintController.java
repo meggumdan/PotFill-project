@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.potfill.admin.complaints.service.ComplaintService;
+import com.potfill.admin.complaints.service.GeminiService;
+
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.IOException;
@@ -28,6 +30,9 @@ public class ComplaintController {
     
     @Autowired
     private ComplaintService complaintService;
+    
+    @Autowired
+    private GeminiService geminiService; 
     
     /**
      * 민원 관리 메인 페이지
@@ -274,5 +279,24 @@ public class ComplaintController {
         }
 
         return "admin/complaints/list";
+    }
+    
+    /**
+     * 민원 내용 AI 요약 AJAX
+     */
+    @PostMapping("/api/summarize")
+    @ResponseBody
+    public Map<String, Object> summarizeComplaint(@RequestParam String content) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            String summary = geminiService.summarizeText(content);
+            response.put("success", true);
+            response.put("summary", summary);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "AI 요약 기능을 불러오는 데 실패했습니다.");
+            e.printStackTrace();
+        }
+        return response;
     }
 }

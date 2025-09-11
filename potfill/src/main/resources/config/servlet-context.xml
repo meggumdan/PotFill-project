@@ -57,7 +57,9 @@
             class="org.springframework.web.multipart.support.StandardServletMultipartResolver" />
 	
 		
-	<context:component-scan	base-package="com.potfill" />
+	<context:component-scan base-package="com.potfill" use-default-filters="false">
+    <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+</context:component-scan>
 
 	
 </beans:beans>
