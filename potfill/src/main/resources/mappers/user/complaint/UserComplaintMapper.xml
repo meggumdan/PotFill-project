@@ -21,12 +21,11 @@
 		<result property="reportContent" column="REPORT_CONTENT" />
 		<result property="createdAt" column="CREATED_AT" />
 		<result property="assignedAdminId" column="ASSIGNED_ADMIN_ID" />
-		<result property="assignedDepartment"
-			column="ASSIGNED_DEPARTMENT" />
+		<result property="assignedDepartment" column="ASSIGNED_DEPARTMENT" />
 		<result property="reportCount" column="REPORT_COUNT" />
 	</resultMap>
 
-
+	<!-- 신고 폼 저장 -->
 	<insert id="insertComplaint" parameterType="com.potfill.user.complaint.model.Complaint">
 		INSERT INTO complaints
 		(complaint_id, reporter_name, reporter_number, incident_address, created_at)
@@ -34,6 +33,7 @@
 		#{incidentAddress}, SYSDATE)
 	</insert>
 
+	<!-- 첨부된 사진 저장 -->
 	<insert id="insertComplaintPhoto" parameterType="com.potfill.user.complaint.model.ComplaintPhoto">
 		INSERT INTO complaint_photos
 		(photo_id, complaint_id, file_url, original_name, stored_name, created_at)
@@ -41,7 +41,7 @@
 		#{originalName}, #{storedName}, SYSDATE)
 	</insert>
 
-	<!-- 이름 + 연락처로 신고 조회 -->
+	<!-- 내 신고 이력 조회 (이름 + 연락처로 신고 조회) -->
 	<select id="findByNameAndPhone" parameterType="map" resultMap="ComplaintResultMap">
 		SELECT
 			COMPLAINT_ID,
@@ -65,5 +65,41 @@
 		WHERE REPORTER_NAME = #{reporterName}
 		AND REPORTER_NUMBER = #{reporterNumber}
 	</select>
+	
+	<!-- 데이터베이스의 좌표 조회 -->
+    <select id="findAllCoords" resultType="com.potfill.user.complaint.model.Complaint">
+        SELECT 
+        	COMPLAINT_ID, 
+        	LAT, 
+        	LON
+        FROM COMPLAINTS
+        WHERE LAT IS NOT NULL AND LON IS NOT NULL
+    </select>
+
+    <!-- 해당 민원의 최신 상태 조회 -->
+    <select id="findLatestStatusByComplaintId" resultType="string" parameterType="long">
+        <!-- SELECT 
+        	STATUS
+        FROM COMPLAINT_HISTORIES
+        WHERE COMPLAINT_ID = #{complaintId}
+          AND CREATED_AT = (
+              	SELECT MAX(CREATED_AT)
+              	FROM COMPLAINT_HISTORIES
+              	WHERE COMPLAINT_ID = #{complaintId}
+          ) -->
+			SELECT status
+			FROM complaint_histories
+			WHERE complaint_id = #{complaintId}
+			ORDER BY created_at DESC
+			FETCH FIRST 1 ROW ONLY
+          
+    </select>
+
+    <!-- 신고 빈도수 증가 -->
+    <update id="incrementReportCount" parameterType="long">
+        UPDATE COMPLAINTS
+        SET REPORT_COUNT = NVL(REPORT_COUNT, 0) + 1
+        WHERE COMPLAINT_ID = #{complaintId}
+    </update>
 
 </mapper>
