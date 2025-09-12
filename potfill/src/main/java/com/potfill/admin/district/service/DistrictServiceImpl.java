@@ -12,32 +12,32 @@ import com.potfill.admin.district.model.DailyCount;
 @Service
 public class DistrictServiceImpl implements DistrictService {
 
-	@Autowired
-	DistrictRepository districtRepository;
-	
-	@Override
-	public int getNewCount() {
-		return districtRepository.getNewCount();
-	}
+    @Autowired
+    DistrictRepository districtRepository;
 
-	@Override
-	public int getProcessingCount() {
-		return districtRepository.getProcessingCount();
-	}
+    @Override
+    public int getNewCount(String districtCode) {
+        return districtRepository.getNewCount(districtCode);
+    }
 
-	@Override
-	public int getCompletedCount() {
-		return districtRepository.getCompletedCount();
-	}
+    @Override
+    public int getProcessingCount(String districtCode) {
+        return districtRepository.getProcessingCount(districtCode);
+    }
 
-	@Override
-    public List<DailyCount> getDailyCounts() {
-		return districtRepository.getDailyCounts();
-	}
-	
-	@Override
-	public List<Complaint> getEmergencyList() {
-		return districtRepository.getEmergencyList();
-	}
+    @Override
+    public int getCompletedCount(String districtCode) {
+        return districtRepository.getCompletedCount(districtCode);
+    }
+
+    @Override
+    public List<DailyCount> getDailyCounts(String districtCode) {
+        return districtRepository.getDailyCounts(districtCode);
+    }
+
+    @Override
+    public List<Complaint> getEmergencyList(String districtCode) {
+        return districtRepository.getEmergencyList(districtCode);
+    }
 
 }
