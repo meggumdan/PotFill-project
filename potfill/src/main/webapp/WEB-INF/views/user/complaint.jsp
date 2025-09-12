@@ -30,6 +30,11 @@
 			<!-- 입력 폼  -->
 			<div class="complaint-form">
 				<form action="<c:url value='/user/complaint'/>" method="post" enctype="multipart/form-data">
+					
+					<!-- 테스트 -->
+					<input type="hidden" id="lat" value="37.5665">
+					<input type="hidden" id="lon" value="126.9780">
+					
 					<div>
 						<label>포트홀 위치 <span class="required">*</span></label> <input type="text" id="place" name="incidentAddress" required>
 						<div class="button-box">
@@ -82,25 +87,40 @@
 					}
 	
 					$.ajax({
-						url : "<c:url value='/user/complaint/check-duplicate'/>",
-						type : "POST",
-						contentType : "application/json",
-						data : JSON.stringify({
-							"address" : address
-						}),
-						success : function(res) {
-							if (res.duplicate) {
-								alert("이미 신고된 위치입니다 ❌");
-							} else {
-								alert("신고 가능한 위치입니다 ✅");
-							}
-						},
-						error : function() {
-							alert("위치 확인 중 오류가 발생했습니다.");
-						}
-					});
+						  url: "<c:url value='/user/complaint/check-duplicate'/>",
+						  type: "POST",
+						  contentType: "application/json; charset=UTF-8",
+						  dataType: "json",
+						  data: JSON.stringify({ address: $("#incidentAddress").val() }),
+						  success: function(res){
+						    console.log("resp:", res);
+						    alert(res.duplicate ? "이미 신고된 위치입니다." : "신고 가능한 위치입니다.");
+						  },
+						  error: function(xhr){
+						    console.error("status=", xhr.status, "body=", xhr.responseText);
+						    alert("위치 확인 중 오류가 발생했습니다.");
+						  }
+						});
+
 				});
 			});
+			
+			
+			
+			/* $.ajax({
+			    url: "/user/complaint/check-duplicate",
+			    type: "POST",
+			    contentType: "application/json",
+			    data: JSON.stringify({
+			        address: $("#incidentAddress").val(),
+			        lat: $("#lat").val(),
+			        lon: $("#lon").val()
+			    }),
+			    success: function(res) {
+			        alert(res.duplicate ? "이미 신고됨" : "신고 가능");
+			    }
+			}); */
+
 		</script>
 	</body>
 </html>

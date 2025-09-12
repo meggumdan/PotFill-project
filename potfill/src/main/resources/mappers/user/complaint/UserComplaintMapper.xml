@@ -78,7 +78,7 @@
 
     <!-- 해당 민원의 최신 상태 조회 -->
     <select id="findLatestStatusByComplaintId" resultType="string" parameterType="long">
-        SELECT 
+        <!-- SELECT 
         	STATUS
         FROM COMPLAINT_HISTORIES
         WHERE COMPLAINT_ID = #{complaintId}
@@ -86,14 +86,20 @@
               	SELECT MAX(CREATED_AT)
               	FROM COMPLAINT_HISTORIES
               	WHERE COMPLAINT_ID = #{complaintId}
-          )
+          ) -->
+			SELECT status
+			FROM complaint_histories
+			WHERE complaint_id = #{complaintId}
+			ORDER BY created_at DESC
+			FETCH FIRST 1 ROW ONLY
+          
     </select>
 
     <!-- 신고 빈도수 증가 -->
     <update id="incrementReportCount" parameterType="long">
-        UPDATE complaints
-        SET report_count = report_count + 1
-        WHERE complaint_id = #{complaintId}
+        UPDATE COMPLAINTS
+        SET REPORT_COUNT = NVL(REPORT_COUNT, 0) + 1
+        WHERE COMPLAINT_ID = #{complaintId}
     </update>
 
 </mapper>

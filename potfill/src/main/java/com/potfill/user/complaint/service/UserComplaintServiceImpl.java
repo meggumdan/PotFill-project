@@ -105,6 +105,9 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 		
 		// 모든 위도 경도 가져오기
 		List<Complaint> complaints = userComplaintRepository.findAllCoords();
+		if (complaints == null || complaints.isEmpty()) {
+	        return false; // 비교 대상 없으면 중복 아님
+	    }
 		
 		String targetCell = h3.geoToH3Address(lat, lon, RES);
 		

@@ -32,6 +32,7 @@
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="mapperLocations" value="classpath:/mappers/**/*.xml"/>
+        <property name="typeAliasesPackage" value="com.potfill.admin.complaints.model"/>
         
         <property name="configuration">
             <bean class="org.apache.ibatis.session.Configuration">
@@ -55,7 +56,7 @@
     </context:component-scan>
 
 	<mybatis-spring:scan base-package=
-			"com.potfill.**.dao" />
+			"com.potfill.**.dao, com.potfill.admin.complaints.dao " />
 			
 	 <bean id="restTemplate" class="org.springframework.web.client.RestTemplate" />		
 </beans>
