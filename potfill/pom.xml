@@ -107,7 +107,7 @@
 		<dependency>
 			<groupId>com.uber</groupId>
 			<artifactId>h3</artifactId>
-			<version>3.7.0</version>
+			<version>3.7.2</version>
 		</dependency>
 
 		<!-- 오라클 클라우드(전자지갑) 관련 -->
