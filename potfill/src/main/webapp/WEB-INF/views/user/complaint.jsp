@@ -63,7 +63,10 @@
 						</div>
 						<div>
 							<label>연락처 <span class="required">*</span></label>
-							<input type="text" id="phonenumber" name="reporterNumber" placeholder="-없이 입력해주세요" required>
+							<input type="text" id="phonenumber" name="reporterNumber"
+								   placeholder="-없이 입력해주세요" required
+								   pattern="[0-9]+"
+								   inputmode="numeric" maxlength="11">
 						</div>
 						<div>
 							<label>상세 설명 </label>
@@ -87,6 +90,11 @@
 		
 		<script>
 			$(document).ready(function() {
+
+				// 숫자만 허용
+				$("#phonenumber").on("input", function() {
+					this.value = this.value.replace(/[^0-9]/g, "");
+				});
 
 				// 위도 경도로 중복 위치 검사
 				$("#check-btn").click(function () {
@@ -119,22 +127,6 @@
 					});
 				});
 			});
-			
-			
-			
-			/* $.ajax({
-			    url: "/user/complaint/check-duplicate",
-			    type: "POST",
-			    contentType: "application/json",
-			    data: JSON.stringify({
-			        address: $("#incidentAddress").val(),
-			        lat: $("#lat").val(),
-			        lon: $("#lon").val()
-			    }),
-			    success: function(res) {
-			        alert(res.duplicate ? "이미 신고됨" : "신고 가능");
-			    }
-			}); */
 
 		</script>
 		<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${jsKey }&libraries=services,clusterer"></script>
