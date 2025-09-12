@@ -8,9 +8,15 @@
 <html>
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" type="text/css" href="<c:url value='/css/user/complaint.css'/>">
-		<link rel="stylesheet" type="text/css" href="<c:url value='/css/map/user-map-style.css'/>">
+
+		<link rel="stylesheet" type="text/css"
+			  href="${pageContext.request.contextPath}/css/user/complaint.css">
+
+		<link rel="stylesheet" type="text/css"
+			  href="${pageContext.request.contextPath}/css/map/user-map-style.css">
+
 		<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+
 		<title>POTFill</title>
 	</head>
 	<body>
@@ -33,14 +39,14 @@
 			<div class="complaint-form">
 				<form action="<c:url value='/user/complaint'/>" method="post" enctype="multipart/form-data">
 	
-					<!-- 테스트 -->
-					<input type="hidden" id="lat" value="">
-					<input type="hidden" id="lon" value="">
-					<input type="hidden" id="gu" value="">
-					<input type="hidden" id="dong" value="">
+					<!-- 사용자에게 보이지 않는 값  -->
+					<input type="hidden" id="lat" name="lat" value="">
+					<input type="hidden" id="lon" name="lon" value="">
+					<input type="hidden" id="gu" name="gu" value="">
+					<input type="hidden" id="dong" name="dong" value="">
 	
 					<div>
-						<div id="map" style="width:285;height:265px;"></div>
+						<div id="map" style="width:285px; height:265px;"></div>
 						<label>포트홀 위치 <span class="required">*</span></label>
 						<input type="text" id="place" name="incidentAddress" readonly >
 						<div class="button-box">
@@ -84,30 +90,27 @@
 		
 		<script>
 			$(document).ready(function() {
-				$("#check-btn").click(function() {
-					let address = $("#place").val();
-	
-					if (!address) {
-						alert("주소를 입력해 주세요.");
-						return;
-					}
-	
-					$.ajax({
-						  url: "<c:url value='/user/complaint/check-duplicate'/>",
-						  type: "POST",
-						  contentType: "application/json; charset=UTF-8",
-						  dataType: "json",
-						  data: JSON.stringify({ address: $("#incidentAddress").val() }),
-						  success: function(res){
-						    console.log("resp:", res);
-						    alert(res.duplicate ? "이미 신고된 위치입니다." : "신고 가능한 위치입니다.");
-						  },
-						  error: function(xhr){
-						    console.error("status=", xhr.status, "body=", xhr.responseText);
-						    alert("위치 확인 중 오류가 발생했습니다.");
-						  }
-						});
 
+				// 위도 경도로 중복 위치 검사
+				$("#check-btn").click(function () {
+					const lat = $("#lat").val();
+					const lon = $("#lon").val();
+					if (!lat || !lon) { alert("지도를 클릭해 위치를 지정해 주세요."); return; }
+
+					$.ajax({
+						url: "<c:url value='/user/complaint/check-duplicate'/>",
+						type: "POST",
+						contentType: "application/json; charset=UTF-8",
+						dataType: "json",
+						data: JSON.stringify({ lat, lon }),
+						success: function (res) {
+							alert(res.duplicate ? "이미 신고된 위치입니다." : "신고 가능한 위치입니다.");
+						},
+						error: function (xhr) {
+							console.error("status=", xhr.status, "body=", xhr.responseText);
+							alert("위치 확인 중 오류가 발생했습니다.");
+						}
+					});
 				});
 			});
 			

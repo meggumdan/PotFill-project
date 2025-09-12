@@ -29,5 +29,6 @@ public interface UserComplaintRepository {
 	// 중복 신고 +1
 	public int incrementReportCount(Long complaintId);
 
-
+	// 주어진 H3 셀(targetCell)과 동일한 위치에 등록된 민원 건수를 조회
+    Integer countByH3Index(String targetCell);
 }

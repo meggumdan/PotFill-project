@@ -47,7 +47,7 @@
     </bean>
     
     <!-- h3 bean 등록 -->
-	<bean id="h3Core" class="com.uber.h3core.H3Core" factory-method="newSystemInstance"/>
+	<bean id="h3Core" class="com.uber.h3core.H3Core" factory-method="newInstance"/>
     
     <tx:annotation-driven/>
     <!-- dataSource, jdbcTemplate, transactionManager 는 기본 id로 하는 걸 권장함. -->
