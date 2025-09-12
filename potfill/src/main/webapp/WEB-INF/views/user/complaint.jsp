@@ -44,45 +44,42 @@
 					<input type="hidden" id="lon" name="lon" value="">
 					<input type="hidden" id="gu" name="gu" value="">
 					<input type="hidden" id="dong" name="dong" value="">
-	
-					<div>
+
+					<!-- 위치 확인 영역 -->
+					<div class="location-section">
 						<div id="map" style="width:285px; height:265px;"></div>
 						<label>포트홀 위치 <span class="required">*</span></label>
-						<input type="text" id="place" name="incidentAddress" readonly >
+						<input type="text" id="place" name="incidentAddress" readonly>
 						<div class="button-box">
-							<button type="button" id="check-btn" )>위치 중복 확인</button>
+							<button type="button" id="check-btn">신고 위치 중복 확인</button>
 						</div>
 					</div>
-	
-					<div>
-						<label>성명 <span class="required">*</span></label>
-						<input type="text" id="name" name="reporterName" required>
-					</div>
-	
-					<div>
-						<label>연락처 <span class="required">*</span></label>
-						<input type="text" id="phonenumber" name="reporterNumber" placeholder="-없이 입력해주세요" required>
-					</div>
-	
-					<div>
-						<label>상세 설명 </label>
-						<input type="text" id="content" name="reportContent" placeholder="포트홀에  설명해 주세요.">
-					</div>
-	
-					<div class="photo-section">
-						<label>포트홀 사진</label>
-						<p>사진이 있으면 신속한 처리에 도움이 됩니다.</p>
-	
-						<div class="photo-box">
-							<label for="fileInput" class="photo-upload"></label>
-							<input type="file" id="fileInput" name="photoFiles" accept="image/*" style="display: none;">
-							<input type="file" id="fileInput" name="photoFiles" accept="image/*" multiple
-								style="display: none;">
+
+					<!-- 추가 입력 영역 (처음엔 숨김) -->
+					<div id="extra-section" class="extra-section hidden">
+						<div>
+							<label>성명 <span class="required">*</span></label>
+							<input type="text" id="name" name="reporterName" required>
 						</div>
-					</div>
-	
-					<div class="submit-box">
-						<button type="submit" class="submit-btn">신고 하기</button>
+						<div>
+							<label>연락처 <span class="required">*</span></label>
+							<input type="text" id="phonenumber" name="reporterNumber" placeholder="-없이 입력해주세요" required>
+						</div>
+						<div>
+							<label>상세 설명 </label>
+							<input type="text" id="content" name="reportContent" placeholder="포트홀에 설명해 주세요.">
+						</div>
+						<div class="photo-section">
+							<label>포트홀 사진</label>
+							<p>사진이 있으면 신속한 처리에 도움이 됩니다.</p>
+							<div class="photo-box">
+								<label for="fileInput" class="photo-upload"></label>
+								<input type="file" id="fileInput" name="photoFiles" accept="image/*" multiple style="display:none;">
+							</div>
+						</div>
+						<div class="submit-box">
+							<button type="submit" class="submit-btn">신고 하기</button>
+						</div>
 					</div>
 				</form>
 			</div>
@@ -104,7 +101,16 @@
 						dataType: "json",
 						data: JSON.stringify({ lat, lon }),
 						success: function (res) {
-							alert(res.duplicate ? "이미 신고된 위치입니다." : "신고 가능한 위치입니다.");
+							if (res.duplicate) {
+								alert("이미 신고된 위치입니다.");
+								// 폼 전체 숨기기
+								$("#extra-section").removeClass("show").addClass("hidden");
+							} else {
+								alert("신고 가능한 위치입니다.");
+								// 추가 입력란 애니메이션으로 표시
+								$("#extra-section").removeClass("hidden").addClass("show");
+								$("#check-btn").hide(); // 중복확인 버튼 숨기고 아래 입력만 보이게
+							}
 						},
 						error: function (xhr) {
 							console.error("status=", xhr.status, "body=", xhr.responseText);
