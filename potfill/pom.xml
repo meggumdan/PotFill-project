@@ -90,6 +90,7 @@
 			<artifactId>jakarta.servlet.jsp.jstl</artifactId>
 			<version>3.0.1</version>
 		</dependency>
+		
 		<!--엑셀파일-->
 		<dependency>
 		    <groupId>org.apache.poi</groupId>
@@ -99,8 +100,15 @@
 		<dependency>
 		    <groupId>org.apache.poi</groupId>
 		    <artifactId>poi-ooxml</artifactId>
-		    <version>5.2.3</version> </dependency>
-
+		    <version>5.2.3</version> 
+		</dependency>
+		
+		<!-- H3 라이브러리 적용 -->
+		<dependency>
+			<groupId>com.uber</groupId>
+			<artifactId>h3</artifactId>
+			<version>3.7.0</version>
+		</dependency>
 	</dependencies>
   
   <build>

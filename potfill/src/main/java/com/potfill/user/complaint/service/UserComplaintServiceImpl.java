@@ -13,6 +13,7 @@ import com.potfill.user.common.ComplaintIdGenerator;
 import com.potfill.user.complaint.dao.UserComplaintRepository;
 import com.potfill.user.complaint.model.Complaint;
 import com.potfill.user.complaint.model.ComplaintPhoto;
+import com.uber.h3core.H3Core;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +22,9 @@ import lombok.RequiredArgsConstructor;
 public class UserComplaintServiceImpl implements UserComplaintService {
 	
 	
-	private final UserComplaintRepository userComplaintRepository; 
+	private final UserComplaintRepository userComplaintRepository;
+	//H3Core h3 = H3Core.newInstance(); // H3 라이브러리 왜안댐 ?????????????
+	private final H3Core h3; // 스프링이 Bean 주입
 
 	@Override
 	@Transactional
@@ -91,6 +94,41 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 	    return userComplaintRepository.findByNameAndPhone(reporterName, reporterNumber);
 	}
 
-	
+	@Override
+    public double[] getCoordinatesFromAddress(String address) {
+        // 카카오 주소 API 연동해서 변환
+        // 지금은 샘플 좌표 반환
+        return new double[]{37.5665, 126.9780};
+    }
 
+	@Override
+	public boolean isDuplicateLocation(double lat, double lon) {
+		final int RES = 10; // ~3m
+		
+		// 모든 위도 경도 가져오기
+		List<Complaint> complaints = userComplaintRepository.findAllCoords();
+		if (complaints == null || complaints.isEmpty()) {
+	        return false; // 비교 대상 없으면 중복 아님
+	    }
+		
+		String targetCell = h3.geoToH3Address(lat, lon, RES);
+		
+		for (Complaint c : complaints) {
+
+			if (c.getLat() == null || c.getLon() == null) continue;
+
+			String dbCell = h3.geoToH3Address(c.getLat(), c.getLon(), RES);
+			if (targetCell.equals(dbCell)) {
+				// 중복 발견 → 해당 민원의 최신 상태 확인
+				String latestStatus = userComplaintRepository.findLatestStatusByComplaintId(c.getComplaintId());
+
+				if ("Received".equalsIgnoreCase(latestStatus)) {
+					// 최신 상태가 Received면 중복 카운터 증가
+					userComplaintRepository.incrementReportCount(c.getComplaintId());
+				}
+				return true;
+			}
+		}
+		return false;
+	}
 }

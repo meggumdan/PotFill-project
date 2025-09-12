@@ -32,6 +32,7 @@
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="mapperLocations" value="classpath:/mappers/**/*.xml"/>
+        <property name="typeAliasesPackage" value="com.potfill.admin.complaints.model"/>
         
         <property name="configuration">
             <bean class="org.apache.ibatis.session.Configuration">
@@ -45,14 +46,19 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
     
-    <tx:annotation-driven transaction-manager="transactionManager" />
+
+    <!-- h3 bean 등록 -->
+    <bean id="h3Core" class="com.uber.h3core.H3Core" factory-method="newInstance"/>
+    
+    <tx:annotation-driven/>
+
     <!-- dataSource, jdbcTemplate, transactionManager 는 기본 id로 하는 걸 권장함. -->
 <context:component-scan base-package="com.potfill">
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
 
 	<mybatis-spring:scan base-package=
-			"com.potfill.**.dao" />
+			"com.potfill.**.dao, com.potfill.admin.complaints.dao " />
 			
 	 <bean id="restTemplate" class="org.springframework.web.client.RestTemplate" />		
 </beans>
