@@ -4,22 +4,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/css/user/complaint-complete.css">
-<script
-	src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-<title>POTFill</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" type="text/css"
+		  href="${pageContext.request.contextPath}/css/user/component.css">
+
+	<link rel="stylesheet" type="text/css"
+		href="${pageContext.request.contextPath}/css/user/complaint-complete.css">
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+	<title>POTFill</title>
 </head>
 	<body>
 	
 		<!-- 젤 큰 영역 -->
 		<div class="container">
-			<div class="header">
-				<div id="intro" class="logo-small-box">
-					<h1 class="logo">POTFill</h1>
-				</div>
-			</div>
+
+			<!-- 헤더 Include -->
+			<%@ include file="/WEB-INF/views/user/user_component/header.jsp" %>
 
 			<!-- 본문 -->
 			<div class="content">
@@ -40,7 +43,9 @@
 					<a href="<c:url value='/user/complaint/list'/>" class="btn">나의 신고 현황</a>
 				</div>
 			</div>
-			
+
+			<!-- 푸터 Include -->
+			<%@ include file="/WEB-INF/views/user/user_component/footer.jsp" %>
 
 		</div>
 	</body>
