@@ -20,7 +20,9 @@
 	href="${pageContext.request.contextPath}/css/admin/admin-sidebar.css"
 	rel="stylesheet">
 <!-- dstrict css -->
-<link href="${pageContext.request.contextPath}/css/admin/admin-district.css" rel="stylesheet">
+<link
+	href="${pageContext.request.contextPath}/css/admin/admin-district.css"
+	rel="stylesheet">
 
 </head>
 <body>
@@ -79,78 +81,83 @@
 
 			<div class="card-vertical">
 				<h3 style="text-align: center; padding-bottom: 20px;">긴급 신고 내역</h3>
-
-				<table class="emergencytable">
-					<colgroup>
-						<col width="10%">
-						<col width="25%">
-						<col width="30%">
-						<col width="15%">
-						<col width="20%">
-					</colgroup>
-					<thead>
-						<tr>
-							<th>긴급순위</th>
-							<th>신고지역</th>
-							<th>신고내용</th>
-							<th>발생시간</th>
-							<th>상태</th>
-						</tr>
-					</thead>
-					<tbody>
-						<c:forEach var="complaint" items="${emergencyList}"
-							varStatus="status">
-							<!-- 요약행 -->
-							<tr class="clickable" data-bs-toggle="collapse"
-								data-bs-target="#detail-${status.count}">
-								<td>${status.count}</td>
-								<td>${complaint.incidentAddress}</td>
-								<td class="sf_text_overflow">${complaint.reportContent}</td>
-								<td><fmt:formatDate value="${complaint.createdAt}"
-										pattern="yyyy-MM-dd HH:mm" /></td>
-
-								<td><c:set var="isNew"
-										value="${now.time - complaint.createdAt.time <= 7*24*60*60*1000}" />
-
-									<c:if test="${isNew or complaint.status eq '접수'}">
-										<span class="status-label status-new">신규</span>
-									</c:if> <c:if test="${complaint.status eq '처리중'}">
-										<span class="status-label status-processing">처리중</span>
-									</c:if></td>
-
+				<div class="trans-scroll">
+					<table class="emergencytable">
+						<colgroup>
+							<col width="10%">
+							<col width="25%">
+							<col width="30%">
+							<col width="15%">
+							<col width="20%">
+						</colgroup>
+						<thead>
+							<tr>
+								<th>긴급순위</th>
+								<th>신고지역</th>
+								<th>신고내용</th>
+								<th>발생시간</th>
+								<th>상태</th>
 							</tr>
-							<!-- 상세행 -->
-							<tr id="detail-${status.count}" class="collapse detail-row">
-								<!-- 라벨 -->
-								<td colspan="1"
-									style="text-align: right; font-weight: bold; vertical-align: top;">
+						</thead>
+						<tbody>
+							<c:forEach var="complaint" items="${emergencyList}"
+								varStatus="status">
+								<!-- 요약행 -->
+								<tr class="clickable" data-bs-toggle="collapse"
+									data-bs-target="#detail-${status.count}">
+									<td>${status.count}</td>
+									<td>${complaint.incidentAddress}</td>
+									<td class="sf_text_overflow">${complaint.reportContent}</td>
+									<td><fmt:formatDate value="${complaint.createdAt}"
+											pattern="yyyy-MM-dd HH:mm" /></td>
 
-								</td>
+									<td><c:set var="isNew"
+											value="${now.time - complaint.createdAt.time <= 7*24*60*60*1000}" />
 
-								<!-- 내용 -->
-								<td colspan="4"><b class="report-content">신&nbsp;고&nbsp;자</b>:&nbsp;${complaint.reporterName}<br>
-									<b class="report-content">주&nbsp;소</b>:&nbsp;${complaint.incidentAddress}<br>
-									<b class="report-content">발생시간</b>:&nbsp; <fmt:formatDate
-										value="${complaint.createdAt}" pattern="yyyy-MM-dd HH:mm" /><br>
-									<div class="detail-textarea">
-										<b class="report-content">상세내용</b>:&nbsp;
-										<textarea class="form-control" rows="3">${complaint.reportContent}</textarea>
-									</div>
-									<div style="text-align: right; margin-top: 5px;">
-										<form
-											action="${pageContext.request.contextPath}/admin/complaints/setSession"
-											method="post" style="display: inline;">
-											<input type="hidden" name="id"
-												value="${complaint.complaintId}">
-											<button type="submit" class="btn btn-primary"
-												style="background-color: #00BFFF; border: none;">접수</button>
-										</form>
-									</div></td>
-							</tr>
-						</c:forEach>
-					</tbody>
-				</table>
+										<c:if test="${isNew or complaint.status eq '접수'}">
+											<span class="status-label status-new">신규</span>
+										</c:if> <c:if test="${complaint.status eq '처리중'}">
+											<span class="status-label status-processing">처리중</span>
+										</c:if></td>
 
+								</tr>
+								<!-- 상세행 -->
+								<tr id="detail-${status.count}" class="collapse detail-row">
+									<!-- 라벨 -->
+									<td colspan="1"
+										style="text-align: right; font-weight: bold; vertical-align: top;">
+
+									</td>
+
+									<!-- 내용 -->
+									<td colspan="4"><b class="report-category">신&nbsp;고&nbsp;자</b>
+										<p class="report-content">:&nbsp;${complaint.reporterName}</p>
+										<br> <b class="report-category">주&nbsp;소</b>
+										<p class="report-content">:&nbsp;${complaint.incidentAddress}</p>
+										<br> <b class="report-category">발생시간</b>:&nbsp;
+										<p class="report-content">
+											<fmt:formatDate value="${complaint.createdAt}"
+												pattern="yyyy-MM-dd HH:mm" />
+										</p> <br>
+										<div class="detail-textarea">
+											<b class="report-category">상세내용</b>:&nbsp;
+											<textarea class="form-control" rows="3">${complaint.reportContent}</textarea>
+										</div>
+										<div style="text-align: right; margin-top: 5px;">
+											<form
+												action="${pageContext.request.contextPath}/admin/complaints/setSession"
+												method="post" style="display: inline;">
+												<input type="hidden" name="id"
+													value="${complaint.complaintId}">
+												<button type="submit" class="btn btn-primary"
+													style="background-color: #00BFFF; border: none;">접수</button>
+											</form>
+										</div></td>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</main>
 	</div>
@@ -175,6 +182,7 @@
 	<!-- Bootstrap -->
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="${pageContext.request.contextPath}/js/admin/admin-district.js"></script>
+	<script
+		src="${pageContext.request.contextPath}/js/admin/admin-district.js"></script>
 </body>
 </html>
