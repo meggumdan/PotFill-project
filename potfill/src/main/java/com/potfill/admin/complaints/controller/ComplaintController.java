@@ -5,7 +5,10 @@ import java.util.Map;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
+import java.io.File; 
+import java.io.FileInputStream; 
+import org.springframework.util.FileCopyUtils; 
+import jakarta.servlet.http.HttpServletResponse; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -298,5 +301,44 @@ public class ComplaintController {
             e.printStackTrace();
         }
         return response;
+    }
+
+
+
+    /**
+     * 신고 사진 파일을 직접 읽어서 브라우저에 전송하는 메서드 (최종 디버깅 버전)
+     */
+    @GetMapping("/photos/{complaintId}/{storedName}")
+    public void viewPhoto(
+            @PathVariable Long complaintId,
+            @PathVariable String storedName,
+            HttpServletResponse response) throws IOException {
+
+        // --- 1. 메서드가 호출되었는지 확인 ---
+        System.out.println("======================================================");
+        System.out.println("[디버그] viewPhoto 메서드 호출됨");
+
+        // --- 2. 전달받은 파라미터 확인 ---
+        System.out.println("[디버그] 요청된 complaintId: " + complaintId);
+        System.out.println("[디버그] 요청된 storedName: " + storedName);
+
+        // --- 3. 서버가 생각하는 실제 파일 저장 경로 확인 ---
+        String savePath = "C:/lect_labs/labs_java/sts-4.31.0.RELEASE/src/main/webapp/upload/";
+        File imageFile = new File(savePath + complaintId + "/" + storedName);
+
+        // --- 4. 최종적으로 찾으려는 파일의 전체 경로 확인 ---
+        System.out.println("[디버그] 찾으려는 전체 파일 경로: " + imageFile.getAbsolutePath());
+
+        // --- 5. Java가 파일이 존재한다고 판단하는지 확인 (가장 중요!) ---
+        System.out.println("[디버그] 파일 존재 여부: " + imageFile.exists());
+        System.out.println("======================================================");
+
+
+        if (imageFile.exists()) {
+            response.setContentType("image/jpeg"); 
+            FileCopyUtils.copy(new FileInputStream(imageFile), response.getOutputStream());
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
     }
 }

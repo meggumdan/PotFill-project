@@ -65,7 +65,7 @@ public class ComplaintServiceImpl implements ComplaintService {
         List<ComplaintHistory> histories = complaintRepository.getComplaintHistories(complaintId);
         
         // 민원 사진 조회
-        List<ReportPhoto> photos = complaintRepository.getComplaintPhotos(complaintId);
+//        List<ReportPhoto> photos = complaintRepository.getComplaintPhotos(complaintId);
         
         // 중복 신고 확인
         List<Complaint> duplicateComplaints = null;
@@ -76,7 +76,7 @@ public class ComplaintServiceImpl implements ComplaintService {
         
         result.put("complaint", complaint);
         result.put("histories", histories);
-        result.put("photos", photos);
+        result.put("photos", complaint.getPhotos());
         result.put("duplicateComplaints", duplicateComplaints);
         
         return result;

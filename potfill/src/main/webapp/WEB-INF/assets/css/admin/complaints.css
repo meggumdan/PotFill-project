@@ -156,3 +156,20 @@
 .detail-status-badge.status-processing { background-color: #17a2b8; }
 .detail-status-badge.status-completed { background-color: #28a745; }
 .detail-status-badge.status-rejected { background-color: #dc3545; }
+.report-photo {
+    width: 100%; /* 부모 요소 너비에 맞춤 */
+    height: 150px; /* 모든 이미지 높이를 150px로 고정 */
+    object-fit: cover; /* 비율을 유지하면서 영역을 꽉 채움 (이미지가 잘릴 수 있음) */
+    transition: transform 0.2s; /* 부드러운 효과 */
+}
+
+.report-photo:hover {
+    transform: scale(1.05); /* 마우스를 올리면 살짝 커지는 효과 */
+}
+
+#photoModalImage {
+    max-width: 100%; /* 모달 너비를 넘지 않도록 설정 */
+    max-height: 80vh; /* 화면 높이의 80%를 넘지 않도록 설정 */
+    display: block;
+    margin: auto; /* 이미지 중앙 정렬 */
+}

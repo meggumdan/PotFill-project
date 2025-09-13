@@ -25,6 +25,9 @@
 
     <collection property="photos" ofType="com.potfill.user.complaint.model.ComplaintPhoto">
         <id property="photoId" column="photo_id"/>
+        
+        <result property="complaintId" column="complaint_id"/>
+        
         <result property="fileUrl" column="file_url"/>
         <result property="originalName" column="original_name"/>
         <result property="storedName" column="stored_name"/>
