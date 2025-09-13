@@ -50,10 +50,12 @@
 		var map = new kakao.maps.Map(mapContainer, mapOption);
 
 		// 2) 클러스터러 생성 (이제 map 준비됨)
+		const CLUSTER_MIN_LEVEL = 8;
+		
 		var clusterer = new kakao.maps.MarkerClusterer({
 			map: map,
 			averageCenter: true,
-			minLevel: 8,
+			minLevel: CLUSTER_MIN_LEVEL,
 			disableClickZoom: true
 		}); //clusterer end
 
@@ -101,8 +103,76 @@
 		kakao.maps.event.addListener(clusterer, 'clusterclick', function (cluster) {
 			var level = map.getLevel() - 1;
 
-			map.setLevel(level, { anchor: cluster.getCenter() });
+			map.setLevel(level, { 
+				anchor: cluster.getCenter(),
+				
+			});
 		}); // kakao.maps.event.addListener
+		
+		 // 내 위치 마커
+		   (function addAdminMyLocation() {
+		     var myMarker = null;
+		     var geocoderMy = new kakao.maps.services.Geocoder();
+		 
+		     // 내 위치 아이콘 (gif) 준비
+		     var imageSrcMe = '${pageContext.request.contextPath}/images/location-me.gif';
+		     var myMarkerImage = new kakao.maps.MarkerImage(imageSrcMe, imageSize, imageOption);
+		 
+		     function upsertMyMarker(latlng) {
+		       if (!myMarker) {
+		         myMarker = new kakao.maps.Marker({ position: latlng, image: myMarkerImage });
+		         myMarker.setMap(map);
+		       } else {
+		         myMarker.setPosition(latlng);
+		       }
+		     }
+		 
+
+		    const fallback = new kakao.maps.LatLng(37.5642135, 127.0016985);
+		    if (navigator.geolocation) {
+		      navigator.geolocation.getCurrentPosition(
+		        (pos) => {
+		          const loc = new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+		          upsertMyMarker(loc);
+		          map.setCenter(loc);
+		        },
+		        (err) => {
+		          console.warn('Geolocation error:', err);
+		          upsertMyMarker(fallback);
+		          map.setCenter(fallback);
+		        },
+		        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+		      );
+		    } else {
+		      upsertMyMarker(fallback);
+		      map.setCenter(fallback);
+		    }
+		  })();
+		
+		let overlayHiddenByCluster = false;
+
+		
+		kakao.maps.event.addListener(map, 'zoom_changed', function () {
+			  const level = map.getLevel();
+			  const isClusteredNow = level >= CLUSTER_MIN_LEVEL;
+
+			  // 1) 클러스터링 상태로 바뀌면 숨기기
+			  if (isClusteredNow) {
+			    if (activeOverlay !== null && overlays[activeOverlay]) {
+			      overlays[activeOverlay].setMap(null);      
+			      overlayHiddenByCluster = true;              
+			    }
+			    return;
+			  }
+
+			  // 2) 클러스터 해제(줌 인)되면, 클러스터 때문에 숨긴 것만 복구
+			  if (!isClusteredNow) {
+			    if (overlayHiddenByCluster && activeOverlay !== null && overlays[activeOverlay]) {
+			      overlays[activeOverlay].setMap(map);        // 다시 보이기
+			      overlayHiddenByCluster = false;
+			    }
+			  }
+			});
 
 		// 8) 오버레이/지오코더 등 부가 기능 (선택)
 		// 오버레이는 마커 클릭 이벤트를 마커 생성 시에 함께 달아주면 됩니다.
@@ -115,9 +185,10 @@
 			var overlay = new kakao.maps.CustomOverlay({
 				content: buildOverlayContent({
 					addressHtml: positions[i].content || '주소 로딩 중...',
-					i,
+					idx: i,
 					reportCount: positions[i].reportCount,
-					status: positions[i].status
+					status: positions[i].status,
+					zIndex: 1000
 				}), //buildOverlayContent
 				map: null,
 				position: positions[i].latlng,
@@ -134,6 +205,7 @@
 				if (activeOverlay !== null && overlays[activeOverlay]) {
 					overlays[activeOverlay].setMap(null);
 				} // if
+				overlays[i].setZIndex(9999);
 				overlays[i].setMap(map);
 				activeOverlay = i;
 
@@ -183,7 +255,6 @@
 				'        <div class="ellipsis">' + (addressHtml || '') + '</div>' +
 				'        <div class="ellipsis"><b>상태</b>: ' + status + '</div>' +     
 				'        <div class="ellipsis"><b>누적신고 수</b>: ' + reportCount + '</div>' +  
-				'        <div class="jibun ellipsis">(관할) 0000행정복지센터</div>' +
 				'      </div>' +
 				'    </div>' +
 				'  </div>' +
