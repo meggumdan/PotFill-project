@@ -24,7 +24,7 @@
 				<ul>
 					<li><a href="<c:url value='/user/complaint' />">포트홀 신고하기</a></li>
 					<li><a href="<c:url value='/user/map' />">포트홀 실시간</a></li>
-					<li><a href="<c:url value='' />">나의 신고 현황</a></li>
+					<li><a href="<c:url value='/user/complaint/list' />">나의 신고 현황</a></li>
 					<li><a href="<c:url value='' />">포트홀 신고 안내</a></li>
 				</ul>
 			</div>

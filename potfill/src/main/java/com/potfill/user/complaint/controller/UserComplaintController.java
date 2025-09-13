@@ -26,12 +26,6 @@ public class UserComplaintController {
 
 	private final UserComplaintService userComplaintService;
 
-	// 신고 화면 이동
-	@GetMapping
-	public String complaint() {
-
-		return "user/complaint";
-	}
 	
 	// 신고 중복 확인
 	@PostMapping("/check-duplicate")
@@ -45,22 +39,20 @@ public class UserComplaintController {
 
 	// 신고 내용 저장
 	@PostMapping
-	public String registerComplaint(Complaint complaint, 
-			@RequestParam(value="photoFiles", required = false) List<MultipartFile> photoFiles) throws IOException {
-		
-		// 좌표가 있으면 서버에서 최종 중복차단
+	public String registerComplaint(Complaint complaint, @RequestParam(value="photoFiles", required = false) List<MultipartFile> photoFiles) throws IOException {
+
 		if (complaint.getLat() != null && complaint.getLon() != null) {
 			boolean dup = userComplaintService.isDuplicateLocation(complaint.getLat(), complaint.getLon());
 			if (dup) {
-				// 필요시 메시지 파라미터로 전달
 				return "redirect:/user/complaint?duplicate=true";
 			}
 		}
 		userComplaintService.saveComplaint(complaint, photoFiles);
 
-		return "redirect:/user/complaint?saved=true";
+		// 저장 완료 후 전용 페이지 보여주기
+		return "user/complaint-complete";
 	}
-	
+
 	// 나의 신고 화면 이동
 	@GetMapping("/list")
 	public String myComplaint() {

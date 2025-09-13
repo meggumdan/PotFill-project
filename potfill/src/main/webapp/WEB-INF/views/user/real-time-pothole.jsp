@@ -8,6 +8,7 @@
 <html>
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/user/component.css">
 		<link rel="stylesheet" type="text/css" href="<c:url value='/css/user/complaint.css'/>">
 		<link rel="stylesheet" type="text/css" href="<c:url value='/css/map/user-map-style.css'/>">
 		<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
@@ -17,12 +18,9 @@
 	
 		<!-- 젤 큰 영역 -->
 		<div class="container">
-	
-			<div class="header">
-				<div id="intro" class="logo-small-box">
-					<h1 class="logo">POTFill</h1>
-				</div>
-			</div>
+
+			<!-- 헤더 Include -->
+			<%@ include file="/WEB-INF/views/user/user_component/header.jsp" %>
 	
 			<!-- 설명  -->
 			<div class="explain">
@@ -34,6 +32,10 @@
 				<div class="content-wrap" id="content">
 				</div>
 			</div>
+
+			<!-- 푸터 Include -->
+			<%@ include file="/WEB-INF/views/user/user_component/footer.jsp" %>
+
 		</div>
 	
 		<script type="text/javascript"

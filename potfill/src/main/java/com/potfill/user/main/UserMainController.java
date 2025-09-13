@@ -9,20 +9,20 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 public class UserMainController {
 	
-	//	임시로 메인 == 유저메인
-	@GetMapping("/user")
+	//	유저 메인
+	@GetMapping()
     public String home() {
 		
         return "/user/main";
     }
 	
 	
-	// 신고화면 
-//	@GetMapping("/user/complaint")
-//	public String complaint() {
-//		
-//		return "user/complaint";
-//	}
+	// 신고 화면
+	@GetMapping("/user/complaint")
+	public String complaint() {
+
+		return "user/complaint";
+	}
 	
 	
 	// 실시간 포트홀 지도
