@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.potfill.user.common.ComplaintIdGenerator;
@@ -27,6 +28,7 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 	private final H3Core h3; // 스프링이 Bean 주입
 
 	@Override
+	@Transactional
 	public void saveComplaint(Complaint complaint, List<MultipartFile> photoFiles) throws IOException {
 
 		// 1) 민원번호 직접 생성
@@ -52,7 +54,9 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 					// 업로드 디렉토리 설정
 					// 개발 환경: 프로젝트 내부(webapp/upload)
 					// 운영 환경: basePath 절대경로로 교체 필요
-					String basePath = new File("src/main/webapp/upload/").getAbsolutePath() + File.separator;
+//					String basePath = new File("src/main/webapp/upload/").getAbsolutePath() + File.separator;
+					String basePath = "C:" + File.separator + "project-potfill" + File.separator;
+
 					System.out.println(">>>>>>>>>>>>>>>>>>>>> user.dir 경로 = " + System.getProperty("user.dir"));
 					System.out.println(">>>>>>>>>>>>>>>>>>>>> basePath 경로 = " + basePath);
 					

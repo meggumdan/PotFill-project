@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 /**
  * /assets/js/admin/complaints.js
  * 민원 관리 페이지 클라이언트 사이드 스크립트
@@ -35,6 +33,11 @@ $(document).ready(function() {
 		loadComplaintList();
 	});
 
+	// 동적으로 생성된 이미지에 대한 클릭 이벤트 위임
+	    $(document).on('click', '.report-photo', function() {
+	        const imageUrl = $(this).attr('src'); // 클릭된 이미지의 src 경로 가져오기
+	        $('#photoModalImage').attr('src', imageUrl); // 모달 안의 img 태그에 src 경로 설정
+	    });
 
 	// '내보내기' 버튼 클릭 이벤트
 	$('#exportBtn').on('click', function() {
@@ -338,7 +341,7 @@ function loadComplaintDetail(complaintId) {
 }
 
 function renderComplaintDetail(data) {
-	const { complaint, histories, photos, duplicateComplaints } = data;
+	const { complaint, histories, duplicateComplaints } = data;
 
 	const detailHtml = `
         <ul class="nav nav-tabs px-3" id="detailTab" role="tablist">
@@ -350,11 +353,12 @@ function renderComplaintDetail(data) {
                     처리 히스토리 <span class="badge bg-secondary">${histories.length}</span>
                 </button>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="photos-tab" data-bs-toggle="tab" data-bs-target="#photos" type="button" role="tab">
-                    첨부 사진 <span class="badge bg-secondary">${photos.length}</span>
-                </button>
-            </li>
+			<li class="nav-item" role="presentation">
+			    <button class="nav-link" id="photos-tab" data-bs-toggle="tab" data-bs-target="#photos" type="button" role="tab">
+			        첨부 사진 
+			        <span class="badge bg-secondary">${complaint.photos.length}</span>
+			    </button>
+			</li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="duplicates-tab" data-bs-toggle="tab" data-bs-target="#duplicates" type="button" role="tab">
                     중복 신고 <span class="badge bg-warning text-dark">${(duplicateComplaints || []).length}</span>
@@ -368,9 +372,9 @@ function renderComplaintDetail(data) {
             <div class="tab-pane fade" id="history" role="tabpanel">
                 ${renderHistoryTab(histories)}
             </div>
-            <div class="tab-pane fade" id="photos" role="tabpanel">
-                ${renderPhotosTab(photos)}
-            </div>
+			<div class="tab-pane fade" id="photos" role="tabpanel">
+			    ${renderPhotosTab(complaint.photos)}
+			</div>
             <div class="tab-pane fade" id="duplicates" role="tabpanel">
                 ${renderDuplicatesTab(duplicateComplaints)}
             </div>
@@ -528,21 +532,30 @@ function renderHistoryTab(histories) {
 }
 
 function renderPhotosTab(photos) {
-	if (!photos || photos.length === 0) {
-		return '<p class="text-muted">첨부된 사진이 없습니다.</p>';
-	}
-	let photosHtml = '<div class="row g-2">';
-	photos.forEach(p => {
-		photosHtml += `
-            <div class="col-md-6">
-                <a href="${p.fileUrl}" target="_blank">
-                    <img src="${p.fileUrl}" class="img-fluid rounded" alt="${escapeHtml(p.photoName)}">
-                </a>
+    if (!photos || photos.length === 0) {
+        return '<p class="text-muted">첨부된 사진이 없습니다.</p>';
+    }
+    let photosHtml = '<div class="row g-2">';
+    photos.forEach(p => {
+        // 명시적으로 URL 생성
+        const imageUrl = "/potfill" + p.fileUrl;  // 직접 결합
+        
+        photosHtml += `
+            <div class="col-md-6 col-lg-4">
+                <figure class="figure">
+                    <img src="${imageUrl}"
+                         class="figure-img img-fluid rounded shadow-sm report-photo"
+                         alt="${escapeHtml(p.originalName)}"
+                         style="cursor: pointer;"
+                         data-bs-toggle="modal"
+                         data-bs-target="#photoModal">
+                    <figcaption class="figure-caption text-center">${escapeHtml(p.originalName)}</figcaption>
+                </figure>
             </div>
         `;
-	});
-	photosHtml += '</div>';
-	return photosHtml;
+    });
+    photosHtml += '</div>';
+    return photosHtml;
 }
 
 function renderDuplicatesTab(duplicates) {
