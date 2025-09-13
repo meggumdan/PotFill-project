@@ -118,4 +118,23 @@
         WHERE COMPLAINT_ID = #{complaintId}
     </update>
 
+	<!-- ComplaintHistory 저장 -->
+	<insert id="insertComplaintHistory" parameterType="com.potfill.user.complaint.model.ComplaintHistory">
+		INSERT INTO complaint_histories (
+			history_id,
+			complaint_id,
+			admin_id,
+			status,
+			status_comment,
+			created_at
+		) VALUES (
+			COMPLAINT_HISTORIES_SEQ.NEXTVAL,
+			#{complaintId},
+			#{adminId,jdbcType=NUMERIC},
+			#{status},
+			#{statusComment},
+			SYSTIMESTAMP
+		)
+	</insert>
+
 </mapper>

@@ -12,6 +12,7 @@ import com.potfill.user.common.ComplaintIdGenerator;
 import com.potfill.user.complaint.dao.UserComplaintRepository;
 import com.potfill.user.complaint.model.Complaint;
 import com.potfill.user.complaint.model.ComplaintPhoto;
+import com.potfill.user.complaint.model.ComplaintHistory;
 import com.uber.h3core.H3Core;
 
 import lombok.RequiredArgsConstructor;
@@ -92,6 +93,14 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 				}
 			}
 		}
+
+		// 5) 히스토리 등록 (Received 상태로)
+		ComplaintHistory history = ComplaintHistory.builder()
+				.complaintId(complaintId)
+				.status("Received")
+				.statusComment("신고 접수됨")
+				.build();
+		userComplaintRepository.insertComplaintHistory(history);
 	}
 
 	@Override

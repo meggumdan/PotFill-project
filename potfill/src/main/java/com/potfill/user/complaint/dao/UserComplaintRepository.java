@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.potfill.user.complaint.model.Complaint;
 import com.potfill.user.complaint.model.ComplaintPhoto;
+import com.potfill.user.complaint.model.ComplaintHistory;
 
 @Mapper
 public interface UserComplaintRepository {
@@ -31,4 +32,7 @@ public interface UserComplaintRepository {
 
 	// 주어진 H3 셀(targetCell)과 동일한 위치에 등록된 민원 건수를 조회
     Integer countByH3Index(String targetCell);
+
+	// 히스토리 추가 (접수상태 등록)
+	void insertComplaintHistory(ComplaintHistory history);
 }
