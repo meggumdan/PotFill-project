@@ -27,10 +27,19 @@
 
 	<!-- 신고 폼 저장 -->
 	<insert id="insertComplaint" parameterType="com.potfill.user.complaint.model.Complaint">
-		INSERT INTO complaints
-		(complaint_id, reporter_name, reporter_number, incident_address, created_at)
-		VALUES (#{complaintId}, #{reporterName}, #{reporterNumber},
-		#{incidentAddress}, SYSDATE)
+		INSERT INTO complaints (
+			complaint_id, reporter_name, reporter_number, incident_address,
+			lat, lon, gu, dong,
+			report_content,
+			h3_index, h3_res,
+			created_at
+		) VALUES (
+			 #{complaintId}, #{reporterName}, #{reporterNumber}, #{incidentAddress},
+			 #{lat}, #{lon}, #{gu}, #{dong},
+			 #{reportContent},
+			 #{h3Index}, #{h3Res},
+			 SYSTIMESTAMP
+		)
 	</insert>
 
 	<!-- 첨부된 사진 저장 -->
@@ -65,7 +74,14 @@
 		WHERE REPORTER_NAME = #{reporterName}
 		AND REPORTER_NUMBER = #{reporterNumber}
 	</select>
-	
+
+	<!-- 같은 셀 존재여부 빠른 조회 -->
+	<select id="countByH3Index" parameterType="string" resultType="int">
+		SELECT COUNT(1)
+		FROM COMPLAINTS
+		WHERE H3_INDEX = #{h3Index}
+	</select>
+
 	<!-- 데이터베이스의 좌표 조회 -->
     <select id="findAllCoords" resultType="com.potfill.user.complaint.model.Complaint">
         SELECT 

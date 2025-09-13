@@ -34,10 +34,18 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 		long complaintId = ComplaintIdGenerator.newId();
 		complaint.setComplaintId(complaintId);
 
-		// 2) 본문 저장
+		// 2) 좌표가 있으면 H3 인덱스 산출 (해상도는 상황에 맞게 조정: 12 또는 13 권장)
+		final int RES = 12;
+		if (complaint.getLat() != null && complaint.getLon() != null) {
+			complaint.setH3Res(RES);
+			String h3Index = h3.geoToH3Address(complaint.getLat(), complaint.getLon(), RES);
+			complaint.setH3Index(h3Index);
+		}
+
+		// 3) 본문 저장 (DB 유니크 제약이 있으면 여기서 중복 자체가 차단됨)
 		userComplaintRepository.insertComplaint(complaint);
 
-		// 3) 파일 저장 (임시로 - 프로젝트 내부 /webapp/upload 사용)
+		// 4) 파일 저장 (임시로 - 프로젝트 내부 /webapp/upload 사용)
 		if (photoFiles != null && !photoFiles.isEmpty()) {
 			for (MultipartFile file : photoFiles) {
 				if (!file.isEmpty()) {
@@ -103,32 +111,14 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 
 	@Override
 	public boolean isDuplicateLocation(double lat, double lon) {
-		final int RES = 10; // ~3m
-		
-		// 모든 위도 경도 가져오기
-		List<Complaint> complaints = userComplaintRepository.findAllCoords();
-		if (complaints == null || complaints.isEmpty()) {
-	        return false; // 비교 대상 없으면 중복 아님
-	    }
-		
+		final int RES = 12;
 		String targetCell = h3.geoToH3Address(lat, lon, RES);
-		
-		for (Complaint c : complaints) {
 
-			if (c.getLat() == null || c.getLon() == null) continue;
+		// (1) 가장 빠른 방법: DB에서 같은 H3_INDEX 존재 여부만 조회
+		Integer cnt = userComplaintRepository.countByH3Index(targetCell);
+		if (cnt != null && cnt > 0) return true;
 
-			String dbCell = h3.geoToH3Address(c.getLat(), c.getLon(), RES);
-			if (targetCell.equals(dbCell)) {
-				// 중복 발견 → 해당 민원의 최신 상태 확인
-				String latestStatus = userComplaintRepository.findLatestStatusByComplaintId(c.getComplaintId());
-
-				if ("Received".equalsIgnoreCase(latestStatus)) {
-					// 최신 상태가 Received면 중복 카운터 증가
-					userComplaintRepository.incrementReportCount(c.getComplaintId());
-				}
-				return true;
-			}
-		}
+		// (2) 과거 코드처럼 전수 비교가 필요하면(비추천) 유지 가능
 		return false;
 	}
 }

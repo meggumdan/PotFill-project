@@ -7,46 +7,6 @@
     padding-top: 80px;
     margin: 0 auto;
 }
-    
-
-/* 로고  */
-.logo-box {
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all 1s ease-in-out;
-}
-
-.logo {
-    font-family: 'Cafe24ProUp', sans-serif;
-    font-size: 40px;
-    font-weight: normal;
-    color: #fff;
-}
-
-
-
-.header {
-    width: 360px;
-    position: fixed;
-    top: 0;
-    height: 80px;
-    background-color: #3E4653;
-    color: #F5F5F7;
-    text-align: center;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding-top: env(safe-area-inset-top); /* iOS notch 대응 */
-}
-
-.logo{
-	font-size : 25px;
-}
 
 .explain {
 	width: 80%;
@@ -161,4 +121,18 @@
     margin: 20px auto;
 }
 
+.hidden {
+    display: none;
+}
 
+.extra-section {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.5s ease;
+}
+
+.extra-section.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}

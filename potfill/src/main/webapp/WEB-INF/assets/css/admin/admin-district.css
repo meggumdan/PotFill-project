@@ -1,7 +1,14 @@
 @charset "UTF-8";
 
 html, body {
-	overflow: hidden; /* 세로/가로 스크롤 둘 다 제거 */
+  overflow: auto;              /* 스크롤 동작은 허용 */
+  -ms-overflow-style: none;    /* IE, 구형 Edge */
+  scrollbar-width: none;       /* Firefox */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;               /* Chrome, Safari, 최신 Edge */
 }
 
 /* --- 레이아웃 관련 --- */
@@ -51,6 +58,17 @@ body {
 	align-items: center;
 	justify-content: center;
 	padding: 40px;
+}
+
+.trans-scroll{
+	max-height: 400px;          /* 원하는 높이 제한 */
+	overflow-y: auto;           /* 세로 스크롤 */
+	-ms-overflow-style: none;   /* IE, 구형 Edge */
+	scrollbar-width: none;      /* Firefox */
+}
+
+.trans-scroll::-webkit-scrollbar {
+	display: none;              /* Chrome, Safari, 최신 Edge */
 }
 
 /* --- 상태 박스 --- */
@@ -164,12 +182,17 @@ body {
 }
 
 /* --- 상세 textarea --- */
-.report-content {
-	width: 70px;
+.report-category {
+	width: 65px;
 	display: inline-block;
 	text-align: justify;
-	font-size: 18px;
+	font-size: 15px;
 	font-weight: 600;
+}
+.report-content {
+	display: inline-block;
+	text-align: justify;
+	font-size: 15px;
 }
 
 .detail-textarea {
@@ -201,11 +224,9 @@ body {
 .status-new {
 	color: #d9534f;
 	border-color: #d9534f;
-	background-color: #fff; /* 흰 배경 */
 }
 /* 처리중 */
 .status-processing {
-	color: #9C27B0;
 	color: #FD9C00;
 	border-color: #FD9C00;
 }

@@ -18,6 +18,12 @@ public interface DashboardOverallRepository {
      * 주요장소 삽입
      */
     int insertMajorPlace(MajorPlace majorPlace);
+    /**
+     * 주요장소 삭제
+     */
+    
+    int deleteByAreaName(String areaName);
+
     
     /**
      * 총 신고건수 (현재월)
@@ -68,4 +74,14 @@ public interface DashboardOverallRepository {
      * 지역구별 우선도 랭킹 (TOP 10)
      */
     List<Map<String, Object>> getAreaRanking();
+    
+    /**
+     * 전체 처리 현황 (도넛차트용)
+     */
+    List<Map<String, Object>> getOverallStatus();
+
+    /**
+     * 구별 상세 현황 (테이블용)
+     */
+    List<Map<String, Object>> getDistrictDetails();
 }

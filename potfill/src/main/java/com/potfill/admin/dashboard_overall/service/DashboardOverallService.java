@@ -31,4 +31,9 @@ public interface DashboardOverallService {
      * 지역구별 우선도 랭킹
      */
     Map<String, Object> getAreaRanking();
+    
+    /**
+     * 지역별 포트홀 신고현황 (도넛차트 + 테이블)
+     */
+    Map<String, Object> getRegionalStatus();
 }
