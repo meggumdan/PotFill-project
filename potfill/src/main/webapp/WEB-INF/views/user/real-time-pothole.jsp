@@ -254,6 +254,62 @@
 				if (idx === 'dom') { hideBelowOverlay(); return; }
 				if (typeof _closeOverlayOrig === 'function') _closeOverlayOrig(idx);
 			};
+			
+			// ===== 내 위치 마커 추가 =====
+			var myMarker = null;
+			var geocoder = new kakao.maps.services.Geocoder();
+
+			const imageName = 'location-me';
+			const imageSrc = '${pageContext.request.contextPath}/images/' + imageName + '.gif';
+			markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+
+			function upsertMarker(latlng) {
+			  if (!myMarker) {
+			    myMarker = new kakao.maps.Marker({
+			      position: latlng,
+			      image: markerImage,      
+			    });
+			    myMarker.setMap(map);
+			  } else {
+			    myMarker.setPosition(latlng);
+			  }
+			}
+
+			function showLatLngAndAddress(latlng, msg) {
+			  const lat = latlng.getLat().toFixed(6);
+			  const lng = latlng.getLng().toFixed(6);
+			  console.log("[내 위치]", lat, lng, msg || "");
+
+			  // 필요시 화면에 표시할 요소를 만들고 싶으면 여기서 innerText 넣기
+			  // geocoder.coord2Address(lng, lat, (results, status) => { ... });
+			}
+
+			// 한번만 현재 위치 요청
+			(function requestMyLocation() {
+			  const fallback = new kakao.maps.LatLng(37.5642135, 127.0016985);
+			  if (navigator.geolocation) {
+			    navigator.geolocation.getCurrentPosition(
+			      (pos) => {
+			        const loc = new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+			        upsertMarker(loc);
+			        map.setCenter(loc);
+			        showLatLngAndAddress(loc);
+			      },
+			      (err) => {
+			        console.warn("Geolocation error:", err);
+			        upsertMarker(fallback);
+			        map.setCenter(fallback);
+			        showLatLngAndAddress(fallback, "위치 권한 거부/실패 → 기본 좌표");
+			      },
+			      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+			    );
+			  } else {
+			    upsertMarker(fallback);
+			    map.setCenter(fallback);
+			    showLatLngAndAddress(fallback, "이 브라우저는 위치 지원 안 함");
+			  }
+			})();
+
 		</script>
 	</body>
 </html>
