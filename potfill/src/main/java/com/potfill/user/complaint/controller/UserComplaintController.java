@@ -37,16 +37,9 @@ public class UserComplaintController {
 	@PostMapping("/check-duplicate")
 	@ResponseBody
 	public Map<String, Object> checkDuplicate(@RequestBody Map<String, String> req) {
-		String address = req.get("address");
-
-		// 1. 주소 -> 위도/경도 변환 (예: 카카오 API)
-		double[] coords = userComplaintService.getCoordinatesFromAddress(address);
-		double lat = coords[0];
-		double lon = coords[1];
-
-		// 2. 중복 여부 확인 (H3)
+		double lat = Double.parseDouble(req.get("lat"));
+		double lon = Double.parseDouble(req.get("lon"));
 		boolean duplicate = userComplaintService.isDuplicateLocation(lat, lon);
-
 		return Map.of("duplicate", duplicate);
 	}
 
@@ -55,14 +48,17 @@ public class UserComplaintController {
 	public String registerComplaint(Complaint complaint, 
 			@RequestParam(value="photoFiles", required = false) List<MultipartFile> photoFiles) throws IOException {
 		
+		// 좌표가 있으면 서버에서 최종 중복차단
+		if (complaint.getLat() != null && complaint.getLon() != null) {
+			boolean dup = userComplaintService.isDuplicateLocation(complaint.getLat(), complaint.getLon());
+			if (dup) {
+				// 필요시 메시지 파라미터로 전달
+				return "redirect:/user/complaint?duplicate=true";
+			}
+		}
 		userComplaintService.saveComplaint(complaint, photoFiles);
-		
-		
-		// 추후에 나의 신고 현황으로 바로가게 바꾸기
-		// 연락처를 파라미터로 넘겨줌
-	    // redirectAttributes.addAttribute("phone", complaint.getReporterNumber());
-		// return "redirect:/user/complaints/status";
-		return "redirect:/user/complaint"; 
+
+		return "redirect:/user/complaint?saved=true";
 	}
 	
 	// 나의 신고 화면 이동
