@@ -308,7 +308,8 @@ public class ComplaintController {
     /**
      * 신고 사진 파일을 직접 읽어서 브라우저에 전송하는 메서드 (최종 디버깅 버전)
      */
-    @GetMapping("/photos/{complaintId}/{storedName}")
+    /*
+      @GetMapping("/photos/{complaintId}/{storedName}")
     public void viewPhoto(
             @PathVariable Long complaintId,
             @PathVariable String storedName,
@@ -341,4 +342,6 @@ public class ComplaintController {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
+     */
+   
 }

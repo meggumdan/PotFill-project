@@ -10,7 +10,7 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
         
-	<context:property-placeholder location="classpath:/config/db-cloude.properties, classpath:/config/api-key.properties" />
+	<context:property-placeholder location="classpath:/config/db-dev.properties, classpath:/config/api-key.properties" />
 
 	<bean id="keyProps"
 		class="org.springframework.beans.factory.config.PropertiesFactoryBean">

@@ -532,31 +532,30 @@ function renderHistoryTab(histories) {
 }
 
 function renderPhotosTab(photos) {
-	if (!photos || photos.length === 0) {
-		return '<p class="text-muted">첨부된 사진이 없습니다.</p>';
-	}
-	let photosHtml = '<div class="row g-2">';
-	photos.forEach(p => {
-		const imageUrl = `${CONTEXT_PATH}/admin/complaints/photos/${p.complaintId}/${p.storedName}`;
-
-		
-		photosHtml += `
+    if (!photos || photos.length === 0) {
+        return '<p class="text-muted">첨부된 사진이 없습니다.</p>';
+    }
+    let photosHtml = '<div class="row g-2">';
+    photos.forEach(p => {
+        // 명시적으로 URL 생성
+        const imageUrl = "/potfill" + p.fileUrl;  // 직접 결합
+        
+        photosHtml += `
             <div class="col-md-6 col-lg-4">
                 <figure class="figure">
-             
-                    <img src="${p.fileUrl}" 
-                         class="figure-img img-fluid rounded shadow-sm report-photo" 
+                    <img src="${imageUrl}"
+                         class="figure-img img-fluid rounded shadow-sm report-photo"
                          alt="${escapeHtml(p.originalName)}"
                          style="cursor: pointer;"
-                         data-bs-toggle="modal" 
+                         data-bs-toggle="modal"
                          data-bs-target="#photoModal">
                     <figcaption class="figure-caption text-center">${escapeHtml(p.originalName)}</figcaption>
                 </figure>
             </div>
         `;
-	});
-	photosHtml += '</div>';
-	return photosHtml;
+    });
+    photosHtml += '</div>';
+    return photosHtml;
 }
 
 function renderDuplicatesTab(duplicates) {

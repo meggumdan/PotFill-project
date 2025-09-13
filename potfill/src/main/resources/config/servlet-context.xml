@@ -10,7 +10,7 @@
 
 	<annotation-driven />
 
-	<mvc:resources mapping="/upload/**" location="file:///C:/lect_labs/labs_java/sts-4.31.0.RELEASE/src/main/webapp/upload/" />
+	<mvc:resources mapping="/upload/**" location="file:C:/project-potfill/" />
     <mvc:resources mapping="/js/**" location="/WEB-INF/assets/js/" />
 	<mvc:resources mapping="/css/**" location="/WEB-INF/assets/css/" />
 	<mvc:resources mapping="/images/**" location="/WEB-INF/assets/images/" />

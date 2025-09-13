@@ -53,7 +53,9 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 					// 업로드 디렉토리 설정
 					// 개발 환경: 프로젝트 내부(webapp/upload)
 					// 운영 환경: basePath 절대경로로 교체 필요
-					String basePath = new File("src/main/webapp/upload/").getAbsolutePath() + File.separator;
+//					String basePath = new File("src/main/webapp/upload/").getAbsolutePath() + File.separator;
+					String basePath = "C:" + File.separator + "project-potfill" + File.separator;
+
 					System.out.println(">>>>>>>>>>>>>>>>>>>>> user.dir 경로 = " + System.getProperty("user.dir"));
 					System.out.println(">>>>>>>>>>>>>>>>>>>>> basePath 경로 = " + basePath);
 					
