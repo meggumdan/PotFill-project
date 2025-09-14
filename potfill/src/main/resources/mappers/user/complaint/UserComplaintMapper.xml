@@ -111,6 +111,15 @@
           
     </select>
 
+	<!-- 같은 H3 셀 내 대표 신고 1건 선택 -->
+	<select id="selectPrimaryComplaintIdByH3Index" parameterType="string" resultType="long">
+		SELECT complaint_id
+		FROM COMPLAINTS
+		WHERE h3_index = #{h3Index}
+		ORDER BY complaint_id DESC
+			FETCH FIRST 1 ROWS ONLY
+	</select>
+
     <!-- 신고 빈도수 증가 -->
     <update id="incrementReportCount" parameterType="long">
         UPDATE COMPLAINTS
