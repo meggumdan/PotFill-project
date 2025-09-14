@@ -50,7 +50,7 @@
 			level: 10
 		};
 		var map = new kakao.maps.Map(mapContainer, mapOption);
-
+		
 		// 2) 클러스터러 생성 (이제 map 준비됨)
 		const CLUSTER_MIN_LEVEL = 8;
 		
@@ -116,46 +116,55 @@
 
 			map.setLevel(level, { 
 				anchor: cluster.getCenter(),
-				
 			});
 		}); // kakao.maps.event.addListener
 		
 		 // 내 위치 마커
-		   (function addAdminMyLocation() {
-		     var myMarker = null;
-		     var geocoderMy = new kakao.maps.services.Geocoder();
+		   (function addAdminUserLocation() {
+		     var userMarker = null;
+		     var geocoderUser = new kakao.maps.services.Geocoder();
 		 
 		     // 내 위치 아이콘
-		     var imageSrcMe = '${pageContext.request.contextPath}/images/location-me.gif';
-		     var myMarkerImage = new kakao.maps.MarkerImage(imageSrcMe, imageSize, imageOption);
+		     const userImage = PotfillMap.getMarkerIconName({
+					type: 'me'
+				});
+		     var imageSrcUser = '${pageContext.request.contextPath}/images/'+userImage;
+		     var userMarkerImage = new kakao.maps.MarkerImage(imageSrcUser, imageSize, imageOption);
 		 
-		     function upsertMyMarker(latlng) {
-		       if (!myMarker) {
-		         myMarker = new kakao.maps.Marker({ position: latlng, image: myMarkerImage });
-		         myMarker.setMap(map);
+		     function upsertUserMarker(latlng) {
+		       if (!userMarker) {
+		    	   userMarker = new kakao.maps.Marker({ 
+		    		   position: latlng, 
+		    		   image: userMarkerImage,
+		    		   clickable: false,
+		    		   zIdex:0
+		    		});
+		    	   userMarker.setMap(map);
 		       } else {
-		         myMarker.setPosition(latlng);
+		    	   userMarker.setPosition(latlng);
 		       }
 		     }
 		 
 
 		    const fallback = new kakao.maps.LatLng(37.5642135, 127.0016985);
+		    
+		    // GPS 승인
 		    if (navigator.geolocation) {
 		      navigator.geolocation.getCurrentPosition(
-		        (pos) => {
-		          const loc = new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
-		          upsertMyMarker(loc);
-		          map.setCenter(loc);
+		        (positon) => {
+		          const location = new kakao.maps.LatLng(positon.coords.latitude, positon.coords.longitude);
+		          upsertUserMarker(location);
+		          map.setCenter(location);
 		        },
 		        (err) => {
 		          console.warn('Geolocation error:', err);
-		          upsertMyMarker(fallback);
+		          upsertUserMarker(fallback);
 		          map.setCenter(fallback);
 		        },
 		        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
 		      );
 		    } else {
-		      upsertMyMarker(fallback);
+		    	upsertUserMarker(fallback);
 		      map.setCenter(fallback);
 		    }
 		  })();
