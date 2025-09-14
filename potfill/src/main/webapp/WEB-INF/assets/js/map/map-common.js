@@ -21,6 +21,12 @@
     if (status === '처리중') return 'location-blue-check.png';  
     return getImageNameByReportCount(reportCount);             
   }
+  
+ // 민원 처리 상태에 따른 내용 매핑
+  function mapStatus(raw, STATUS_LABELS, fallback = '접수') {
+    if (!raw) return fallback;
+    return (STATUS_LABELS && STATUS_LABELS[raw]) || fallback;
+  }
 
   
   // 역지오코딩 - 경도와 위도를 주소로 변환
@@ -33,5 +39,6 @@
   root.getImageNameByReportCount = getImageNameByReportCount;
   root.getMarkerIconName = getMarkerIconName;
   root.searchDetailAddrFromCoords = searchDetailAddrFromCoords;
+  root.mapStatus = mapStatus;
   window.PotfillMap = root;
   })(window);
