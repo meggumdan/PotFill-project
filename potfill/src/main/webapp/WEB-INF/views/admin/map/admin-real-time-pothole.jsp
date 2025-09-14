@@ -40,6 +40,8 @@
 	</div>
 	
 		<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${jsKey }&libraries=services,clusterer"></script>
+		<script src="${pageContext.request.contextPath}/js/map/map-common.js?v=1"></script>
+		
 	<script>
 		// 1) 지도 먼저 생성
 		var mapContainer = document.getElementById('map');
@@ -90,14 +92,13 @@
 
 		// 5) 클러스터러에 넣을 마커들 생성 (map 지정 X)
 		var clusterMarkers = positions.map(function (position) {
-			let imageName;
-			if(position.status === '처리중') {
-				imageName = 'location-blue-check';
-			} else {
-				imageName = getImageNameByReportCount(position.reportCount);
-				
-			}
-			var imageSrc = '${pageContext.request.contextPath}/images/' + imageName + '.png';
+			const imageName = PotfillMap.getMarkerIconName({
+				type: 'report',
+				status: position.status,
+				reportCount: position.reportCount
+				});
+			
+			var imageSrc = '${pageContext.request.contextPath}/images/' + imageName;
 			var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
 
 			return new kakao.maps.Marker({
@@ -220,7 +221,7 @@
 				activeOverlay = i;
 
 				// 역지오코딩
-				searchDetailAddrFromCoords(marker.getPosition(), function (result, status) {
+				PotfillMap.searchDetailAddrFromCoords(geocoder, marker.getPosition(), function (result, status) {
 					var detailAddr = '주소를 불러오지 못했습니다.';
 					if (status === kakao.maps.services.Status.OK && Array.isArray(result) && result.length > 0) {
 						detailAddr = (result[0].road_address ? '도로명주소 : ' + result[0].road_address.address_name + '<br>' : '')
@@ -244,6 +245,7 @@
 				activeOverlay = null;
 			} // if
 		}); // kakao.maps.event.addListener
+/*  
 
 		function getImageNameByReportCount(expr) {
 			switch (expr) {
@@ -253,7 +255,8 @@
 				default: return "location-green";
 			}
 		}
-
+ * 
+ */
 		function buildOverlayContent({ addressHtml = '', idx, status = '', reportCount = '' } = {}) {
 			return (
 				'<div class="wrap">' +
@@ -272,10 +275,13 @@
 				'</div>'
 			);
 		} // buildOverlayContent
-
+/*
+ * 
+ 
 		function searchDetailAddrFromCoords(coords, callback) {
 			geocoder.coord2Address(coords.getLng(), coords.getLat(), callback);
 		}
+ */
 
 		function closeOverlay(idx) {
 			if (overlays[idx]) overlays[idx].setMap(null);
