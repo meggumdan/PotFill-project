@@ -43,6 +43,19 @@
 		<script src="${pageContext.request.contextPath}/js/map/map-common.js?v=1"></script>
 		
 	<script>
+	/* ---- 라벨 및 상수 선언 ---- */
+	
+	// 클러스터 최소 레벨
+	const CLUSTER_MIN_LEVEL = 8;
+
+	// 민원 처리 상태 라벨 번역
+	  const STATUS_LABELS = {
+			    Received:   '접수',
+			    Processing: '처리중',
+			    Completed:  '완료',
+			    Rejected:   '반려'
+			  };
+	
 		// 1) 지도 먼저 생성
 		var mapContainer = document.getElementById('map');
 		var mapOption = {
@@ -52,7 +65,6 @@
 		var map = new kakao.maps.Map(mapContainer, mapOption);
 		
 		// 2) 클러스터러 생성 (이제 map 준비됨)
-		const CLUSTER_MIN_LEVEL = 8;
 		
 		var clusterer = new kakao.maps.MarkerClusterer({
 			map: map,
@@ -69,7 +81,7 @@
 					latlng: new kakao.maps.LatLng(${row['LAT']}, ${row['LON']}),
 				reportCount: ${row['REPORTCOUNT']},
 				content: '', // 초기 내용 필요시 채우기
-				status: getStatusLabel('${row['STATUS']}')
+				status: PotfillMap.mapStatus('${row['STATUS']}', STATUS_LABELS, '접수')
 				}); //positions.push end
 			</c:if>
 		</c:forEach>
