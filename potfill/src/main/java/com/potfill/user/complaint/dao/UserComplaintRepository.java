@@ -35,4 +35,7 @@ public interface UserComplaintRepository {
 
 	// 히스토리 추가 (접수상태 등록)
 	void insertComplaintHistory(ComplaintHistory history);
+	
+    // 지민 : 위험도 insert
+    void insertRisk(@Param("complaintId") Long complaintId, @Param("riskGrade") int riskGrade);
 }

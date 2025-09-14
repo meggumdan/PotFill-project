@@ -4,14 +4,16 @@
     xmlns:tx="http://www.springframework.org/schema/tx"
     xmlns:aop="http://www.springframework.org/schema/aop"
     xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+    xmlns:task="http://www.springframework.org/schema/task"
     xsi:schemaLocation="http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
-        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
         
-	<context:property-placeholder location="classpath:/config/db-cloude.properties, classpath:/config/api-key.properties" />
-
+	<context:property-placeholder location="classpath:/config/db-cloude.properties, classpath:/config/api-key.properties, classpath:/config/path.properties" />
+	
 	<bean id="keyProps"
 		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		<property name="locations">
@@ -51,6 +53,11 @@
 	<bean id="h3Core" class="com.uber.h3core.H3Core" factory-method="newInstance"/>
     
     <tx:annotation-driven/>
+	
+	<!-- 지민 : @Async 어노테이션 활성화 -->
+	<task:annotation-driven executor="asyncExecutor" />
+	<task:executor id="asyncExecutor" pool-size="5-10" queue-capacity="100" />
+
 
     <!-- dataSource, jdbcTemplate, transactionManager 는 기본 id로 하는 걸 권장함. -->
 <context:component-scan base-package="com.potfill">

@@ -34,3 +34,12 @@
 		</div>
 	</div>
 </header>
+
+<script>
+    const btnLogout = document.getElementById("btnLogout");
+    if (btnLogout) {   // 버튼이 존재할 때만 이벤트 바인딩
+        btnLogout.addEventListener("click", function() {
+            window.location.href = "<%=request.getContextPath()%>/admin/logout";
+        });
+    }
+</script>

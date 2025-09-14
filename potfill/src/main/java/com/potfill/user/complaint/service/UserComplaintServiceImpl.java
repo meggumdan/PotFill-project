@@ -27,6 +27,10 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 	//H3Core h3 = H3Core.newInstance(); // H3 라이브러리 왜안댐 ?????????????
 	private final H3Core h3; // 스프링이 Bean 주입
 
+
+	// 지민 : 파이썬 실행시 필요한 서비스 주입
+    private final RiskService riskService;
+	
 	@Override
 	@Transactional
 	public void saveComplaint(Complaint complaint, List<MultipartFile> photoFiles) throws IOException {
@@ -47,6 +51,7 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 		userComplaintRepository.insertComplaint(complaint);
 
 		// 4) 파일 저장 (임시로 - 프로젝트 내부 /webapp/upload 사용)
+		String firstPhotoPath = null; // 지민 : AI 실행용 대표 사진 경로 저장
 		if (photoFiles != null && !photoFiles.isEmpty()) {
 			for (MultipartFile file : photoFiles) {
 				if (!file.isEmpty()) {
@@ -94,6 +99,13 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 					photo.setStoredName(storedName); // 서버 저장된 파일명
 
 					userComplaintRepository.insertComplaintPhoto(photo);
+					
+					// 지민 : 대표 사진 경로 (실제 파일 경로)
+					// 업로드 중 첫 번째 파일만 대표 사진으로 선택
+					if (firstPhotoPath == null) {
+					    firstPhotoPath = dest.getAbsolutePath();
+					    System.out.println("대표 사진 경로: " + firstPhotoPath);
+					}
 				}
 			}
 		}
@@ -105,6 +117,11 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 				.statusComment("신고 접수됨")
 				.build();
 		userComplaintRepository.insertComplaintHistory(history);
+		
+		// 지민 : 첨부 사진이 있으면 RiskService 호출
+		if (firstPhotoPath != null) {
+		    riskService.analyzeAndSaveRisk(complaintId, firstPhotoPath);
+		}
 	}
 
 	@Override

@@ -25,11 +25,11 @@
         <result property="riskGrade" column="RISK_GRADE"/>
     </resultMap>
 
-    <!-- 1. 신규 건수 -->
+    <!-- 1. 신규 건수  WHERE C.DISTRICT_CODE = #{districtCode} -->
     <select id="getNewCount" parameterType="string" resultType="int">
         SELECT COUNT(*)
         FROM COMPLAINTS C
-        WHERE C.DISTRICT_CODE = #{districtCode}
+        WHERE C.GU = #{districtCode}
           AND EXISTS (
             SELECT 1
             FROM COMPLAINT_HISTORIES CH
@@ -47,7 +47,7 @@
     <select id="getProcessingCount" parameterType="string" resultType="int">
         SELECT COUNT(*)
         FROM COMPLAINTS C
-        WHERE C.DISTRICT_CODE = #{districtCode}
+        WHERE C.GU = #{districtCode}
           AND EXISTS (
             SELECT 1
             FROM COMPLAINT_HISTORIES CH
@@ -65,7 +65,7 @@
     <select id="getCompletedCount" parameterType="string" resultType="int">
         SELECT COUNT(*)
         FROM COMPLAINTS C
-        WHERE C.DISTRICT_CODE = #{districtCode}
+        WHERE C.GU = #{districtCode}
           AND EXISTS (
             SELECT 1
             FROM COMPLAINT_HISTORIES CH
@@ -116,7 +116,7 @@
                 )
             ) lch ON c.COMPLAINT_ID = lch.COMPLAINT_ID
             WHERE r.RISK_GRADE &gt;= 5
-              AND c.DISTRICT_CODE = #{districtCode}
+              AND c.GU = #{districtCode}
             ORDER BY r.RISK_GRADE DESC, c.CREATED_AT DESC
         )
         WHERE ROWNUM &lt;= 10
@@ -152,7 +152,7 @@
          AND lch.rn = 1
         LEFT JOIN COMPLAINTS c
           ON lch.COMPLAINT_ID = c.COMPLAINT_ID
-         AND c.DISTRICT_CODE = #{districtCode}
+         AND c.GU = #{districtCode}
         GROUP BY d.CREATED_DATE
         ORDER BY d.CREATED_DATE
     </select>

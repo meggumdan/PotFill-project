@@ -50,6 +50,14 @@
 		#{originalName}, #{storedName}, SYSDATE)
 	</insert>
 
+	<!-- 지민 : 위험도 저장 -->
+	<insert id="insertRisk">
+		INSERT INTO COMPLAINT_RISK
+		(RISK_ID, COMPLAINT_ID, RISK_GRADE)
+		VALUES
+		(COMPLAINT_RISK_SEQ.NEXTVAL, #{complaintId}, #{riskGrade})
+	</insert>
+
 	<!-- 내 신고 이력 조회 (이름 + 연락처로 신고 조회) -->
 	<select id="findByNameAndPhone" parameterType="map" resultMap="ComplaintResultMap">
 		SELECT
