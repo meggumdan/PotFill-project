@@ -64,6 +64,7 @@
     cursor: pointer;
 }
 
+/* 첨부 이미지 영역 */
 .photo-section {
 	padding-top : 20px;
 }
@@ -71,6 +72,69 @@
 .photo-section p{
 	font-size : 14px;
 	color: #898989;
+}
+
+.photo-list {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.photo-slot {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.photo-slot.add {
+    cursor: pointer;
+}
+
+/* 썸네일 이미지 + 버튼 */
+.photo-slot.add::before {
+    content: "+";
+    font-size: 32px;
+    font-weight: bold;
+    color: #FA8C2D;
+    line-height: 1;
+}
+
+/* 썸네일 이미지 */
+.photo-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 썸네일 이미지 삭제 버튼 */
+.remove-btn {
+    position: absolute;
+    top: 4px;                  /* 안쪽으로 이동 – 더는 안 잘림 */
+    right: 4px;                /* 안쪽으로 이동 – 더는 안 잘림 */
+    width: 22px;
+    height: 22px;
+    border: 2px solid #fff;    /* 흰색 테두리로 가독성 ↑ */
+    border-radius: 50%;
+    background: #FA8C2D;       /* 요청 색상 */
+    color: #fff;               /* X 글자 흰색 */
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    z-index: 1;
+    box-shadow: 0 1px 4px rgba(0,0,0,.12);
+}
+
+.remove-btn:hover {
+    filter: brightness(0.95);
 }
 
 .photo-box {
