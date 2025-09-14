@@ -17,6 +17,10 @@
 
 		<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 
+		<!-- h3 확인해보기  -->
+		<script src="https://unpkg.com/h3-js@4.1.0/dist/h3-js.umd.js"></script>
+		<script src="${pageContext.request.contextPath}/js/user/h3-check.js" defer></script>
+
 		<title>POTFill</title>
 	</head>
 	<body>
@@ -45,6 +49,19 @@
 
 					<!-- 위치 확인 영역 -->
 					<div class="location-section">
+
+						<%-- h3 영역 확인할 때  --%>
+						<%--<div class="h3-tools" style="display:flex; gap:8px; align-items:center; margin-top:8px;">
+							<label for="h3-res" style="font-size:12px;">H3 해상도</label>
+							<select id="h3-res">
+								<option value="9">9 (더더 넓게 ~100m)</option>
+								<option value="10">10 (넓게 ~100m)</option>
+								<option value="11" selected>11 (~45m)</option>
+								<option value="12">12 (좁게 ~17m)</option>
+							</select>
+							<button type="button" id="h3-draw-btn" style="padding:6px 10px;">H3 보기</button>
+							<button type="button" id="h3-clear-btn" style="padding:6px 10px;">지우기</button>
+						</div>--%>
 
 						<!-- 지도 래퍼 -->
 						<div class="map-wrap" style="width:285px; height:285px;">
@@ -216,7 +233,7 @@
 					});
 				});
 
-				// ===== 위치 변경 (시나리오 3 중간 단계) =====
+				// ===== 위치 변경 =====
 				$("#change-loc-btn").off("click").on("click", function () {
 					// 지도 풀고, 입력폼은 보이되 비활성(값은 유지)
 					unlockMap();

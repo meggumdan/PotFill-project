@@ -22,10 +22,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserComplaintServiceImpl implements UserComplaintService {
 	
-	
 	private final UserComplaintRepository userComplaintRepository;
-	//H3Core h3 = H3Core.newInstance(); // H3 라이브러리 왜안댐 ?????????????
 	private final H3Core h3; // 스프링이 Bean 주입
+
+	final int RES = 10;
 
 	@Override
 	@Transactional
@@ -35,8 +35,7 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 		long complaintId = ComplaintIdGenerator.newId();
 		complaint.setComplaintId(complaintId);
 
-		// 2) 좌표가 있으면 H3 인덱스 산출 (해상도는 상황에 맞게 조정: 12 또는 13 권장)
-		final int RES = 12;
+		// 2) 좌표가 있으면 H3 인덱스 산출
 		if (complaint.getLat() != null && complaint.getLon() != null) {
 			complaint.setH3Res(RES);
 			String h3Index = h3.geoToH3Address(complaint.getLat(), complaint.getLon(), RES);
@@ -122,7 +121,6 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 
 	@Override
 	public boolean isDuplicateLocation(double lat, double lon) {
-		final int RES = 12;
 		String targetCell = h3.geoToH3Address(lat, lon, RES);
 
 		// (1) 가장 빠른 방법: DB에서 같은 H3_INDEX 존재 여부만 조회
@@ -131,5 +129,19 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 
 		// (2) 과거 코드처럼 전수 비교가 필요하면(비추천) 유지 가능
 		return false;
+	}
+
+	// 신고 누적
+	@Transactional
+	@Override
+	public Long incrementDuplicateHit(double lat, double lon) {
+		String h3Index = h3.geoToH3Address(lat, lon, RES);
+
+		// 대표 신고 1건 선택 (정책: 가장 최근 건을 대표로)
+		Long complaintId = userComplaintRepository.selectPrimaryComplaintIdByH3Index(h3Index);
+		if (complaintId == null) return null;
+
+		userComplaintRepository.incrementReportCount(complaintId); // NVL + 1
+		return complaintId;
 	}
 }
