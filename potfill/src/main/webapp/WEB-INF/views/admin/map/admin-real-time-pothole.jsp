@@ -67,10 +67,20 @@
 					latlng: new kakao.maps.LatLng(${row['LAT']}, ${row['LON']}),
 				reportCount: ${row['REPORTCOUNT']},
 				content: '', // 초기 내용 필요시 채우기
-				status: '${row['STATUS']}'
+				status: getStatusLabel('${row['STATUS']}')
 				}); //positions.push end
 			</c:if>
 		</c:forEach>
+		
+		function getStatusLabel(data) {
+			switch (data) {
+				case "Received": return "접수";
+				case "Processing": return "처리중";
+				case "Completed": return "완료";
+				case "Rejected": return "반려";
+				default: return "접수";
+			}
+		} // getStatus
 
 
 
@@ -114,7 +124,7 @@
 		     var myMarker = null;
 		     var geocoderMy = new kakao.maps.services.Geocoder();
 		 
-		     // 내 위치 아이콘 (gif) 준비
+		     // 내 위치 아이콘
 		     var imageSrcMe = '${pageContext.request.contextPath}/images/location-me.gif';
 		     var myMarkerImage = new kakao.maps.MarkerImage(imageSrcMe, imageSize, imageOption);
 		 
@@ -239,7 +249,8 @@
 			switch (expr) {
 				case 1: return "location-green";
 				case 2: return "location-yellow";
-				default: return "location-red";
+				case 3: return "location-red";
+				default: return "location-green";
 			}
 		}
 
