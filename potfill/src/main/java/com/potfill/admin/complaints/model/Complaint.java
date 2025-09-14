@@ -1,6 +1,10 @@
 package com.potfill.admin.complaints.model;
 
 import java.sql.Timestamp;
+import java.util.List;
+
+import com.potfill.user.complaint.model.ComplaintPhoto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,6 +43,6 @@ public class Complaint {
     
     private String status;
     
-    
+    private List<ComplaintPhoto> photos;
 
 }

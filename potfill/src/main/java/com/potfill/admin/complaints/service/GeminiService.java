@@ -22,12 +22,12 @@ public class GeminiService {
     @Value("${gemini.api.key}")
     private String apiKey;
 
-    // [수정!] 더 간단한 'Google AI Gemini API' 엔드포인트를 사용합니다.
+   
     private final String model = "gemini-1.5-flash-latest"; // 최신 Flash 모델
 
     public String summarizeText(String textToSummarize) {
-        // 1. [수정!] Gemini API 호출을 위한 URL 변경
-        // 프로젝트 ID나 location이 필요 없는 더 간단한 주소입니다.
+        // 1. Gemini API 호출을 위한 URL 변경
+
         String apiUrl = String.format(
             "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s",
             model, apiKey
@@ -53,7 +53,7 @@ public class GeminiService {
 
         try {
             // 4. RestTemplate으로 API에 POST 요청 전송
-            // [수정!] 이 API는 응답을 단일 Map 형태로 반환합니다. (List가 아님)
+
             Map<String, Object> response = restTemplate.postForObject(apiUrl, requestEntity, Map.class);
 
             if (response == null || response.isEmpty()) {
