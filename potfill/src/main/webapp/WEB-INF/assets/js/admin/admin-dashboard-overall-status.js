@@ -222,7 +222,7 @@ function initMainStatusTable() {
 			info: false,
 			ordering: false,
 			autoWidth: false,
-			scrollY: '225px',
+			scrollY: '40.3vh',
 			scrollCollapse: true,
 			language: {
 				emptyTable: "데이터를 불러오는 중..."

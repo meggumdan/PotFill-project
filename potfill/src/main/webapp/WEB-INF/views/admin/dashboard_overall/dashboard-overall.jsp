@@ -142,7 +142,7 @@
 								<span class="section-icon">🚨</span> 우선 처리 지역 TOP 5
 								    <a href="${pageContext.request.contextPath}/admin/majorPlaceUpload" 
 								       class="btn btn-sm btn-primary me-3"
-								       style="background-color: #798BFF;border-color: #798BFF;font-size:9px;margin-left: 1%; font-size:8px">
+								       style="background-color: #798BFF;border-color: #798BFF;font-size:10px;margin-left: 1%; font-size:10px">
 								        <i class="bi bi-pin-map-fill"></i> 주요장소 업로드
 								    </a>
 							</h3>
@@ -203,7 +203,7 @@
 							</h3>
 
 							<div
-								style="text-align: center; font-size: 10px; color: #8094AE; margin-bottom: 0px;">
+								style="text-align: center; font-size: 13px; color: #8094AE; margin-bottom: 0px;">
 								전체 처리 현황</div>
 
 							<div style="display: flex; gap: 20px; margin-bottom: 0px;">
@@ -223,12 +223,12 @@
 											style="background-color: #D4DFB8; width: 18px; height: 18px; border-radius: 0px; flex-shrink: 0; margin-bottom: 15px;'"></div>
 										<div class="legend-details">
 											<div class="status-label"
-												style="font-size: 12px; color: #364A63; font-weight: 500;">완료</div>
+												style="font-size: 15px; color: #364A63; font-weight: 500;">완료</div>
 											<div class="status-value"
-												style="font-size: 13px; font-weight: 600; color: #8094AE; margin-top: 3px">
+												style="font-size: 16px; font-weight: 600; color: #8094AE; margin-top: 3px">
 												<span class="completed-count">0</span>건 <span
 													class="status-percentage"
-													style="font-size: 9px; color: #8094AE; margin-left: 3px;">0%</span>
+													style="font-size: 12px; color: #8094AE; margin-left: 3px;">0%</span>
 											</div>
 										</div>
 									</div>
@@ -239,12 +239,12 @@
 											style="background-color: #3D70C3; width: 18px; height: 18px; border-radius: 0px; flex-shrink: 0; margin-bottom: 15px;"></div>
 										<div class="legend-details">
 											<div class="status-label"
-												style="font-size: 12px; color: #364A63; font-weight: 500;">처리중</div>
+												style="font-size: 15px; color: #364A63; font-weight: 500;">처리중</div>
 											<div class="status-value"
-												style="font-size: 13px; font-weight: 600; color: #8094AE; margin-top: 3px">
+												style="font-size: 16px; font-weight: 600; color: #8094AE; margin-top: 3px">
 												<span class="processing-count">0</span>건 <span
 													class="status-percentage"
-													style="font-size: 9px; color: #8094AE; margin-left: 3px;">0%</span>
+													style="font-size: 12px; color: #8094AE; margin-left: 3px;">0%</span>
 											</div>
 										</div>
 									</div>
@@ -255,12 +255,12 @@
 											style="background-color: #FFB97D; width: 18px; height: 18px; border-radius: 0px; flex-shrink: 0; margin-bottom: 15px;"></div>
 										<div class="legend-details">
 											<div class="status-label"
-												style="font-size: 12px; color: #364A63; font-weight: 500;">접수</div>
+												style="font-size: 15px; color: #364A63; font-weight: 500;">접수</div>
 											<div class="status-value"
-												style="font-size: 13px; font-weight: 600; color: #8094AE; margin-top: 3px">
+												style="font-size: 16px; font-weight: 600; color: #8094AE; margin-top: 3px">
 												<span class="received-count">0</span>건 <span
 													class="status-percentage"
-													style="font-size: 9px; color: #8094AE; margin-left: 3px;">0%</span>
+													style="font-size: 12px; color: #8094AE; margin-left: 3px;">0%</span>
 											</div>
 										</div>
 									</div>
@@ -271,12 +271,12 @@
 											style="background-color: #868EA1; width: 18px; height: 18px; border-radius: 0px; flex-shrink: 0; margin-bottom: 15px;"></div>
 										<div class="legend-details">
 											<div class="status-label"
-												style="font-size: 12px; color: #364A63; font-weight: 500;">반려</div>
+												style="font-size: 15px; color: #364A63; font-weight: 500;">반려</div>
 											<div class="status-value"
-												style="font-size: 13px; font-weight: 600; color: #8094AE; margin-top: 3px">
+												style="font-size: 16px; font-weight: 600; color: #8094AE; margin-top: 3px">
 												<span class="rejected-count"></span>건 <span
 													class="status-percentage"
-													style="font-size: 9px; color: #8094AE; margin-left: 3px;">%</span>
+													style="font-size: 12px; color: #8094AE; margin-left: 3px;">%</span>
 											</div>
 										</div>
 									</div>
@@ -284,18 +284,18 @@
 							</div>
 
 							<div
-								style="text-align: center; font-size: 10px; color: #8094AE; margin-bottom: 5px;">
+								style="text-align: center; font-size: 13px; color: #8094AE; margin-bottom: 5px; margin-top: 5%;">
 								구별 상세 현황</div>
 
 							<div style="height: calc(100% - 180px); overflow: hidden;">
 								<table id="mainStatusTable"
-									style="width: 100%; border-collapse: collapse; font-size: 10px;">
+									style="width: 100%; border-collapse: collapse; font-size: 12px;">
 								</table>
 							</div>
 							<!-- 테이블 스타일을 위한 CSS 추가 -->
 							<style>
 #mainStatusTable tbody td {
-	font-size: 11px !important;
+	font-size: 14px !important;
 	padding: 8px 4px !important;
 	color: #364A63 !important;
 }

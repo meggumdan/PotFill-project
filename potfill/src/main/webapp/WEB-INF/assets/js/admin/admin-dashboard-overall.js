@@ -65,13 +65,13 @@ function updateTrendColors() {
         $(this).css({
             'color': '#1EE0AC',      // 민트 그린 색상
             'font-weight': '500',     // 중간 굵기
-            'font-size': '11px'       // 작은 폰트 크기
+            'font-size': '13px'       // 작은 폰트 크기
         });
     });
     
     // 전월 대비 텍스트도 작게
     $('.metric-period').css({
-        'font-size': '10px',
+        'font-size': '11px',
         'color': '#8094AE',
         'margin-top': '2px'
     });

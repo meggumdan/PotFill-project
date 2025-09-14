@@ -60,7 +60,7 @@ function initRankingChart() {
                     borderRadius: 2,
                     borderSkipped: false,
                     maxBarThickness: 15,  // 막대 최대 두께 (픽셀 단위)
-                    barThickness: 10,     // 막대 고정 두께 (픽셀 단위)
+                    barThickness: 15,     // 막대 고정 두께 (픽셀 단위)
                 }]
             },
             options: {
