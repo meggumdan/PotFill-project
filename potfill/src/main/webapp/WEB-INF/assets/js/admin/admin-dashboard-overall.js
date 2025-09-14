@@ -19,7 +19,7 @@ function loadKPIData() {
         type: 'GET',
         dataType: 'json',
         success: function(data) {
-            console.log('KPI 데이터 로드 성공:', data);
+            /*console.log('KPI 데이터 로드 성공:', data);*/
             updateKPICards(data);
         },
         error: function(xhr, status, error) {

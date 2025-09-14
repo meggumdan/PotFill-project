@@ -117,7 +117,7 @@ function initMainDonutChart() {
 			container.style.maxHeight = '170px';
 		}
 
-		console.log('메인 도넛차트 초기화 완료 (작은 크기)');
+		
 
 	} catch (error) {
 		console.error('메인 도넛차트 초기화 실패:', error);
@@ -229,7 +229,6 @@ function initMainStatusTable() {
 			}
 		});
 
-		console.log('메인 상태 테이블 초기화 완료');
 
 	} catch (error) {
 		console.error('메인 상태 테이블 초기화 실패:', error);
@@ -245,7 +244,7 @@ function loadRealData() {
 		type: 'GET',
 		dataType: 'json',
 		success: function(response) {
-			console.log('지역별 신고현황 데이터 로드:', response);
+			/*console.log('지역별 신고현황 데이터 로드:', response);*/
 			
 			// 도넛차트 데이터 업데이트
 			if (response.statusChart) {
