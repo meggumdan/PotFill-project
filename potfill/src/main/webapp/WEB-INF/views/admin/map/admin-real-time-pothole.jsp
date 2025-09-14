@@ -258,7 +258,7 @@
 			return (
 				'<div class="wrap">' +
 				'  <div class="info">' +
-				'    <div class="title">포트홀 위치 ' +
+				'    <div class="title">포트홀 정보 ' +
 				'      <div class="close" onclick="closeOverlay(' + idx + ')" title="닫기"></div>' +
 				'    </div>' +
 				'    <div class="body">' +
