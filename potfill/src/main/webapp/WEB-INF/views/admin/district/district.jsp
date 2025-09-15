@@ -114,12 +114,12 @@
 									<td><c:set var="isNew"
 											value="${now.time - complaint.createdAt.time <= 7*24*60*60*1000}" />
 
-										<c:if test="${isNew or complaint.status eq '접수'}">
+										<c:if test="${complaint.status eq 'Received' or complaint.status eq 'RECEIVED'}">
 											<span class="status-label status-new">신규</span>
-										</c:if> <c:if test="${complaint.status eq '처리중'}">
+										</c:if> <c:if test="${complaint.status eq 'Processing' or complaint.status eq 'PROCESSING'}">
 											<span class="status-label status-processing">처리중</span>
-										</c:if></td>
-
+										</c:if>
+									</td>
 								</tr>
 								<!-- 상세행 -->
 								<tr id="detail-${status.count}" class="collapse detail-row">
@@ -150,7 +150,7 @@
 												<input type="hidden" name="id"
 													value="${complaint.complaintId}">
 												<button type="submit" class="btn btn-primary"
-													style="background-color: #00BFFF; border: none;">접수</button>
+													style="background-color: #00BFFF; border: none;">접수상세</button>
 											</form>
 										</div></td>
 								</tr>

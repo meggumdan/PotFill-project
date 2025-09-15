@@ -39,7 +39,7 @@
                 FROM COMPLAINT_HISTORIES CH2
                 WHERE CH2.COMPLAINT_ID = C.COMPLAINT_ID
               )
-              AND CH.STATUS = '접수'
+              AND CH.STATUS = 'RECEIVED'
           )
     </select>
 
@@ -57,7 +57,7 @@
                 FROM COMPLAINT_HISTORIES CH2
                 WHERE CH2.COMPLAINT_ID = C.COMPLAINT_ID
               )
-              AND CH.STATUS = '처리중'
+              AND CH.STATUS = 'PROCESSING'
           )
     </select>
 
@@ -75,11 +75,11 @@
                 FROM COMPLAINT_HISTORIES CH2
                 WHERE CH2.COMPLAINT_ID = C.COMPLAINT_ID
               )
-              AND CH.STATUS IN ('완료', '반려')
+              AND CH.STATUS IN ('COMPLETED', 'REJECTED')
           )
     </select>
 
-    <!-- 4. 긴급 민원 리스트 (리스크 등급 5 이상) -->
+    <!-- 4. 긴급 민원 리스트 (리스크 등급 7 이상) -->
     <select id="getEmergencyList" parameterType="string" resultMap="ComplaintResultMap">
         SELECT *
         FROM (
@@ -115,7 +115,7 @@
                     WHERE ch2.COMPLAINT_ID = ch.COMPLAINT_ID
                 )
             ) lch ON c.COMPLAINT_ID = lch.COMPLAINT_ID
-            WHERE r.RISK_GRADE &gt;= 5
+            WHERE r.RISK_GRADE &gt;= 7
               AND c.GU = #{districtCode}
             ORDER BY r.RISK_GRADE DESC, c.CREATED_AT DESC
         )
@@ -144,8 +144,8 @@
         )
         SELECT
             d.CREATED_DATE AS CREATED_DATE,
-            NVL(SUM(CASE WHEN lch.STATUS = '접수' THEN 1 ELSE 0 END), 0) AS NEWCOUNT,
-            NVL(SUM(CASE WHEN lch.STATUS IN ('완료', '반려') THEN 1 ELSE 0 END), 0) AS COMPLETEDCOUNT
+            NVL(SUM(CASE WHEN lch.STATUS = 'RECEIVED' THEN 1 ELSE 0 END), 0) AS NEWCOUNT,
+            NVL(SUM(CASE WHEN lch.STATUS IN ('COMPLETED', 'REJECTED') THEN 1 ELSE 0 END), 0) AS COMPLETEDCOUNT
         FROM last7days d
         LEFT JOIN latest_complaint_histories lch
           ON TRUNC(lch.CREATED_AT) = d.CREATED_DATE

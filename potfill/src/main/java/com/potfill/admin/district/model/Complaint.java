@@ -15,7 +15,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 public class Complaint {
-	private int complaintId;
+	private long complaintId;
 	private String reporterName;
 	private String reporterNumber;
 	private String incidentAddress;
