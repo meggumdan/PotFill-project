@@ -1,55 +1,90 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" type="text/css" href="<c:url value='/css/user/main.css'/>">
-		<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-		<title>POTFill</title>
-	</head>
-	<body>
-	
-		<!-- 젤 큰 영역 -->
-		<div class="container">
-			
-			<!--  인트로 -->
-			<div id="intro" class="logo-box">
-				<h1 class="logo">POTFill</h1>
-			</div>
-			
-			<!-- 메인 메뉴 -->
-			<div id="menu" class="menu-box hidden">
-				<ul>
-					<li><a href="<c:url value='/user/complaint' />">포트홀 신고하기</a></li>
-					<li><a href="<c:url value='/user/map' />">포트홀 실시간</a></li>
-					<li><a href="<c:url value='/user/complaint/list' />">나의 신고 현황</a></li>
-					<!-- 지민 : 신고 안내 화면 이동 -->
-                		<li><a href="<c:url value='/user/complaint/manual'/>">포트홀 신고 안내</a></li>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css"
+	href="<c:url value='/css/user/main.css'/>">
 
-				</ul>
-			</div>
-			
+<link rel="stylesheet" type="text/css"
+	href="${pageContext.request.contextPath}/css/user/manual.css"><!-- 지민css -->
+<script
+	src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<title>POTFill</title>
+</head>
+
+<body>
+
+	<!-- 젤 큰 영역 -->
+	<div class="container">
+
+		<!--  인트로 -->
+		<div id="intro" class="logo-box">
+			<h1 class="logo">POTFill</h1>
 		</div>
-				
-		<script>
-		
-			$(document).ready(function(){
-				
-				
-				// 메인 시작 효과
-				setTimeout(function(){
-					
-					// 배경 흰색으로 
-					$('.container').css('background-color' , '#F5F5F7');
-					// 로고 효과
-					$("#intro").addClass("move-up");
-					// 메뉴 표시
-					$("#menu").removeClass("hidden").addClass("show");
-				},1000);
+
+		<!-- 메인 메뉴 -->
+		<div id="menu" class="menu-box hidden">
+			<ul>
+				<li><a href="<c:url value='/user/complaint' />">포트홀 신고하기</a></li>
+				<li><a href="<c:url value='/user/map' />">포트홀 실시간</a></li>
+				<li><a href="<c:url value='/user/complaint/list' />">나의 신고
+						현황</a></li>
+				<!-- 지민 : 신고 안내 화면 이동 -->
+				<li><a href="<c:url value='/user/complaint/manual'/>"
+					id="openManual">포트홀 신고 안내</a></li>
+
+			</ul>
+		</div>
+
+		<!-- 지민: 모달숨기기 -->
+		<div id="manualModal" class="manual-modal hidden">
+			<div class="manual-content">
+				<%@ include file="/WEB-INF/views/user/user-manual.jsp"%>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$(document).ready(function() {
+
+			// 메인 시작 효과
+			setTimeout(function() {
+
+				// 배경 흰색으로 
+				$('.container').css('background-color', '#F5F5F7');
+				// 로고 효과
+				$("#intro").addClass("move-up");
+				// 메뉴 표시
+				$("#menu").removeClass("hidden").addClass("show");
+			}, 1000);
+
+			//지민
+			// ===== 안내 오버레이 제어 =====
+			function openManual() {
+				$("#manualModal").removeClass("hidden").addClass("show");
+				$("body").css("overflow", "hidden");
+			}
+			function closeManual() {
+				$("#manualModal").removeClass("show").addClass("hidden");
+				$("body").css("overflow", "");
+			}
+
+			// 메뉴 클릭 시 열기
+			$("#openManual").on("click", function(e) {
+				e.preventDefault();
+				openManual();
 			});
-		</script>
-		
-	</body>
+
+			// fragment 안의 X 버튼 클릭으로 닫기
+			$(document).on("click", "#close-btn", function() {
+				closeManual();
+			});
+
+		});
+	</script>
+
+</body>
 </html>
