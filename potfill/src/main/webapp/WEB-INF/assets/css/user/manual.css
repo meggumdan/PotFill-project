@@ -1,0 +1,167 @@
+@import url("reset.css");
+
+.container {
+    width: 100%;          /* body 기준 100% */
+    min-height: 100vh;    /* 화면 높이 채움 */
+    background-color: #fff;    /* 본문 영역 */
+    padding-top: 80px;
+    margin: 0 auto;
+}
+    
+
+/* 로고  */
+.logo-box {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 1s ease-in-out;
+}
+
+.logo {
+    font-family: 'Cafe24ProUp', sans-serif;
+    font-size: 40px;
+    font-weight: normal;
+    color: #fff;
+}
+
+
+
+.header {
+    width: 360px;
+    position: fixed;
+    top: 0;
+    height: 80px;
+    background-color: #3E4653;
+    color: #F5F5F7;
+    text-align: center;
+	z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding-top: env(safe-area-inset-top); /* iOS notch 대응 */
+}
+
+.logo{
+	font-size : 25px;
+}
+
+.top {
+	width: 80%;
+	margin: 0 auto;
+	padding-top:10px;
+	padding-left: 15px;
+}
+
+.required {
+	color: #FA8C2D;
+	font-size: 16px; 
+}
+
+.manual-content-bg{
+  width: 100%;
+  margin: 0 0;
+
+  /* 스크롤 영역 설정 */
+  max-height: calc(100vh - 160px); /* 헤더+푸터 높이 뺀 값 */
+  overflow-y: auto;
+
+}
+
+.manual-content {
+  width: 80%;
+  margin: 0 auto;
+  padding: 10px;
+
+
+  /* 배경/스타일 */
+  background: #fff;
+  box-sizing: border-box;
+}
+
+/* 스크롤바 얇게 */
+.manual-content-bg::-webkit-scrollbar {
+  width: 6px;
+}
+.manual-content-bg::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 3px;
+}
+.manual-content-bg::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.manual-content div {
+	margin-bottom: 5px;
+} 
+
+h4 {
+  margin-top: 16px; 
+  margin-bottom: 8px;
+  padding: 0;
+}
+
+.manual-content label {
+	display:block;
+}
+
+
+.small-font{
+	font-size: 14px;
+}
+
+.img-area {
+  max-width: 300px;
+  border: 1px solid #3E4653;
+  border-radius: 0;
+}
+
+.img-center {
+  display: block;      /* inline → block으로 바꾸기 */
+  margin: 0 auto;      /* 좌우 margin 자동 배분 */
+}
+
+
+/*--------------------------------*/
+
+/* 공통 */
+.highlight-box {
+  position: relative;
+  display: inline-block;
+}
+.highlight-box::before,
+.highlight-box::after {
+  content: "";
+  position: absolute;
+  border: 5px dashed #FA8C2D;
+  animation: blink 2s infinite;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+/* 원형 (after 사용) */
+.highlight-box.circle::after {
+  top: 24%;
+  left: 46%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
+/* 네모 (before 사용) */
+.highlight-box.square::before {
+  bottom: 2%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 200px;
+  height: 40px;
+  border-radius: 0px;
+}
+
+/* 깜빡임 */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
