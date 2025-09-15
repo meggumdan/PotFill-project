@@ -122,8 +122,8 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 		// 5) 히스토리 등록 (Received 상태로)
 		ComplaintHistory history = ComplaintHistory.builder()
 				.complaintId(complaintId)
-				.status("Received")
-				.statusComment("신고 접수됨")
+				.status("RECEIVED")
+				.statusComment("신규 접수")
 				.build();
 		userComplaintRepository.insertComplaintHistory(history);
 		
