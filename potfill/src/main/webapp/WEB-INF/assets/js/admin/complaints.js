@@ -469,10 +469,10 @@ $(document).on('click', '#aiSummaryBtn', function() {
     const $resultDiv = $('#aiSummaryResult');
     const $btn = $(this);
 
-    if (content.trim() === '내용 없음' || content.trim() === '') {
-        alert('요약할 내용이 없습니다.');
-        return;
-    }
+	if (!selectedComplaintId) {
+	    alert('요약할 민원을 먼저 선택해주세요.');
+	    return; // ID가 없으면 여기서 중단
+	}
 
     // 로딩 상태 표시 (버튼 비활성화 및 스피너 아이콘)
     $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 요약 중...');
@@ -481,7 +481,7 @@ $(document).on('click', '#aiSummaryBtn', function() {
     $.ajax({
         url: CONTEXT_PATH + '/admin/complaints/api/summarize',
         method: 'POST',
-        data: { content: content },
+        data: { complaintId: selectedComplaintId },
         success: function(response) {
             if (response.success) {
                 // 성공 시, 결과를 예쁘게 포장해서 보여줌
@@ -709,7 +709,7 @@ function maskName(name) {
 
 function maskPhone(phone) {
 	if (!phone) return '';
-	return phone.replace(/(\d{3})-(\d{4})-(\d{4})/, '$1-****-$3');
+	return phone.replace(/(\d{3})(\d{4})(\d{4})/, '$1-****-$3');
 }
 
 function formatDate(dateValue) {
