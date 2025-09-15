@@ -75,7 +75,11 @@ public class UserComplaintController {
 	
 	
 	
-	
+	// 지민: 포트홀 신고 안내 페이지 이동
+	@GetMapping("/manual")
+	public String complaintManual() {
+		return "user/user-manual";
+	}
 	
 
 }
