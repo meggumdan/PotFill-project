@@ -60,9 +60,9 @@
 					<p style="margin: 0;">* 사진 촬영 가이드</p>
 					<p style="margin: 0 0 0 10px;">포트홀의 크기를 가늠할 수 있도록 차선의 양 끝을 보이게
 						촬영해 주세요.</p>
-					<img style="margin: 5px 0 0 10px;"
-						src="${pageContext.request.contextPath}/images/guid-img.png"
-						alt="가이드" class="sub-img-area sub-img-center">
+					<img style="margin: 5px 0 0 10px; max-width:250px;"
+						 src="${pageContext.request.contextPath}/images/guid-img.png"
+						 alt="가이드" class="sub-img-area sub-img-center">
 				</div>
 			</div>
 
