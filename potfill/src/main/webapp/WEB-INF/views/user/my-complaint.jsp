@@ -29,7 +29,7 @@
 			<c:if test="${not empty complaints}">
 				<div class="explain">
 					<h3>내 신고 조회 결과</h3>
-					<p>신고 내역의 접수 상태를 확인 할 수 있습니다.</p>
+					<p>신고 접수 상태를 확인 할 수 있습니다.</p>
 				</div>
 
 				<div class="complaint-list">
