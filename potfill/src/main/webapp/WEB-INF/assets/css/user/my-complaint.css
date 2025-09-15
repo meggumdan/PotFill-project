@@ -184,8 +184,7 @@
 	justify-content: center;
 	align-items: center;
 	gap: 40px;
-	font-size: 16px;
-	font-weight: bold;
+	font-size: 15px;
 	color: #888;
 	padding: 30px 0;
 }
@@ -198,7 +197,6 @@
 	height: 60px;
 	border-radius: 50%;
 	border: 2px solid #FA8C2D;
-	opacity: 0.5;
 	transition: all 0.3s ease-in-out;
 }
 
@@ -220,11 +218,54 @@
 
 .complaint-info div {
 	display: flex;
-	align-items: center;
+	align-items: flex-start;  /* label 위아래 맞춤 */
 	gap: 10px;
+	word-break: break-word;   /* 긴 단어/주소 줄바꿈 */
+	white-space: normal;      /* 줄바꿈 허용 */
 }
 
 .complaint-label {
 	font-weight: bold;
-	width: 100px;
+	min-width: 80px;   /* 라벨 최소 너비 */
+	flex-shrink: 0;    /* 줄어들지 않음 */
+}
+
+.complaint-info div span + * {
+	flex: 1;          /* 내용이 자동으로 줄바꿈 */
+}
+
+.no-result-plain {
+	margin: 40px auto;
+	padding: 30px 20px;
+	text-align: center;
+	font-size: 16px;
+	font-weight: 500;
+	color: #666;
+	background: #fff;
+	border: 2px dashed #FA8C2D;   /* 포인트 컬러 */
+	border-radius: 12px;
+	max-width: 300px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.action-btns {
+	display: flex;
+	justify-content: center;
+	margin-top: 20px;
+}
+
+.btn-primary {
+	display: inline-block;
+	padding: 12px 24px;
+	border-radius: 8px;
+	background-color: #FA8C2D;
+	color: #fff;
+	text-decoration: none;
+	font-size: 15px;
+	font-weight: bold;
+	transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+	background-color: #e67a1f;
 }

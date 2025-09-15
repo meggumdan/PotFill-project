@@ -1,8 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <footer class="footer">
-    <div class="footer-content">
-        <p>메꿈단</p>
-        <p> 또 뭐 넣지 ? 추천 받아요 </p>
-    </div>
+    <p>&copy; 2025 POTFILL - 포트홀 신고 시스템</p>
+    <p>서울시 도로 안전을 위한 시민 참여 플랫폼</p>
 </footer>

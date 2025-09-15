@@ -63,26 +63,27 @@ public class UserComplaintController {
 		return "user/complaint-complete";
 	}
 
-	// 나의 신고 화면 이동
+	// 나의 신고 화면 (초기 진입: 폼만 보이게)
 	@GetMapping("/list")
-	public String myComplaint() {
-
+	public String myComplaint(Model model) {
+		model.addAttribute("searched", false); // 초기 진입 표시
 		return "user/my-complaint";
 	}
 
-
-	// 나의 신고 화면 이동
+	// 나의 신고 조회 (검색 수행)
 	@PostMapping("/list")
-	public String getMyComplaint(@RequestParam String reporterName, @RequestParam String reporterNumber, Model model) throws IOException {
+	public String getMyComplaint(@RequestParam String reporterName,
+								 @RequestParam String reporterNumber,
+								 Model model) throws IOException {
 
 		List<Complaint> list = userComplaintService.findByNameAndPhone(reporterName, reporterNumber);
-		model.addAttribute("complaints", list);
-		model.addAttribute("inputName", reporterName);
-		model.addAttribute("inputPhone", reporterNumber);
+
+		model.addAttribute("searched", true);      // 검색을 수행했음
+		model.addAttribute("complaints", list);    // null/빈 리스트 가능
 
 		return "user/my-complaint";
 	}
-	
+
 	
 	
 	// 지민: 포트홀 신고 안내 페이지 이동
