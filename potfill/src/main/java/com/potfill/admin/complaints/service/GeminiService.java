@@ -12,7 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
+import com.potfill.admin.complaints.model.Complaint;
 @Service
 public class GeminiService {
 
@@ -25,7 +25,7 @@ public class GeminiService {
    
     private final String model = "gemini-1.5-flash-latest"; // 최신 Flash 모델
 
-    public String summarizeText(String textToSummarize) {
+    public String summarizeText(Complaint complaint) {
         // 1. Gemini API 호출을 위한 URL 변경
 
         String apiUrl = String.format(
@@ -38,8 +38,34 @@ public class GeminiService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         // 3. API에 보낼 요청 본문(Body) 생성 (이전과 거의 동일)
-        String prompt = "다음 민원 내용을 세 문장으로 간결하게 요약해줘. 핵심 내용만 포함해줘. \n\n민원 내용: \"" + textToSummarize + "\"";
+       // String prompt = "다음 민원 내용을 세 문장으로 간결하게 요약해줘. 핵심 내용만 포함해줘. \n\n민원 내용: \"" + textToSummarize + "\"";
+        String risk = complaint.getRiskLevel(); // "HIGH", "MEDIUM", "LOW" 등
+        int duplicates = complaint.getReportCount();
+        String contentText  = complaint.getReportContent();
         
+        String prompt = String.format(
+                """
+                [임무]
+                당신은 서울시 도로 안전 관제 AI입니다. 민원 정보를 분석하여 현장 담당자를 위한 **핵심 브리핑**을 생성합니다.
+
+                [결과물 규칙]
+                1.  **길이:** 전체 브리핑은 반드시 **총 2문장**으로 작성하세요.
+                2.  **내용:** 첫 문장은 '위치'와 '핵심 문제'를, 두 번째 문장은 '위험도'와 '중복 신고'를 근거로 한 '조치 권고'를 자연스럽게 서술하세요.
+                3.  **형식:** 제목, 날짜, 글머리 기호(-, •) 등을 절대 사용하지 말고, 오직 2개의 문장만 생성하세요.
+                4.  **어조:** 기계적인 정보 나열이 아닌, 사람이 보고하는 것처럼 간결하고 명확한 문장으로 작성하세요.
+
+                [분석할 민원 정보]
+                - 중복 신고: %d회
+                - 시스템 위험도: %s
+                - 민원 내용: "%s"
+
+                [브리핑 생성 시작]
+                """,
+                duplicates,
+                risk,
+                contentText
+            );
+
         Map<String, Object> textPart = new HashMap<>();
         textPart.put("text", prompt);
 

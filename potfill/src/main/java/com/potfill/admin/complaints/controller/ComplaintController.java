@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.potfill.admin.complaints.model.Complaint;
 import com.potfill.admin.complaints.service.ComplaintService;
 import com.potfill.admin.complaints.service.GeminiService;
 
@@ -289,12 +291,26 @@ public class ComplaintController {
      */
     @PostMapping("/api/summarize")
     @ResponseBody
-    public Map<String, Object> summarizeComplaint(@RequestParam String content) {
+    public Map<String, Object> summarizeComplaint(@RequestParam("complaintId") Long complaintId) {
         Map<String, Object> response = new HashMap<>();
         try {
-            String summary = geminiService.summarizeText(content);
+            // 1. complaintId로 민원 상세 정보 전체를 DB에서 조회합니다.
+            Map<String, Object> detailData = complaintService.getComplaintDetail(complaintId);
+            
+            // 민원 정보가 없는 경우 예외 처리
+            if (detailData == null || detailData.get("complaint") == null) {
+                throw new IllegalArgumentException("해당 ID의 민원을 찾을 수 없습니다: " + complaintId);
+            }
+            
+            // Map에서 Complaint 객체를 꺼냅니다.
+            Complaint complaint = (Complaint) detailData.get("complaint");
+
+            // 2. Gemini 서비스에 String이 아닌 Complaint 객체 전체를 넘겨줍니다.
+            String summary = geminiService.summarizeText(complaint);
+            
             response.put("success", true);
             response.put("summary", summary);
+            
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "AI 요약 기능을 불러오는 데 실패했습니다.");
@@ -302,7 +318,6 @@ public class ComplaintController {
         }
         return response;
     }
-
 
 
     /**
