@@ -75,7 +75,7 @@ public class SizeCheckService {
 		}
 	}
 
-	/** 면적 + 최대폭 기반 위험도 계산 */
+	/* 1. 면적 + 최대폭 기반 위험도 계산
 	public int calculateRiskGrade(double areaM2, double maxWidthM) {
 		if (areaM2 <= 0.0 || maxWidthM <= 0.0)
 			return 0;
@@ -113,4 +113,57 @@ public class SizeCheckService {
 
 		return Math.max(0, Math.min(10, grade));
 	}
+	*/
+	
+	/* 2. 면적 중심 가중합 
+	public int calculateRiskGrade(double areaM2, double maxWidthM) {
+	    if (areaM2 <= 0.0 || maxWidthM <= 0.0) return 0;
+
+	    // 면적 점수 (0.5㎡ 이상이면 10점)
+	    double areaScore10 = Math.min(areaM2 / 0.5, 1.0) * 10.0;
+
+	    // 폭 점수 (기존 로직 유지)
+	    double[] targets = {0.16, 0.19, 0.235, 0.295, 0.315};
+	    double sigma = 0.03, maxSim = 0.0;
+	    for (double t : targets) {
+	        double sim = Math.exp(-Math.pow(maxWidthM - t, 2) / (2 * sigma * sigma));
+	        maxSim = Math.max(maxSim, sim);
+	    }
+	    double tireScore10 = 10.0 * maxSim;
+
+	    // 가중합 (면적 70%, 폭 30%)
+	    double finalScore = 0.7 * areaScore10 + 0.3 * tireScore10;
+	    int grade = (int) Math.round(finalScore);
+
+	    System.out.println(">>>>> areaM2      : " + areaM2);
+	    System.out.println(">>>>> areaScore10 : " + areaScore10);
+	    System.out.println(">>>>> tireScore10 : " + tireScore10);
+	    System.out.println(">>>>> finalScore  : " + finalScore);
+	    System.out.println(">>>>> grade       : " + grade);
+
+	    return Math.max(0, Math.min(10, grade));
+	}
+	*/
+	
+	// 3. 면적으로만
+	/** 면적 기반 위험도 계산 (0~10, 2㎡ 기준)
+	public int calculateRiskGrade(double areaM2, double maxWidthM) {
+	    if (areaM2 <= 0.0) return 0;
+
+	    // 면적 비례 (2㎡ → 10점, 2㎡ 이상은 10점 고정)
+	    double areaScore10 = Math.min(areaM2 / 2.0, 1.0) * 10.0;
+
+	    // 정수로 반올림
+	    int grade = (int) Math.round(areaScore10);
+
+	    // 디버깅 출력
+	    System.out.println(">>>>> maxWidthM   : " + maxWidthM);
+	    System.out.println(">>>>> areaM2      : " + areaM2);
+	    System.out.println(">>>>> areaScore10 : " + areaScore10);
+	    System.out.println(">>>>> grade       : " + grade);
+
+	    return grade;
+	} */
+
+
 }

@@ -30,7 +30,7 @@ public class RiskService {
             // 위험도 등급 계산
             int riskGrade = calculateRiskGrade(area, maxWidth);
 
-            System.out.println(complaintId + "] 위험등급 : " + riskGrade);
+            System.out.println("[ "+complaintId + " ] 위험등급 : " + riskGrade);
 
             // DB 저장 (area 없이)
             userComplaintRepository.insertRisk(complaintId, riskGrade);
@@ -59,6 +59,7 @@ public class RiskService {
         }
     }
 
+    /*
     private int calculateRiskGrade(double areaM2, double maxWidthM) {
         if (areaM2 <= 0.0 || maxWidthM <= 0.0) return 0;
 
@@ -77,5 +78,16 @@ public class RiskService {
         int grade = (int) Math.round(finalScore);
 
         return Math.max(0, Math.min(10, grade));
+    }
+    */
+    private int calculateRiskGrade(double areaM2, double maxWidthM) {
+        if (areaM2 <= 0.0) return 0;
+
+        // 면적 비례 (2㎡ → 10점, 2㎡ 이상은 10점 고정)
+        double areaScore10 = Math.min(areaM2 / 2.0, 1.0) * 10.0;
+        int grade = (int) Math.round(areaScore10);
+
+        System.out.println(">>>>> [RiskService 실행] areaM2=" + areaM2 + ", grade=" + grade);
+        return grade;
     }
 }
