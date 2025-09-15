@@ -24,4 +24,6 @@ public class Complaint {
 	    private Long assignedAdminId;        // ASSIGNED_ADMIN_ID
 	    private String assignedDepartment;   // ASSIGNED_DEPARTMENT
 	    private Integer reportCount;         // REPORT_COUNT
+
+		private String Status;				 // HISTORY 테이블의 Status
 }

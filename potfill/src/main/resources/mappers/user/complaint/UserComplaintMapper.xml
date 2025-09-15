@@ -6,23 +6,24 @@
 
 	<!-- Complaint VO 매핑 -->
 	<resultMap id="ComplaintResultMap" type="com.potfill.user.complaint.model.Complaint">
-		<id property="complaintId" column="COMPLAINT_ID" />
-		<result property="reporterName" column="REPORTER_NAME" />
-		<result property="reporterNumber" column="REPORTER_NUMBER" />
-		<result property="incidentAddress" column="INCIDENT_ADDRESS" />
-		<result property="districtCode" column="DISTRICT_CODE" />
-		<result property="gu" column="GU" />
-		<result property="dong" column="DONG" />
-		<result property="lat" column="LAT" />
-		<result property="lon" column="LON" />
-		<result property="radius" column="RADIUS" />
-		<result property="h3Index" column="H3_INDEX" />
-		<result property="h3Res" column="H3_RES" />
-		<result property="reportContent" column="REPORT_CONTENT" />
-		<result property="createdAt" column="CREATED_AT" />
-		<result property="assignedAdminId" column="ASSIGNED_ADMIN_ID" />
-		<result property="assignedDepartment" column="ASSIGNED_DEPARTMENT" />
-		<result property="reportCount" column="REPORT_COUNT" />
+		<id property="complaintId" column="COMPLAINT_ID"/>
+		<result property="reporterName" column="REPORTER_NAME"/>
+		<result property="reporterNumber" column="REPORTER_NUMBER"/>
+		<result property="incidentAddress" column="INCIDENT_ADDRESS"/>
+		<result property="districtCode" column="DISTRICT_CODE"/>
+		<result property="gu" column="GU"/>
+		<result property="dong" column="DONG"/>
+		<result property="lat" column="LAT"/>
+		<result property="lon" column="LON"/>
+		<result property="radius" column="RADIUS"/>
+		<result property="h3Index" column="H3_INDEX"/>
+		<result property="h3Res" column="H3_RES"/>
+		<result property="reportContent" column="REPORT_CONTENT"/>
+		<result property="createdAt" column="CREATED_AT"/>
+		<result property="assignedAdminId" column="ASSIGNED_ADMIN_ID"/>
+		<result property="assignedDepartment" column="ASSIGNED_DEPARTMENT"/>
+		<result property="reportCount" column="REPORT_COUNT"/>
+		<result property="status" column="STATUS"/>
 	</resultMap>
 
 	<!-- 신고위치에 맞는 구 담당자 가져오기-->
@@ -68,29 +69,45 @@
 		(COMPLAINT_RISK_SEQ.NEXTVAL, #{complaintId}, #{riskGrade})
 	</insert>
 
-	<!-- 내 신고 이력 조회 (이름 + 연락처로 신고 조회) -->
+	<!-- 내 신고 이력 조회 (이름 + 연락처) + 최신 상태 조인 -->
 	<select id="findByNameAndPhone" parameterType="map" resultMap="ComplaintResultMap">
 		SELECT
-			COMPLAINT_ID,
-			REPORTER_NAME,
-			REPORTER_NUMBER,
-			INCIDENT_ADDRESS,
-			DISTRICT_CODE,
-			GU,
-			DONG,
-			LAT,
-			LON,
-			RADIUS,
-			H3_INDEX,
-			H3_RES,
-			REPORT_CONTENT,
-			CREATED_AT,
-			ASSIGNED_ADMIN_ID,
-			ASSIGNED_DEPARTMENT,
-			REPORT_COUNT
-		FROM COMPLAINTS
-		WHERE REPORTER_NAME = #{reporterName}
-		AND REPORTER_NUMBER = #{reporterNumber}
+			c.COMPLAINT_ID,
+			c.REPORTER_NAME,
+			c.REPORTER_NUMBER,
+			c.INCIDENT_ADDRESS,
+			c.DISTRICT_CODE,
+			c.GU,
+			c.DONG,
+			c.LAT,
+			c.LON,
+			c.RADIUS,
+			c.H3_INDEX,
+			c.H3_RES,
+			c.REPORT_CONTENT,
+			c.CREATED_AT,
+			c.ASSIGNED_ADMIN_ID,
+			c.ASSIGNED_DEPARTMENT,
+			c.REPORT_COUNT,
+			ch.STATUS AS STATUS
+		FROM COMPLAINTS c
+				 LEFT JOIN (
+			SELECT complaint_id, status
+			FROM (
+					 SELECT
+						 complaint_id,
+						 status,
+						 ROW_NUMBER() OVER (
+                    PARTITION BY complaint_id
+                    ORDER BY created_at DESC, history_id DESC
+                ) AS rn
+					 FROM complaint_histories
+				 )
+			WHERE rn = 1
+		) ch
+						   ON ch.complaint_id = c.complaint_id
+		WHERE c.REPORTER_NAME  = #{reporterName}
+		  AND c.REPORTER_NUMBER = #{reporterNumber}
 	</select>
 
 	<!-- 같은 셀 존재여부 빠른 조회 -->
