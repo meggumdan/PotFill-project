@@ -45,8 +45,19 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 			complaint.setH3Index(h3Index);
 		}
 
+		// 담당자 배정 (gu 기준, 없으면 null)
+		Long adminId = userComplaintRepository.findAdminIdByGu(complaint.getGu());
+		if (adminId != null) {
+			complaint.setAssignedAdminId(adminId);
+		} else {
+			// 정책에 따라 기본 담당자 배정하거나(null 허용이면 패스)
+			// complaint.setAssignedAdminId(DEFAULT_ADMIN_ID);
+		}
+
+
 		// 3) 본문 저장 (DB 유니크 제약이 있으면 여기서 중복 자체가 차단됨)
 		userComplaintRepository.insertComplaint(complaint);
+		System.out.println(adminId);
 
 		// 4) 파일 저장 (임시로 - 프로젝트 내부 /webapp/upload 사용)
 		String firstPhotoPath = null; // 지민 : AI 실행용 대표 사진 경로 저장

@@ -25,17 +25,27 @@
 		<result property="reportCount" column="REPORT_COUNT" />
 	</resultMap>
 
+	<!-- 신고위치에 맞는 구 담당자 가져오기-->
+	<select id="findAdminIdByGu" parameterType="string" resultType="java.lang.Long">
+		SELECT admin_id
+		FROM   admins
+		WHERE  district_code = #{gu}
+		  AND  ROWNUM = 1
+	</select>
+
 	<!-- 신고 폼 저장 -->
 	<insert id="insertComplaint" parameterType="com.potfill.user.complaint.model.Complaint">
 		INSERT INTO complaints (
 			complaint_id, reporter_name, reporter_number, incident_address,
 			lat, lon, gu, dong,
+			assigned_admin_id,
 			report_content,
 			h3_index, h3_res,
 			created_at
 		) VALUES (
 			 #{complaintId}, #{reporterName}, #{reporterNumber}, #{incidentAddress},
 			 #{lat}, #{lon}, #{gu}, #{dong},
+		     #{assignedAdminId},
 			 #{reportContent},
 			 #{h3Index}, #{h3Res},
 			 SYSTIMESTAMP
