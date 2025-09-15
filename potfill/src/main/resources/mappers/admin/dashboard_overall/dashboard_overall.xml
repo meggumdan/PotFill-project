@@ -67,7 +67,7 @@
     SELECT COUNT(*)
     FROM complaints c
     LEFT JOIN latest_status ls ON c.complaint_id = ls.complaint_id AND ls.rn = 1
-    WHERE NVL(ls.status, '접수') = '처리중'
+    WHERE NVL(ls.status, 'RECEIVED') = 'PROCESSING'
     ]]>
 	</select>
 
@@ -82,7 +82,7 @@
     SELECT COUNT(*)
     FROM complaints c
     LEFT JOIN latest_status ls ON c.complaint_id = ls.complaint_id AND ls.rn = 1
-    WHERE NVL(ls.status, '접수') = '완료'
+    WHERE NVL(ls.status, 'RECEIVED') = 'COMPLETED'
     ]]>
 	</select>
 
@@ -133,7 +133,7 @@
         ON c.complaint_id = ls.complaint_id AND ls.rn = 1
     WHERE c.created_at >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1)
       AND c.created_at < TRUNC(SYSDATE, 'MM')
-      AND NVL(ls.status, '접수') = '처리중'
+      AND NVL(ls.status, 'RECEIVED') = 'PROCESSING'
     ]]>
 	</select>
 
@@ -155,7 +155,7 @@
         ON c.complaint_id = ls.complaint_id AND ls.rn = 1
     WHERE c.created_at >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1)
       AND c.created_at < TRUNC(SYSDATE, 'MM')
-      AND NVL(ls.status, '접수') = '완료'
+      AND NVL(ls.status, 'RECEIVED') = 'COMPLETED'
     ]]>
 	</select>
 
@@ -198,7 +198,7 @@
                     SELECT 1
                     FROM complaint_histories ch
                     WHERE ch.complaint_id = c.complaint_id
-                      AND ch.status = '완료'
+                      AND ch.status = 'COMPLETED'
                 ) THEN 0
                 ELSE 1
             END AS is_pending
@@ -250,7 +250,7 @@
                 WHEN NOT EXISTS (
                     SELECT 1 FROM complaint_histories ch 
                     WHERE ch.complaint_id = c.complaint_id 
-                    AND ch.status = '완료'
+                    AND ch.status = 'COMPLETED'
                 ) THEN 1 ELSE 0 
             END) AS pending_count,                           -- 미처리 건수
             AVG(NVL(c.report_count, 0)) AS avg_repeat,      -- 평균 반복 신고
@@ -295,11 +295,11 @@
         FROM complaint_histories ch
     )
     SELECT 
-        NVL(ls.status, '접수') as status,
+        NVL(ls.status, 'RECEIVED') as status,
         COUNT(*) as count
     FROM complaints c
     LEFT JOIN latest_status ls ON c.complaint_id = ls.complaint_id AND ls.rn = 1
-    GROUP BY NVL(ls.status, '접수')
+    GROUP BY NVL(ls.status, 'RECEIVED')
     ]]>
 	</select>
 
@@ -318,9 +318,9 @@
         SELECT 
             c.gu,
             COUNT(*) as total_reports,
-            SUM(CASE WHEN ls.status = '완료' THEN 1 ELSE 0 END) as completed,
+            SUM(CASE WHEN ls.status = 'COMPLETED' THEN 1 ELSE 0 END) as completed,
             AVG(CASE 
-                WHEN ls.status = '완료' 
+                WHEN ls.status = 'COMPLETED' 
                 THEN (CAST(ls.status_date AS DATE) - CAST(c.created_at AS DATE)) 
                 ELSE NULL 
             END) as avg_process_time
