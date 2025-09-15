@@ -80,8 +80,8 @@ function initMainDonutChart() {
 						borderWidth: 1,
 						cornerRadius: 4,
 						displayColors: true,
-						titleFont: { size: 9 },
-						bodyFont: { size: 8 },
+						titleFont: { size: 14 },
+						bodyFont: { size: 13 },
 						callbacks: {
 							label: function(context) {
 								const total = context.dataset.data.reduce((a, b) => a + b, 0);
