@@ -60,7 +60,7 @@ function initRankingChart() {
                     borderRadius: 2,
                     borderSkipped: false,
                     maxBarThickness: 15,  // 막대 최대 두께 (픽셀 단위)
-                    barThickness: 10,     // 막대 고정 두께 (픽셀 단위)
+                    barThickness: 15,     // 막대 고정 두께 (픽셀 단위)
                 }]
             },
             options: {
@@ -157,8 +157,7 @@ function initRankingChart() {
         // 차트 생성
         rankingChart = new Chart(ctx, config);
         
-        console.log('지역별 우선도 랭킹 차트 초기화 완료');
-        
+  
         // 실제 데이터 로드
         fetchRankingData();
         
@@ -176,7 +175,7 @@ function fetchRankingData() {
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            console.log('지역구별 랭킹 데이터:', response);
+           /* console.log('지역구별 랭킹 데이터:', response);*/
             
             if (response && response.labels && response.data) {
                 updateRankingChartWithAPIData(response.labels, response.data);
@@ -205,8 +204,8 @@ function updateRankingChartWithAPIData(apiLabels, apiData) {
         const chartData = new Array(25).fill(0);
         
         // 디버깅용 로그
-        console.log('API 라벨:', apiLabels);
-        console.log('차트 라벨:', SEOUL_25_GU);
+     /*   console.log('API 라벨:', apiLabels);
+        console.log('차트 라벨:', SEOUL_25_GU);*/
         
         // API에서 받은 데이터를 매칭
         for (let i = 0; i < apiLabels.length; i++) {
@@ -235,8 +234,8 @@ function updateRankingChartWithAPIData(apiLabels, apiData) {
         rankingChart.data.datasets[0].data = chartData;
         rankingChart.update();
         
-        console.log('지역별 우선도 랭킹 차트 데이터 업데이트 완료');
-        console.log('최종 차트 데이터:', chartData);
+      /*  console.log('지역별 우선도 랭킹 차트 데이터 업데이트 완료');
+        console.log('최종 차트 데이터:', chartData);*/
         
     } catch (error) {
         console.error('차트 데이터 업데이트 실패:', error);

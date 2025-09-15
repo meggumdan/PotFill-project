@@ -28,6 +28,7 @@ public interface UserComplaintRepository {
 	public String findLatestStatusByComplaintId(Long complaintId);
 	
 	// 중복 신고 +1
+	Long selectPrimaryComplaintIdByH3Index(String h3Index);
 	public int incrementReportCount(Long complaintId);
 
 	// 주어진 H3 셀(targetCell)과 동일한 위치에 등록된 민원 건수를 조회
@@ -35,7 +36,8 @@ public interface UserComplaintRepository {
 
 	// 히스토리 추가 (접수상태 등록)
 	void insertComplaintHistory(ComplaintHistory history);
-	
+
     // 지민 : 위험도 insert
     void insertRisk(@Param("complaintId") Long complaintId, @Param("riskGrade") int riskGrade);
+
 }

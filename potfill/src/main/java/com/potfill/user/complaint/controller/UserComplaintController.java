@@ -37,6 +37,16 @@ public class UserComplaintController {
 		return Map.of("duplicate", duplicate);
 	}
 
+	// 중복 신고 일 때
+	@PostMapping("/duplicate-hit")
+	@ResponseBody
+	public Map<String, Object> duplicateHit(@RequestBody Map<String, String> req) {
+		double lat = Double.parseDouble(req.get("lat"));
+		double lon = Double.parseDouble(req.get("lon"));
+		Long targetId = userComplaintService.incrementDuplicateHit(lat, lon);
+		return Map.of("ok", targetId != null, "complaintId", targetId);
+	}
+
 	// 신고 내용 저장
 	@PostMapping
 	public String registerComplaint(Complaint complaint, @RequestParam(value="photoFiles", required = false) List<MultipartFile> photoFiles) throws IOException {

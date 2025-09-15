@@ -39,7 +39,7 @@ function initPriorityTable() {
         // 초기화 직후 테이블 비우기
         priorityTable.clear().draw();
 
-        console.log('우선처리 지역 TOP 5 테이블 초기화 완료');
+        /*console.log('우선처리 지역 TOP 5 테이블 초기화 완료');*/
     } catch (error) {
         console.error('우선처리 지역 TOP 5 테이블 초기화 실패:', error);
     }
@@ -71,7 +71,7 @@ function updatePriorityTableData(items) {
         });
 
         priorityTable.draw();
-        console.log('우선처리 지역 데이터 업데이트 완료:', items.length + '개 항목');
+        /*console.log('우선처리 지역 데이터 업데이트 완료:', items.length + '개 항목');*/
     } catch (error) {
         console.error('우선처리 지역 데이터 업데이트 실패:', error);
     }
@@ -81,14 +81,14 @@ function updatePriorityTableData(items) {
 function fetchPriorityData() {
     const url = contextPath + '/admin/api/dashboard/priority';
     
-    console.log('우선처리 TOP5 API 호출:', url);
+   /* console.log('우선처리 TOP5 API 호출:', url);*/
 
     $.ajax({
         url: url,
         method: 'GET',
         dataType: 'json',
         success: function (resp) {
-            console.log('우선처리 TOP5 응답:', resp);
+            /*console.log('우선처리 TOP5 응답:', resp);*/
             
             // Oracle JDBC는 컬럼명을 대문자로 반환하므로 대소문자 모두 처리
             const normalized = (Array.isArray(resp) ? resp : []).map(r => ({

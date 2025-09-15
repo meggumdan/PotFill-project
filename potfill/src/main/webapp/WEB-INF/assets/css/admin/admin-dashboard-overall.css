@@ -45,7 +45,7 @@ body {
 /* ========== 핵심 지표 카드 영역 ========== */
 .metrics-section {
     width: 100%;
-    max-width: 1200px;   /* 기존 1200px → 1000px 정도로 줄이기 */
+    max-width: 83%;   /* 기존 1200px → 1000px 정도로 줄이기 */
     margin: 0 auto 10px auto;
     display: flex;
     gap: 56px;           /* 기존 38px → 20px */
@@ -81,13 +81,13 @@ body {
 }
 
 .metric-title {
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 500;
     color: #FFFCFC;
 }
 
 .metric-value {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #FFFCFC;
     margin-bottom: 5px;
