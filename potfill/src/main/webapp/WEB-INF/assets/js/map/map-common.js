@@ -5,12 +5,10 @@
 (() => {
   // 신고 수에 따라 마커 이미지 이름 return
   function getImageNameByReportCount(reportCount) {
-  	switch (reportCount) {
-  		case 1: return "location-green.png";
-  		case 2: return "location-yellow.png";
-  		case 3: return "location-red.png";
-  		default: return "location-green.png";
-  	}
+	const n = Number(reportCount) || 0;
+	if (n <= 1) return "location-green.png";
+	if (n === 2) return "location-yellow.png";
+	return "location-red.png"; 
   }
  
   // type에 따라 신고 마커 또는 사용자 위치 표시 마커 리턴
