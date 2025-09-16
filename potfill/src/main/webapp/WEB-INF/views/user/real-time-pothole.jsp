@@ -40,7 +40,19 @@
 	
 		<script type="text/javascript"
 			src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${jsKey }&libraries=services,clusterer"></script>
+		<script src="${pageContext.request.contextPath}/js/map/map-common.js?v=1"></script>
+		
 		<script>
+		
+		// 민원 처리 상태 라벨 번역
+		  const STATUS_LABELS = {
+				    RECEIVED:   '접수',
+				    PROCESSING: '처리중',
+				    COMPLETED:  '완료',
+				    REJECTED:   '반려'
+				  };
+		
+		
 			// 1) 지도 생성
 			var mapContainer = document.getElementById('map');
 			var mapOption = {
@@ -65,7 +77,7 @@
 						latlng: new kakao.maps.LatLng(${row['LAT']}, ${row['LON']}),
 					reportCount: ${row['REPORTCOUNT']},
 					content: '', // 초기 내용 필요시 채우기
-					status: '${row['STATUS']}'
+					status: PotfillMap.mapStatus('${row['STATUS']}', STATUS_LABELS, '접수')
 					}); //positions.push end
 				</c:if>
 			</c:forEach>
@@ -79,12 +91,12 @@
 			var clusterMarkers = positions.map(function (position) {
 				let imageName;
 				if (position.status === '처리중') {
-					imageName = 'location-blue-check';
+					imageName = 'location-blue-check.png';
 				} else {
 					imageName = getImageNameByReportCount(position.reportCount);
 	
 				}
-				var imageSrc = '${pageContext.request.contextPath}/images/' + imageName + '.png';
+				var imageSrc = '${pageContext.request.contextPath}/images/' + imageName;
 				var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
 	
 				return new kakao.maps.Marker({
@@ -190,12 +202,11 @@
 	
 			
 			// 포트홀 상태에 따른 이미지 이름 설정
-			function getImageNameByReportCount(expr) {
-				switch (expr) {
-					case 1: return "location-green";
-					case 2: return "location-yellow";
-					default: return "location-red";
-				}
+			 function getImageNameByReportCount(reportCount) {
+			   const n = Number(reportCount) || 0;
+			   if (n <= 1) return "location-green.png";
+			   if (n === 2) return "location-yellow.png";
+			   return "location-red.png"; 
 			}
 	
 			// 오버레이창 내용 html 생성
@@ -259,8 +270,8 @@
 			var myMarker = null;
 			var geocoder = new kakao.maps.services.Geocoder();
 
-			const imageName = 'location-me';
-			const imageSrc = '${pageContext.request.contextPath}/images/' + imageName + '.gif';
+			const imageName = 'location-me.gif';
+			const imageSrc = '${pageContext.request.contextPath}/images/' + imageName;
 			markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
 
 			function upsertMarker(latlng) {

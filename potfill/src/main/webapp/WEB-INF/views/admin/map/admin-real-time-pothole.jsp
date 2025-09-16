@@ -50,10 +50,10 @@
 
 	// 민원 처리 상태 라벨 번역
 	  const STATUS_LABELS = {
-			    Received:   '접수',
-			    Processing: '처리중',
-			    Completed:  '완료',
-			    Rejected:   '반려'
+			    RECEIVED:   '접수',
+			    PROCESSING: '처리중',
+			    COMPLETED:  '완료',
+			    REJECTED:   '반려'
 			  };
 	
 		// 1) 지도 먼저 생성
@@ -85,18 +85,6 @@
 				}); //positions.push end
 			</c:if>
 		</c:forEach>
-		
-		function getStatusLabel(data) {
-			switch (data) {
-				case "Received": return "접수";
-				case "Processing": return "처리중";
-				case "Completed": return "완료";
-				case "Rejected": return "반려";
-				default: return "접수";
-			}
-		} // getStatus
-
-
 
 		// 4) 마커 이미지 공통 설정
 		var imageSize = new kakao.maps.Size(40, 40);
@@ -183,7 +171,7 @@
 		
 		let overlayHiddenByCluster = false;
 
-		
+		// 줌 이벤트
 		kakao.maps.event.addListener(map, 'zoom_changed', function () {
 			  const level = map.getLevel();
 			  const isClusteredNow = level >= CLUSTER_MIN_LEVEL;
@@ -206,10 +194,8 @@
 			  }
 			});
 
-		// 8) 오버레이/지오코더 등 부가 기능 (선택)
-		// 오버레이는 마커 클릭 이벤트를 마커 생성 시에 함께 달아주면 됩니다.
-		// 아래는 예시로, contentText 대신 content 사용:
-		var overlays = [];
+
+			var overlays = [];
 		var activeOverlay = null;
 		var geocoder = new kakao.maps.services.Geocoder();
 
@@ -228,6 +214,7 @@
 			}); // var overlay = new kakao.maps.CustomOverlay
 			overlays[i] = overlay;
 
+			// 마커 클릭 이벤트
 			kakao.maps.event.addListener(marker, 'click', function () {
 				if (activeOverlay === i) {
 					overlays[i].setMap(null);
@@ -266,18 +253,8 @@
 				activeOverlay = null;
 			} // if
 		}); // kakao.maps.event.addListener
-/*  
 
-		function getImageNameByReportCount(expr) {
-			switch (expr) {
-				case 1: return "location-green";
-				case 2: return "location-yellow";
-				case 3: return "location-red";
-				default: return "location-green";
-			}
-		}
- * 
- */
+
 		function buildOverlayContent({ addressHtml = '', idx, status = '', reportCount = '' } = {}) {
 			return (
 				'<div class="wrap">' +
@@ -296,13 +273,6 @@
 				'</div>'
 			);
 		} // buildOverlayContent
-/*
- * 
- 
-		function searchDetailAddrFromCoords(coords, callback) {
-			geocoder.coord2Address(coords.getLng(), coords.getLat(), callback);
-		}
- */
 
 		function closeOverlay(idx) {
 			if (overlays[idx]) overlays[idx].setMap(null);

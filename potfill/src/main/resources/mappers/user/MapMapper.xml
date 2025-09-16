@@ -14,8 +14,8 @@
 		      , cpl.status 
 		  FROM complaints cp, complaint_histories cpl
 		 WHERE cp.complaint_id = cpl.complaint_id
-		   AND status != '완료' 
-		   AND status != '반려'
+		   AND status != 'COMPLETED' 
+		   AND status != 'REJECTED'
  	</select>
  
  </mapper>
