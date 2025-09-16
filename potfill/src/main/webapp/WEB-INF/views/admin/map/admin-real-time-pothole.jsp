@@ -40,7 +40,22 @@
 	</div>
 	
 		<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${jsKey }&libraries=services,clusterer"></script>
+		<script src="${pageContext.request.contextPath}/js/map/map-common.js?v=1"></script>
+		
 	<script>
+	/* ---- 라벨 및 상수 선언 ---- */
+	
+	// 클러스터 최소 레벨
+	const CLUSTER_MIN_LEVEL = 8;
+
+	// 민원 처리 상태 라벨 번역
+	  const STATUS_LABELS = {
+			    RECEIVED:   '접수',
+			    PROCESSING: '처리중',
+			    COMPLETED:  '완료',
+			    REJECTED:   '반려'
+			  };
+	
 		// 1) 지도 먼저 생성
 		var mapContainer = document.getElementById('map');
 		var mapOption = {
@@ -48,9 +63,8 @@
 			level: 10
 		};
 		var map = new kakao.maps.Map(mapContainer, mapOption);
-
+		
 		// 2) 클러스터러 생성 (이제 map 준비됨)
-		const CLUSTER_MIN_LEVEL = 8;
 		
 		var clusterer = new kakao.maps.MarkerClusterer({
 			map: map,
@@ -67,12 +81,10 @@
 					latlng: new kakao.maps.LatLng(${row['LAT']}, ${row['LON']}),
 				reportCount: ${row['REPORTCOUNT']},
 				content: '', // 초기 내용 필요시 채우기
-				status: '${row['STATUS']}'
+				status: PotfillMap.mapStatus('${row['STATUS']}', STATUS_LABELS, '접수')
 				}); //positions.push end
 			</c:if>
 		</c:forEach>
-
-
 
 		// 4) 마커 이미지 공통 설정
 		var imageSize = new kakao.maps.Size(40, 40);
@@ -80,14 +92,13 @@
 
 		// 5) 클러스터러에 넣을 마커들 생성 (map 지정 X)
 		var clusterMarkers = positions.map(function (position) {
-			let imageName;
-			if(position.status === '처리중') {
-				imageName = 'location-blue-check';
-			} else {
-				imageName = getImageNameByReportCount(position.reportCount);
-				
-			}
-			var imageSrc = '${pageContext.request.contextPath}/images/' + imageName + '.png';
+			const imageName = PotfillMap.getMarkerIconName({
+				type: 'report',
+				status: position.status,
+				reportCount: position.reportCount
+				});
+			
+			var imageSrc = '${pageContext.request.contextPath}/images/' + imageName;
 			var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
 
 			return new kakao.maps.Marker({
@@ -105,53 +116,62 @@
 
 			map.setLevel(level, { 
 				anchor: cluster.getCenter(),
-				
 			});
 		}); // kakao.maps.event.addListener
 		
 		 // 내 위치 마커
-		   (function addAdminMyLocation() {
-		     var myMarker = null;
-		     var geocoderMy = new kakao.maps.services.Geocoder();
+		   (function addAdminUserLocation() {
+		     var userMarker = null;
+		     var geocoderUser = new kakao.maps.services.Geocoder();
 		 
-		     // 내 위치 아이콘 (gif) 준비
-		     var imageSrcMe = '${pageContext.request.contextPath}/images/location-me.gif';
-		     var myMarkerImage = new kakao.maps.MarkerImage(imageSrcMe, imageSize, imageOption);
+		     // 내 위치 아이콘
+		     const userImage = PotfillMap.getMarkerIconName({
+					type: 'me'
+				});
+		     var imageSrcUser = '${pageContext.request.contextPath}/images/'+userImage;
+		     var userMarkerImage = new kakao.maps.MarkerImage(imageSrcUser, imageSize, imageOption);
 		 
-		     function upsertMyMarker(latlng) {
-		       if (!myMarker) {
-		         myMarker = new kakao.maps.Marker({ position: latlng, image: myMarkerImage });
-		         myMarker.setMap(map);
+		     function upsertUserMarker(latlng) {
+		       if (!userMarker) {
+		    	   userMarker = new kakao.maps.Marker({ 
+		    		   position: latlng, 
+		    		   image: userMarkerImage,
+		    		   clickable: false,
+		    		   zIdex:0
+		    		});
+		    	   userMarker.setMap(map);
 		       } else {
-		         myMarker.setPosition(latlng);
+		    	   userMarker.setPosition(latlng);
 		       }
 		     }
 		 
 
 		    const fallback = new kakao.maps.LatLng(37.5642135, 127.0016985);
+		    
+		    // GPS 승인
 		    if (navigator.geolocation) {
 		      navigator.geolocation.getCurrentPosition(
-		        (pos) => {
-		          const loc = new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
-		          upsertMyMarker(loc);
-		          map.setCenter(loc);
+		        (positon) => {
+		          const location = new kakao.maps.LatLng(positon.coords.latitude, positon.coords.longitude);
+		          upsertUserMarker(location);
+		          map.setCenter(location);
 		        },
 		        (err) => {
 		          console.warn('Geolocation error:', err);
-		          upsertMyMarker(fallback);
+		          upsertUserMarker(fallback);
 		          map.setCenter(fallback);
 		        },
 		        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
 		      );
 		    } else {
-		      upsertMyMarker(fallback);
+		    	upsertUserMarker(fallback);
 		      map.setCenter(fallback);
 		    }
 		  })();
 		
 		let overlayHiddenByCluster = false;
 
-		
+		// 줌 이벤트
 		kakao.maps.event.addListener(map, 'zoom_changed', function () {
 			  const level = map.getLevel();
 			  const isClusteredNow = level >= CLUSTER_MIN_LEVEL;
@@ -174,10 +194,8 @@
 			  }
 			});
 
-		// 8) 오버레이/지오코더 등 부가 기능 (선택)
-		// 오버레이는 마커 클릭 이벤트를 마커 생성 시에 함께 달아주면 됩니다.
-		// 아래는 예시로, contentText 대신 content 사용:
-		var overlays = [];
+
+			var overlays = [];
 		var activeOverlay = null;
 		var geocoder = new kakao.maps.services.Geocoder();
 
@@ -196,6 +214,7 @@
 			}); // var overlay = new kakao.maps.CustomOverlay
 			overlays[i] = overlay;
 
+			// 마커 클릭 이벤트
 			kakao.maps.event.addListener(marker, 'click', function () {
 				if (activeOverlay === i) {
 					overlays[i].setMap(null);
@@ -210,7 +229,7 @@
 				activeOverlay = i;
 
 				// 역지오코딩
-				searchDetailAddrFromCoords(marker.getPosition(), function (result, status) {
+				PotfillMap.searchDetailAddrFromCoords(geocoder, marker.getPosition(), function (result, status) {
 					var detailAddr = '주소를 불러오지 못했습니다.';
 					if (status === kakao.maps.services.Status.OK && Array.isArray(result) && result.length > 0) {
 						detailAddr = (result[0].road_address ? '도로명주소 : ' + result[0].road_address.address_name + '<br>' : '')
@@ -235,19 +254,12 @@
 			} // if
 		}); // kakao.maps.event.addListener
 
-		function getImageNameByReportCount(expr) {
-			switch (expr) {
-				case 1: return "location-green";
-				case 2: return "location-yellow";
-				default: return "location-red";
-			}
-		}
 
 		function buildOverlayContent({ addressHtml = '', idx, status = '', reportCount = '' } = {}) {
 			return (
 				'<div class="wrap">' +
 				'  <div class="info">' +
-				'    <div class="title">포트홀 위치 ' +
+				'    <div class="title">포트홀 정보 ' +
 				'      <div class="close" onclick="closeOverlay(' + idx + ')" title="닫기"></div>' +
 				'    </div>' +
 				'    <div class="body">' +
@@ -261,10 +273,6 @@
 				'</div>'
 			);
 		} // buildOverlayContent
-
-		function searchDetailAddrFromCoords(coords, callback) {
-			geocoder.coord2Address(coords.getLng(), coords.getLat(), callback);
-		}
 
 		function closeOverlay(idx) {
 			if (overlays[idx]) overlays[idx].setMap(null);
