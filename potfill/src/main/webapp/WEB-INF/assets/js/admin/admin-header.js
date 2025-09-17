@@ -1,5 +1,9 @@
-//작성자 : 최산하
+/*
+* 작성자 : 최영준, 최산하
+*/
+
 console.log('스크립트 파일 로드 완료!');
+
 
 // DOM이 모두 로드된 후에 스크립트가 실행
 document.addEventListener('DOMContentLoaded', function() {
@@ -10,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (logoutButton) {
         logoutButton.addEventListener('click', function() {
           
-            console.log('로그아웃 버튼 클릭!'); 
+             
 
          
             location.href = '/potfill/admin/logout'; 
