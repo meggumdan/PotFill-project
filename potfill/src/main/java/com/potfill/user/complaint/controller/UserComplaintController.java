@@ -1,3 +1,10 @@
+/*
+ * 작성자 : 정소영
+ * 설명   : 사용자 포트홀 신고 컨트롤러.
+ *         - 위치 중복 확인 및 중복 카운트 처리
+ *         - 신고 등록 (사진 업로드 포함)
+ *         - 나의 신고 내역 조회/화면 진입 처리
+ */
 package com.potfill.user.complaint.controller;
 
 import java.io.IOException;
@@ -63,14 +70,14 @@ public class UserComplaintController {
 		return "user/complaint-complete";
 	}
 
-	// 나의 신고 화면 (초기 진입: 폼만 보이게)
+	// 나의 신고 화면
 	@GetMapping("/list")
 	public String myComplaint(Model model) {
-		model.addAttribute("searched", false); // 초기 진입 표시
+		model.addAttribute("searched", false);
 		return "user/my-complaint";
 	}
 
-	// 나의 신고 조회 (검색 수행)
+	// 나의 신고 조회
 	@PostMapping("/list")
 	public String getMyComplaint(@RequestParam String reporterName,
 								 @RequestParam String reporterNumber,
@@ -78,17 +85,9 @@ public class UserComplaintController {
 
 		List<Complaint> list = userComplaintService.findByNameAndPhone(reporterName, reporterNumber);
 
-		model.addAttribute("searched", true);      // 검색을 수행했음
-		model.addAttribute("complaints", list);    // null/빈 리스트 가능
+		model.addAttribute("searched", true);
+		model.addAttribute("complaints", list);
 
 		return "user/my-complaint";
 	}
-
-	// 포트홀 신고 안내 페이지 이동
-	@GetMapping("/manual")
-	public String complaintManual() {
-		return "user/user-manual";
-	}
-	
-
 }

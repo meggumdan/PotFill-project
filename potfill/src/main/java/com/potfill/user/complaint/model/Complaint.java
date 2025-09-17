@@ -1,3 +1,7 @@
+/*
+ * 작성자 : 정소영
+ * 설명   : 사용자 포트홀 신고 정보를 담는 도메인 모델 클래스
+ */
 package com.potfill.user.complaint.model;
 
 import java.sql.Timestamp;

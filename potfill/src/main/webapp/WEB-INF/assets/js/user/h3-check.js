@@ -1,3 +1,8 @@
+/*
+* 작성자 : 정소영
+* 설명 : H3 라이브러리 해상도 확인을 위한 js
+*/
+
 ;(() => {
     'use strict';
 
@@ -34,7 +39,7 @@
         const indices = options.ring ? h3Neighbors(centerIdx, options.ring) : [centerIdx];
 
         indices.forEach((idx, i) => {
-            const boundary = h3IndexToBoundary(idx); // [ [lat, lng], ... ]
+            const boundary = h3IndexToBoundary(idx);
             const path = boundary.map(([la, lo]) => new kakao.maps.LatLng(la, lo));
 
             const poly = new kakao.maps.Polygon({

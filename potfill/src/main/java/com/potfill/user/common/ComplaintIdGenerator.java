@@ -1,3 +1,7 @@
+/*
+ * 작성자 : 정소영
+ * 설명   : 포트홀 민원 ID를 생성하는 유틸리티 클래스 (타임스탬프 + 2자리 난수)
+ */
 package com.potfill.user.common;
 
 import java.time.ZoneId;
