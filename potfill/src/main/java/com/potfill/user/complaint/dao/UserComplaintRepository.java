@@ -1,3 +1,7 @@
+/*
+ * 작성자 : 정소영
+ * 설명   : 사용자 포트홀 신고 데이터를 관리하는 MyBatis 매퍼 인터페이스
+ */
 package com.potfill.user.complaint.dao;
 
 import java.util.List;
@@ -20,19 +24,13 @@ public interface UserComplaintRepository {
 
 	// 나의 신고 이력 조회
 	public List<Complaint> findByNameAndPhone(@Param("reporterName") String reporterName, @Param("reporterNumber")String reporterNumber);
-
-	// 데이터베이스에 저장된 위도 경도 가져오기
-	public List<Complaint> findAllCoords();
-
-	// 중복인 장소의 상태 확인
-	public String findLatestStatusByComplaintId(Long complaintId);
 	
 	// 중복 신고 +1
 	Long selectPrimaryComplaintIdByH3Index(String h3Index);
 	public int incrementReportCount(Long complaintId);
 
-	// 주어진 H3 셀(targetCell)과 동일한 위치에 등록된 민원 건수를 조회
-    Integer countByH3Index(String targetCell);
+	// DB에서 같은 H3_INDEX 존재 여부 + 접수 상태 인지 조회
+    Integer findLatestStatusByH3Index(String targetCell);
 
 	// 히스토리 추가 (접수상태 등록)
 	void insertComplaintHistory(ComplaintHistory history);

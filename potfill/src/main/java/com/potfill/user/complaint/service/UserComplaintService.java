@@ -1,3 +1,7 @@
+/*
+ * 작성자 : 정소영
+ * 설명   : 사용자 신고 처리 비즈니스 로직을 담당하는 서비스 인터페이스
+ */
 package com.potfill.user.complaint.service;
 
 import java.io.IOException;

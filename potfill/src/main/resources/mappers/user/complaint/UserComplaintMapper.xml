@@ -2,6 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+<!--
+	작성자 : 정소영
+	설명 : 사용자 신고 도메인의 MyBatis 매퍼
+-->
+
 <mapper namespace="com.potfill.user.complaint.dao.UserComplaintRepository">
 
 	<!-- Complaint VO 매핑 -->
@@ -110,11 +115,22 @@
 		  AND c.REPORTER_NUMBER = #{reporterNumber}
 	</select>
 
-	<!-- 같은 셀 존재여부 빠른 조회 -->
-	<select id="countByH3Index" parameterType="string" resultType="int">
+	<!-- 같은 H3 셀에서 '최신 상태'가 RECEIVED 인 민원 건수 -->
+	<select id="findLatestStatusByH3Index" parameterType="string" resultType="int">
 		SELECT COUNT(1)
-		FROM COMPLAINTS
-		WHERE H3_INDEX = #{h3Index}
+		FROM complaints c
+		WHERE c.h3_index = #{h3Index}
+		  AND EXISTS (
+			SELECT 1
+			FROM (
+					 SELECT ch.status
+					 FROM complaint_histories ch
+					 WHERE ch.complaint_id = c.complaint_id
+					 ORDER BY ch.created_at DESC, ch.history_id DESC
+				 )
+			WHERE ROWNUM = 1
+			  AND status = 'RECEIVED'
+		)
 	</select>
 
 	<!-- 데이터베이스의 좌표 조회 -->
@@ -125,25 +141,6 @@
         	LON
         FROM COMPLAINTS
         WHERE LAT IS NOT NULL AND LON IS NOT NULL
-    </select>
-
-    <!-- 해당 민원의 최신 상태 조회 -->
-    <select id="findLatestStatusByComplaintId" resultType="string" parameterType="long">
-        <!-- SELECT 
-        	STATUS
-        FROM COMPLAINT_HISTORIES
-        WHERE COMPLAINT_ID = #{complaintId}
-          AND CREATED_AT = (
-              	SELECT MAX(CREATED_AT)
-              	FROM COMPLAINT_HISTORIES
-              	WHERE COMPLAINT_ID = #{complaintId}
-          ) -->
-			SELECT status
-			FROM complaint_histories
-			WHERE complaint_id = #{complaintId}
-			ORDER BY created_at DESC
-			FETCH FIRST 1 ROW ONLY
-          
     </select>
 
 	<!-- 같은 H3 셀 내 대표 신고 1건 선택 -->

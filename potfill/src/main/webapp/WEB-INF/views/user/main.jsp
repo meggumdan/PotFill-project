@@ -1,5 +1,6 @@
 <!--
-    작성자 : 정소영, 이지민 <- 요기도 쫌 끼어들게~~ 
+    작성자 : 정소영, 이지민
+	설명 : 사용자 메인 화면
  -->
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>

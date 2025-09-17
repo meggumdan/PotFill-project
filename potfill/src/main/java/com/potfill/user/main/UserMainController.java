@@ -1,3 +1,7 @@
+/*
+ * 작성자 : 정소영
+ * 설명   : 사용자 메인 화면에서 각 메뉴로 이동을 처리하는 컨트롤러
+ */
 package com.potfill.user.main;
 
 import org.springframework.stereotype.Controller;
@@ -32,6 +36,7 @@ public class UserMainController {
 		return "user/potholemap";
 	}
 
+
 	// 나의 신고
 	@GetMapping("/user/mycomplaint")
 	public String mycomplaint() {
@@ -39,5 +44,12 @@ public class UserMainController {
 		return "user/mycomplaint";
 	}
 
+
+	// 포트홀 신고 안내 페이지 이동
+	@GetMapping("/manual")
+	public String complaintManual() {
+
+		return "user/user-manual";
+	}
 }
 

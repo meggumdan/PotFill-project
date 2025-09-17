@@ -1,3 +1,7 @@
+<!--
+	작성자 : 정소영
+	설명 : 신고 완료 화면
+-->
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
