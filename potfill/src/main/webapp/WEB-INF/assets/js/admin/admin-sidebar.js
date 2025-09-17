@@ -1,4 +1,6 @@
-
+/*
+* 작성자 : 최영준
+*/
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('스크립트 로드됨');
