@@ -1,3 +1,7 @@
+/*
+* 작성자 : 최산하
+*/
+
 package com.potfill.admin.complaints.dao;
 
 import java.util.List;
@@ -7,17 +11,18 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.potfill.admin.complaints.model.Complaint;
 import com.potfill.admin.complaints.model.ComplaintHistory;
+import com.potfill.admin.complaints.model.ComplaintSearchRequestDto;
 import com.potfill.admin.complaints.model.ReportPhoto;
 
 @Mapper
 public interface ComplaintRepository {
     
     // 민원 리스트 조회 (검색, 정렬, 필터 조건 포함)
-    List<Complaint> getComplaintList(@Param("searchParams") Map<String, Object> searchParams);
-    
+	 List<Complaint> getComplaintList(@Param("searchDto") ComplaintSearchRequestDto searchDto);
+	    
     // 민원 총 개수 (페이징용)
-    int getComplaintCount(@Param("searchParams") Map<String, Object> searchParams);
-    
+	 int getComplaintCount(@Param("searchDto") ComplaintSearchRequestDto searchDto);
+
     // 민원 상세 조회
     Complaint getComplaintById(@Param("complaintId") Long complaintId);
     
