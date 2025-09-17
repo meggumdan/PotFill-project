@@ -1,3 +1,6 @@
+/*
+* 작성자 : 최산하
+*/
 package com.potfill.admin.complaints.service;
 
 import java.io.IOException;
@@ -12,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.potfill.admin.complaints.dao.ComplaintRepository;
 import com.potfill.admin.complaints.model.Complaint;
 import com.potfill.admin.complaints.model.ComplaintHistory;
+import com.potfill.admin.complaints.model.ComplaintSearchRequestDto;
 import com.potfill.admin.complaints.model.ReportPhoto;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -25,22 +29,16 @@ public class ComplaintServiceImpl implements ComplaintService {
     private ComplaintRepository complaintRepository;
     
     @Override
-    public Map<String, Object> getComplaintListWithPaging(Map<String, Object> searchParams) {
-        Map<String, Object> result = new HashMap<>();
-        
-        int page = searchParams.get("page") != null ? (Integer) searchParams.get("page") : 1;
-        int pageSize = searchParams.get("pageSize") != null ? (Integer) searchParams.get("pageSize") : 20;
 
-        //  시작 행과 끝 행 번호를 Java에서 미리 계산합니다.
-        int startRow = (page - 1) * pageSize + 1;
-        int endRow = page * pageSize;
-        
-        //  계산된 값을 Map에 넣습니다.
-        searchParams.put("startRow", startRow);
-        searchParams.put("endRow", endRow);
-        
-        List<Complaint> complaints = complaintRepository.getComplaintList(searchParams);
-        int totalCount = complaintRepository.getComplaintCount(searchParams);
+    public Map<String, Object> getComplaintListWithPaging(ComplaintSearchRequestDto searchDto) { 
+        Map<String, Object> result = new HashMap<>();
+
+        int page = searchDto.getPage();
+        int pageSize = searchDto.getPageSize();
+
+
+        List<Complaint> complaints = complaintRepository.getComplaintList(searchDto);
+        int totalCount = complaintRepository.getComplaintCount(searchDto);
         
         result.put("complaints", complaints);
         result.put("totalCount", totalCount);

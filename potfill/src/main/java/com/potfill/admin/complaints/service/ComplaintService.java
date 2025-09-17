@@ -1,9 +1,14 @@
+/*
+* 작성자 : 최산하
+*/
+
 package com.potfill.admin.complaints.service;
 
 import java.util.List;
 import java.util.Map;
 import com.potfill.admin.complaints.model.Complaint;
 import com.potfill.admin.complaints.model.ComplaintHistory;
+import com.potfill.admin.complaints.model.ComplaintSearchRequestDto;
 import com.potfill.admin.complaints.model.ReportPhoto;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,7 +16,7 @@ import java.io.OutputStream;
 public interface ComplaintService {
     
     // 민원 리스트 조회 (페이징 포함)
-    Map<String, Object> getComplaintListWithPaging(Map<String, Object> searchParams);
+	Map<String, Object> getComplaintListWithPaging(ComplaintSearchRequestDto searchDto);
     
     // 민원 상세 조회 (히스토리, 사진 포함)
     Map<String, Object> getComplaintDetail(Long complaintId);
