@@ -40,7 +40,7 @@ public interface UserComplaintRepository {
 	// 구에 맞는 담당자 찾기
 	Long findAdminIdByGu(@Param("gu") String gu);
 
-	// 지민 : 위험도 insert
+	// 위험도 저장
     void insertRisk(@Param("complaintId") Long complaintId, @Param("riskGrade") int riskGrade);
 
 }

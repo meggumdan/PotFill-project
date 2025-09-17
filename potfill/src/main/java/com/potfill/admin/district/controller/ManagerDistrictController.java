@@ -1,3 +1,7 @@
+/*
+ * 작성자 : 이지민
+ */
+
 package com.potfill.admin.district.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +54,7 @@ public class ManagerDistrictController {
 		return "admin/district/district";
 	}
 
+	// 세션 기반 상세 페이지 연동
 	@PostMapping("/admin/complaints/setSession")
 	public String setComplaintSession(@RequestParam("id") Long id, HttpSession session) {
 		// 세션에 클릭한 민원 ID 저장

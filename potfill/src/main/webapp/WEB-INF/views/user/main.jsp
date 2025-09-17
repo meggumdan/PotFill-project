@@ -1,3 +1,6 @@
+<!--
+    작성자 : 정소영, 이지민 <- 요기도 쫌 끼어들게~~ 
+ -->
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -9,7 +12,7 @@
 	href="<c:url value='/css/user/main.css'/>">
 
 <link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/css/user/manual.css"><!-- 지민css -->
+	href="${pageContext.request.contextPath}/css/user/manual.css">
 <script
 	src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 <title>POTFill</title>
@@ -32,14 +35,13 @@
 				<li><a href="<c:url value='/user/map' />">포트홀 실시간</a></li>
 				<li><a href="<c:url value='/user/complaint/list' />">나의 신고
 						현황</a></li>
-				<!-- 지민 : 신고 안내 화면 이동 -->
 				<li><a href="<c:url value='/user/complaint/manual'/>"
 					id="openManual">포트홀 신고 안내</a></li>
 
 			</ul>
 		</div>
 
-		<!-- 지민: 모달숨기기 -->
+		<!-- 모달숨기기 -->
 		<div id="manualModal" class="manual-modal hidden">
 			<div class="manual-content">
 				<%@ include file="/WEB-INF/views/user/user-manual.jsp"%>
@@ -61,8 +63,8 @@
 				$("#menu").removeClass("hidden").addClass("show");
 			}, 1000);
 
-			//지민
-			// ===== 안내 오버레이 제어 =====
+
+			// ===== 안내 오버레이(모달) 제어 =====
 			function openManual() {
 				$("#manualModal").removeClass("hidden").addClass("show");
 				$("body").css("overflow", "hidden");

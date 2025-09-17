@@ -1,3 +1,4 @@
+# 작성자 : 이지민
 import cv2
 import torch
 import sys
@@ -20,7 +21,8 @@ def estimate_area(image_path, model_path, lane_width_m=3.5):
         print("0.0000,0.0000")
         return 0.0
 
-    # 4. 픽셀→미터 스케일(차선 폭 = 이미지 가로 폭 가정)
+    # 4. 픽셀을 미터로 스케일
+    # 차선 폭 = 이미지 가로 폭 가정
     lane_width_px = w
     scale = lane_width_m / lane_width_px  # m/px
 
@@ -36,8 +38,8 @@ def estimate_area(image_path, model_path, lane_width_m=3.5):
         if box_w_m > max_width_m:
             max_width_m = box_w_m
 
-    # 한 줄 CSV 출력: "면적,최대폭"
-    print(f"{total_area_m2:.4f},{max_width_m:.4f}")
+    # CSV 출력
+    print(f"{total_area_m2:.4f},{max_width_m:.4f}") # 면적,최대폭
     return total_area_m2
 
 

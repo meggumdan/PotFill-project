@@ -1,3 +1,6 @@
+/*
+ * 작성자 : 이지민
+ */
 package com.potfill.admin.district.model;
 
 import java.util.Date;
@@ -32,7 +35,6 @@ public class Complaint {
 	private int assignedAdminId;
 	private String assignedDepartment;
 	private int reportCount;
-	// COMPLAINT_HISTORIES 테이블에서 상태 가져올 변수
 	private String status;
 	// AI가 판정할 위험도
 	private int riskGrade;
