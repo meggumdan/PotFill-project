@@ -1,5 +1,7 @@
 @import url("reset.css");
-
+/*
+* 작성자 : 이지민
+*/
 .sub-container {
 	max-width: 360px; /* body 기준 100% */
 	min-height: 60%; /* 화면 높이 채움 */

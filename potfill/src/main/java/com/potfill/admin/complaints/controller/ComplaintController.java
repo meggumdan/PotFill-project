@@ -1,5 +1,5 @@
 /*
-* 작성자 : 최산하
+* 작성자 : 최산하, 이지민
 */
 
 package com.potfill.admin.complaints.controller;
@@ -250,7 +250,7 @@ public class ComplaintController {
         }
     }
     
-    // 지민: 페이지에서 보낸 민원 id 매핑
+    // 관할 페이지에서 보낸 민원 id 매핑
     @GetMapping("/admin/complaints/list")
     public String complaintList(HttpSession session, Model model) {
         Object selectedId = session.getAttribute("selectedComplaintId");

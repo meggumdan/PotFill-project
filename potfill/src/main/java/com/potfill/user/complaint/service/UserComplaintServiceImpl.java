@@ -1,3 +1,7 @@
+/*
+ * 작성자 : 정소영, 이지민 -> 요기는 쫌 끼어들게~~~
+ */
+
 package com.potfill.user.complaint.service;
 
 import java.io.File;
@@ -25,7 +29,7 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 	private final UserComplaintRepository userComplaintRepository;
 	private final H3Core h3; // 스프링이 Bean 주입
 
-	// 지민 : 파이썬 실행시 필요한 서비스 주입
+	// 파이썬 실행시 필요한 서비스 주입
     private final RiskService riskService;
 	
 	final int RES = 10;
@@ -109,7 +113,7 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 
 					userComplaintRepository.insertComplaintPhoto(photo);
 					
-					// 지민 : 대표 사진 경로 (실제 파일 경로)
+					// 대표 사진 경로 (실제 파일 경로)
 					// 업로드 중 첫 번째 파일만 대표 사진으로 선택
 					if (firstPhotoPath == null) {
 					    firstPhotoPath = dest.getAbsolutePath();
@@ -127,7 +131,7 @@ public class UserComplaintServiceImpl implements UserComplaintService {
 				.build();
 		userComplaintRepository.insertComplaintHistory(history);
 		
-		// 지민 : 첨부 사진이 있으면 RiskService 호출
+		// 첨부 사진이 있으면 RiskService 호출
 		if (firstPhotoPath != null) {
 		    riskService.analyzeAndSaveRisk(complaintId, firstPhotoPath);
 		}
