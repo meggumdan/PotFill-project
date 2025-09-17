@@ -79,114 +79,71 @@
     </resultMap>
 
     <!-- 공통 검색 조건 -->
-    <sql id="searchCondition">
-    <where>
-        1=1
-        <if test="searchParams.searchType != null and searchParams.searchKeyword != null and searchParams.searchKeyword != ''">
-            <choose>
-                <when test="searchParams.searchType == 'complaintId'">
-                    AND c.complaint_id = #{searchParams.searchKeyword}
-                </when>
-                <when test="searchParams.searchType == 'reporterName'">
-                    AND c.reporter_name LIKE '%' || #{searchParams.searchKeyword} || '%'
-                </when>
-                <when test="searchParams.searchType == 'reporterNumber'">
-                    AND c.reporter_number LIKE '%' || #{searchParams.searchKeyword} || '%'
-                </when>
-                <when test="searchParams.searchType == 'address'">
-                    AND c.incident_address LIKE '%' || #{searchParams.searchKeyword} || '%'
-                </when>
-            </choose>
-        </if>
-        <if test="searchParams.status != null and searchParams.status != ''">
-            AND ch.status = #{searchParams.status}
-        </if>
-        
-        <if test="searchParams.riskLevel != null and searchParams.riskLevel != ''">
-            AND
-            <choose>
-                <when test="searchParams.riskLevel == 'HIGH'">
-                    c.report_count > 5
-                </when>
-                <when test="searchParams.riskLevel == 'MEDIUM'">
-                    c.report_count > 2 AND c.report_count &lt;= 5
-                </when>
-                <when test="searchParams.riskLevel == 'LOW'">
-                    c.report_count &lt;= 2
-                </when>
-            </choose>
-        </if>
-        
-        <if test="searchParams.gu != null and searchParams.gu != ''">
-            AND c.gu = #{searchParams.gu}
-        </if>
-        <if test="searchParams.dong != null and searchParams.dong != ''">
-            AND c.dong = #{searchParams.dong}
-        </if>
-        <if test="searchParams.startDate != null and searchParams.startDate != ''">
-            AND c.created_at >= TO_DATE(#{searchParams.startDate}, 'YYYY-MM-DD')
-        </if>
-        <if test="searchParams.endDate != null and searchParams.endDate != ''">
-            AND c.created_at <![CDATA[<=]]> TO_DATE(#{searchParams.endDate}, 'YYYY-MM-DD') + 1
-        </if>
-    </where>
-</sql>
+<sql id="searchCondition">
+        <where>
+            1=1
+            <if test="searchDto.searchType != null and searchDto.searchKeyword != null and searchDto.searchKeyword != ''">
+                <choose>
+                    <when test="searchDto.searchType == 'complaintId'">AND c.complaint_id = #{searchDto.searchKeyword}</when>
+                    <when test="searchDto.searchType == 'reporterName'">AND c.reporter_name LIKE '%' || #{searchDto.searchKeyword} || '%'</when>
+                    <when test="searchDto.searchType == 'reporterNumber'">AND c.reporter_number LIKE '%' || #{searchDto.searchKeyword} || '%'</when>
+                    <when test="searchDto.searchType == 'address'">AND c.incident_address LIKE '%' || #{searchDto.searchKeyword} || '%'</when>
+                </choose>
+            </if>
+            <if test="searchDto.status != null and searchDto.status != ''">AND ch.status = #{searchDto.status}</if>
+            <if test="searchDto.riskLevel != null and searchDto.riskLevel != ''">
+                AND
+                <choose>
+                    <when test="searchDto.riskLevel == 'HIGH'">c.report_count > 5</when>
+                    <when test="searchDto.riskLevel == 'MEDIUM'">c.report_count > 2 AND c.report_count &lt;= 5</when>
+                    <when test="searchDto.riskLevel == 'LOW'">c.report_count &lt;= 2</when>
+                </choose>
+            </if>
+            <if test="searchDto.gu != null and searchDto.gu != ''">AND c.gu = #{searchDto.gu}</if>
+            <if test="searchDto.dong != null and searchDto.dong != ''">AND c.dong = #{searchDto.dong}</if>
+            <if test="searchDto.period != null and searchDto.period != ''">
+                <choose>
+                    <when test="searchDto.period == 'today'">AND c.created_at >= TRUNC(SYSDATE) AND c.created_at &lt; TRUNC(SYSDATE) + 1</when>
+                    <when test="searchDto.period == 'week'">AND c.created_at >= TRUNC(SYSDATE) - 7</when>
+                    <when test="searchDto.period == 'month'">AND c.created_at >= ADD_MONTHS(TRUNC(SYSDATE), -1)</when>
+                </choose>
+            </if>
+        </where>
+    </sql>
 
     <!-- 민원 리스트 조회 -->
-    <select id="getComplaintList" resultMap="ComplaintResultMap">
+<select id="getComplaintList" resultMap="ComplaintResultMap">
         SELECT * FROM (
             SELECT 
-                c.*,
-                ch.status,
-                CASE 
-                    WHEN c.report_count > 5 THEN 'HIGH'
-                    WHEN c.report_count > 2 THEN 'MEDIUM'
-                    ELSE 'LOW'
-                END as risk_level,
+                c.*, ch.status,
+                CASE WHEN c.report_count > 5 THEN 'HIGH' WHEN c.report_count > 2 THEN 'MEDIUM' ELSE 'LOW' END as risk_level,
                 c.report_count * 10 as risk_score,
-                ROW_NUMBER() OVER (
-                    ORDER BY 
+                ROW_NUMBER() OVER (ORDER BY 
                     <choose>
-                        <when test="searchParams.sortBy == 'created_at'">
-                            c.created_at ${searchParams.sortOrder}
-                        </when>
-                        <when test="searchParams.sortBy == 'risk_level'">
-                            (CASE 
-                                WHEN c.report_count > 5 THEN 3
-                                WHEN c.report_count > 2 THEN 2
-                                ELSE 1
-                            END) ${searchParams.sortOrder}, c.created_at DESC
-                        </when>
-                        <when test="searchParams.sortBy == 'report_count'">
-                            c.report_count ${searchParams.sortOrder}, c.created_at DESC
-                        </when>
-                        <otherwise>
-                            c.created_at DESC
-                        </otherwise>
+                        <when test="searchDto.sortBy == 'created_at'">c.created_at ${searchDto.sortOrder}</when>
+                        <when test="searchDto.sortBy == 'risk_level'">(CASE WHEN c.report_count > 5 THEN 3 WHEN c.report_count > 2 THEN 2 ELSE 1 END) ${searchDto.sortOrder}, c.created_at DESC</when>
+                        <when test="searchDto.sortBy == 'report_count'">c.report_count ${searchDto.sortOrder}, c.created_at DESC</when>
+                        <otherwise>c.created_at DESC</otherwise>
                     </choose>
                 ) as rnum
             FROM complaints c
             LEFT JOIN (
-                SELECT 
-                    complaint_id,
-                    status,
-                    ROW_NUMBER() OVER (PARTITION BY complaint_id ORDER BY created_at DESC) as rn
+                SELECT complaint_id, status, ROW_NUMBER() OVER (PARTITION BY complaint_id ORDER BY created_at DESC) as rn
                 FROM complaint_histories
             ) ch ON c.complaint_id = ch.complaint_id AND ch.rn = 1
             <include refid="searchCondition"/>
         ) 
-         WHERE rnum BETWEEN #{searchParams.startRow} AND #{searchParams.endRow}
+        WHERE rnum BETWEEN #{searchDto.startRow} AND #{searchDto.endRow}
     </select>
+
+
 
     <!-- 민원 총 개수 조회 -->
     <select id="getComplaintCount" resultType="int">
         SELECT COUNT(*)
         FROM complaints c
         LEFT JOIN (
-            SELECT 
-                complaint_id,
-                status,
-                ROW_NUMBER() OVER (PARTITION BY complaint_id ORDER BY created_at DESC) as rn
+            SELECT complaint_id, status, ROW_NUMBER() OVER (PARTITION BY complaint_id ORDER BY created_at DESC) as rn
             FROM complaint_histories
         ) ch ON c.complaint_id = ch.complaint_id AND ch.rn = 1
         <include refid="searchCondition"/>
@@ -195,28 +152,13 @@
     <!-- 민원 상세 조회 -->
 	<select id="getComplaintById" resultMap="ComplaintDetailResultMap">
 	    SELECT 
-	        c.*,
-	        ch.status,
-	        CASE 
-	            WHEN c.report_count > 5 THEN 'HIGH'
-	            WHEN c.report_count > 2 THEN 'MEDIUM'
-	            ELSE 'LOW'
-	        END as risk_level,
+	        c.*, ch.status,
+	        CASE WHEN c.report_count > 5 THEN 'HIGH' WHEN c.report_count > 2 THEN 'MEDIUM' ELSE 'LOW' END as risk_level,
 	        c.report_count * 10 as risk_score, 
-	        
-	      
-	        p.photo_id,
-	        p.file_url,
-	        p.original_name,
-	        p.stored_name,
-	        p.created_at as photo_created_at
-	        
+	        p.photo_id, p.file_url, p.original_name, p.stored_name, p.created_at as photo_created_at
 	    FROM complaints c
 	    LEFT JOIN (
-	        SELECT 
-	            complaint_id,
-	            status,
-	            ROW_NUMBER() OVER (PARTITION BY complaint_id ORDER BY created_at DESC) as rn
+	        SELECT complaint_id, status, ROW_NUMBER() OVER (PARTITION BY complaint_id ORDER BY created_at DESC) as rn
 	        FROM complaint_histories
 	    ) ch ON c.complaint_id = ch.complaint_id AND ch.rn = 1
 	    LEFT JOIN complaint_photos p ON c.complaint_id = p.complaint_id

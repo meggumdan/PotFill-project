@@ -1,3 +1,7 @@
+/*
+* 작성자 : 최산하
+*/
+
 package com.potfill.admin.complaints.controller;
 
 import java.util.HashMap;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.potfill.admin.complaints.model.Complaint;
+import com.potfill.admin.complaints.model.ComplaintSearchRequestDto;
 import com.potfill.admin.complaints.service.ComplaintService;
 import com.potfill.admin.complaints.service.GeminiService;
 
@@ -53,41 +58,13 @@ public class ComplaintController {
     @GetMapping("/api/list")
     @ResponseBody
     public Map<String, Object> getComplaintList(
-            @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
-            @RequestParam(value = "searchType", required = false) String searchType,
-            @RequestParam(value = "searchKeyword", required = false) String searchKeyword,
-            @RequestParam(value = "status", required = false) String status,
-            @RequestParam(value = "riskLevel", required = false) String riskLevel,
-            @RequestParam(value = "gu", required = false) String gu,
-            @RequestParam(value = "dong", required = false) String dong,
-            @RequestParam(value = "sortBy", defaultValue = "created_at") String sortBy,
-            @RequestParam(value = "sortOrder", defaultValue = "DESC") String sortOrder,
-            @RequestParam(value = "startDate", required = false) String startDate,
-            @RequestParam(value = "endDate", required = false) String endDate,
+    		ComplaintSearchRequestDto searchDto, // DTO로 잘 받고 있습니다.
             HttpSession session) {
-        
-        Map<String, Object> searchParams = new HashMap<>();
-        searchParams.put("page", page);
-        searchParams.put("pageSize", pageSize);
-        searchParams.put("searchType", searchType);
-        searchParams.put("searchKeyword", searchKeyword);
-        searchParams.put("status", status);
-        searchParams.put("riskLevel", riskLevel);
-        searchParams.put("gu", gu);
-        searchParams.put("dong", dong);
-        searchParams.put("sortBy", sortBy);
-        searchParams.put("sortOrder", sortOrder);
-        searchParams.put("startDate", startDate);
-        searchParams.put("endDate", endDate);
-        
-        // 세션에서 관리자 정보 가져오기 (필요시)
-        // Long adminId = (Long) session.getAttribute("adminId");
-        // searchParams.put("adminId", adminId);
-        
+
         Map<String, Object> response = new HashMap<>();
         try {
-            Map<String, Object> result = complaintService.getComplaintListWithPaging(searchParams);
+
+            Map<String, Object> result = complaintService.getComplaintListWithPaging(searchDto); 
             response.put("success", true);
             response.put("data", result);
         } catch (Exception e) {
