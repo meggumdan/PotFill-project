@@ -1,5 +1,6 @@
 /*
  * 작성자 : 이지민
+ * 설명   : COMPLAINTS 테이블의 정보를 담는 모델
  */
 package com.potfill.admin.district.model;
 

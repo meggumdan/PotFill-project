@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 	작성자 : 이지민
+	설명   : MyBatis Mapper 설정으로
+			관할 코드를 조건으로 민원 현황 데이터를 조회하기 위한 SQL 쿼리들을 정의한 매퍼 파일
  -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
@@ -126,7 +128,7 @@
 		) lch ON c.COMPLAINT_ID = lch.COMPLAINT_ID
 		WHERE r.RISK_GRADE &gt;= 7
 		AND c.GU = #{districtCode}
-		AND lch.STATUS NOT IN ('COMPLETED', 'REJECTED')  <!-- ✅ 추가된 조건 -->
+		AND lch.STATUS NOT IN ('COMPLETED', 'REJECTED')
 		ORDER BY r.RISK_GRADE DESC, c.CREATED_AT DESC
 		)
 		WHERE ROWNUM &lt;= 10

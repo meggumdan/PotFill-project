@@ -1,4 +1,5 @@
 # 작성자 : 이지민
+# 설명   : YOLOv8과 OpenCV로 이미지 속 포트홀을 감지해 면적과 최대 폭을 계산하고 표준 출력으로 반환하는 Python 분석 모듈
 import cv2
 import torch
 import sys
