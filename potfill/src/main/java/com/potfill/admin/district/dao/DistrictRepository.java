@@ -1,5 +1,6 @@
 /*
  * 작성자 : 이지민
+ * 설명   : 관할 처리 목적의 MyBatis Mapper 인터페이스
  */
 package com.potfill.admin.district.dao;
 

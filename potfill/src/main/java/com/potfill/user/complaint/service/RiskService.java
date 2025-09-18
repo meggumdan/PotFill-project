@@ -1,5 +1,6 @@
 /*
- * 작성자 : 이지민 
+ * 작성자 : 이지민
+ * 설명   : 파이썬 실행 결과를 바탕으로 위험등급 반환하는 서비스
  */
 package com.potfill.user.complaint.service;
 
