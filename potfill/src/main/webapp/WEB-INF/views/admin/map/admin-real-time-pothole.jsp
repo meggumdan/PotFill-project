@@ -42,242 +42,251 @@
 		<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${jsKey }&libraries=services,clusterer"></script>
 		<script src="${pageContext.request.contextPath}/js/map/map-common.js?v=1"></script>
 		
-	<script>
-	/* ---- 라벨 및 상수 선언 ---- */
-	
-	// 클러스터 최소 레벨
-	const CLUSTER_MIN_LEVEL = 8;
-
-	// 민원 처리 상태 라벨 번역
-	  const STATUS_LABELS = {
-			    RECEIVED:   '접수',
-			    PROCESSING: '처리중',
-			    COMPLETED:  '완료',
-			    REJECTED:   '반려'
-			  };
-	
-		// 1) 지도 먼저 생성
-		var mapContainer = document.getElementById('map');
-		var mapOption = {
-			center: new kakao.maps.LatLng(37.5642135, 127.0016985),
-			level: 10
-		};
-		var map = new kakao.maps.Map(mapContainer, mapOption);
+		<script>
+			/* ---- 라벨 및 상수 선언 ---- */
 		
-		// 2) 클러스터러 생성 (이제 map 준비됨)
+			// 지도 최소 레벨
+			const MAP_MIN_LEVEL = 8;
 		
-		var clusterer = new kakao.maps.MarkerClusterer({
-			map: map,
-			averageCenter: true,
-			minLevel: CLUSTER_MIN_LEVEL,
-			disableClickZoom: true
-		}); //clusterer end
-
-		// 3) 서버 데이터 -> positions 구성
-		var positions = [];
-		<c:forEach items="${holeList}" var="row">
-			<c:if test="${not empty row['LAT'] and not empty row['LON']}">
-				positions.push({
-					latlng: new kakao.maps.LatLng(${row['LAT']}, ${row['LON']}),
-				reportCount: ${row['REPORTCOUNT']},
-				content: '', // 초기 내용 필요시 채우기
-				status: PotfillMap.mapStatus('${row['STATUS']}', STATUS_LABELS, '접수')
-				}); //positions.push end
-			</c:if>
-		</c:forEach>
-
-		// 4) 마커 이미지 공통 설정
-		var imageSize = new kakao.maps.Size(40, 40);
-		var imageOption = { offset: new kakao.maps.Point(20, 40) };
-
-		// 5) 클러스터러에 넣을 마커들 생성 (map 지정 X)
-		var clusterMarkers = positions.map(function (position) {
-			const imageName = PotfillMap.getMarkerIconName({
-				type: 'report',
-				status: position.status,
-				reportCount: position.reportCount
-				});
+			// 클러스터 최소 레벨
+			const CLUSTER_MIN_LEVEL = 6;
 			
-			var imageSrc = '${pageContext.request.contextPath}/images/' + imageName;
-			var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
-
-			return new kakao.maps.Marker({
-				position: position.latlng,
-				image: markerImage
-			}); //return new kakao.maps.Marker
-		}); //clusterMarkers
-
-		// 6) 클러스터러에 추가
-		clusterer.addMarkers(clusterMarkers);
-
-		// 7) 클러스터 클릭 핸들러
-		kakao.maps.event.addListener(clusterer, 'clusterclick', function (cluster) {
-			var level = map.getLevel() - 1;
-
-			map.setLevel(level, { 
-				anchor: cluster.getCenter(),
-			});
-		}); // kakao.maps.event.addListener
+			
+			// 지도 기본 좌표
+			const DEFAULT_LAT_LNG = new kakao.maps.LatLng(37.5642135, 127.0016985);
 		
-		 // 내 위치 마커
-		   (function addAdminUserLocation() {
-		     var userMarker = null;
-		     var geocoderUser = new kakao.maps.services.Geocoder();
-		 
-		     // 내 위치 아이콘
-		     const userImage = PotfillMap.getMarkerIconName({
-					type: 'me'
+		
+			// 민원 처리 상태 라벨 번역
+			const STATUS_LABELS = {
+				RECEIVED: '접수',
+				PROCESSING: '처리중',
+				COMPLETED: '완료',
+				REJECTED: '반려'
+			};
+		
+			/* ---- 지도 함수 ---- */
+		
+			// 지도 먼저 생성
+			var mapContainer = document.getElementById('map');
+			var mapOption = {
+				center: DEFAULT_LAT_LNG,
+				level: MAP_MIN_LEVEL
+			};
+			var map = new kakao.maps.Map(mapContainer, mapOption);
+		
+			// 클러스터러 생성
+			var clusterer = new kakao.maps.MarkerClusterer({
+				map: map,
+				averageCenter: true,
+				minLevel: CLUSTER_MIN_LEVEL,
+				disableClickZoom: true
+			}); //clusterer end
+		
+			// 서버 데이터 -> positions 구성
+			var positions = [];
+			<c:forEach items="${holeList}" var="row">
+				<c:if test="${not empty row['LAT'] and not empty row['LON']}">
+					positions.push({
+						latlng: new kakao.maps.LatLng(${row['LAT']}, ${row['LON']}),
+					reportCount: ${row['REPORTCOUNT']},
+					content: '', // 초기 내용 필요시 채우기
+					status: PotfillMap.mapStatus('${row['STATUS']}', STATUS_LABELS, '접수')
+						}); //positions.push end
+				</c:if>
+			</c:forEach>
+		
+			// 마커 이미지 공통 설정
+			var imageSize = new kakao.maps.Size(40, 40);
+			var imageOption = { offset: new kakao.maps.Point(20, 40) };
+		
+			// 클러스터러에 넣을 마커들 생성 (map 지정 X)
+			var clusterMarkers = positions.map(function (position) {
+				const imageName = PotfillMap.getMarkerIconName({
+					type: 'report',
+					status: position.status,
+					reportCount: position.reportCount
 				});
-		     var imageSrcUser = '${pageContext.request.contextPath}/images/'+userImage;
-		     var userMarkerImage = new kakao.maps.MarkerImage(imageSrcUser, imageSize, imageOption);
-		 
-		     function upsertUserMarker(latlng) {
-		       if (!userMarker) {
-		    	   userMarker = new kakao.maps.Marker({ 
-		    		   position: latlng, 
-		    		   image: userMarkerImage,
-		    		   clickable: false,
-		    		   zIdex:0
-		    		});
-		    	   userMarker.setMap(map);
-		       } else {
-		    	   userMarker.setPosition(latlng);
-		       }
-		     }
-		 
-
-		    const fallback = new kakao.maps.LatLng(37.5642135, 127.0016985);
-		    
-		    // GPS 승인
-		    if (navigator.geolocation) {
-		      navigator.geolocation.getCurrentPosition(
-		        (positon) => {
-		          const location = new kakao.maps.LatLng(positon.coords.latitude, positon.coords.longitude);
-		          upsertUserMarker(location);
-		          map.setCenter(location);
-		        },
-		        (err) => {
-		          console.warn('Geolocation error:', err);
-		          upsertUserMarker(fallback);
-		          map.setCenter(fallback);
-		        },
-		        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-		      );
-		    } else {
-		    	upsertUserMarker(fallback);
-		      map.setCenter(fallback);
-		    }
-		  })();
 		
-		let overlayHiddenByCluster = false;
-
-		// 줌 이벤트
-		kakao.maps.event.addListener(map, 'zoom_changed', function () {
-			  const level = map.getLevel();
-			  const isClusteredNow = level >= CLUSTER_MIN_LEVEL;
-
-			  // 1) 클러스터링 상태로 바뀌면 숨기기
-			  if (isClusteredNow) {
-			    if (activeOverlay !== null && overlays[activeOverlay]) {
-			      overlays[activeOverlay].setMap(null);      
-			      overlayHiddenByCluster = true;              
-			    }
-			    return;
-			  }
-
-			  // 2) 클러스터 해제(줌 인)되면, 클러스터 때문에 숨긴 것만 복구
-			  if (!isClusteredNow) {
-			    if (overlayHiddenByCluster && activeOverlay !== null && overlays[activeOverlay]) {
-			      overlays[activeOverlay].setMap(map);        // 다시 보이기
-			      overlayHiddenByCluster = false;
-			    }
-			  }
-			});
-
-
-			var overlays = [];
-		var activeOverlay = null;
-		var geocoder = new kakao.maps.services.Geocoder();
-
-		clusterMarkers.forEach(function (marker, i) {
-			var overlay = new kakao.maps.CustomOverlay({
-				content: buildOverlayContent({
-					addressHtml: positions[i].content || '주소 로딩 중...',
-					idx: i,
-					reportCount: positions[i].reportCount,
-					status: positions[i].status,
-					zIndex: 1000
-				}), //buildOverlayContent
-				map: null,
-				position: positions[i].latlng,
-				yAnchor: 1
-			}); // var overlay = new kakao.maps.CustomOverlay
-			overlays[i] = overlay;
-
-			// 마커 클릭 이벤트
-			kakao.maps.event.addListener(marker, 'click', function () {
-				if (activeOverlay === i) {
-					overlays[i].setMap(null);
-					activeOverlay = null;
+				var imageSrc = '${pageContext.request.contextPath}/images/' + imageName;
+				var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+		
+				return new kakao.maps.Marker({
+					position: position.latlng,
+					image: markerImage
+				}); //return new kakao.maps.Marker
+			}); //clusterMarkers
+		
+			// 클러스터러에 추가
+			clusterer.addMarkers(clusterMarkers);
+		
+			// 클러스터 클릭 핸들러
+			kakao.maps.event.addListener(clusterer, 'clusterclick', function (cluster) {
+				var level = map.getLevel() - 1;
+		
+				map.setLevel(level, {
+					anchor: cluster.getCenter(),
+				});
+			}); // kakao.maps.event.addListener
+		
+			// 내 위치 마커
+			(function addUserLocation() {
+				var userMarker = null;
+				var geocoderUser = new kakao.maps.services.Geocoder();
+		
+				// 내 위치 아이콘
+				const userImage = PotfillMap.getMarkerIconName({
+					type: 'me'
+				}) || 'location-me.gif';
+				var imageSrcUser = '${pageContext.request.contextPath}/images/' + userImage;
+				var userMarkerImage = new kakao.maps.MarkerImage(imageSrcUser, imageSize, imageOption);
+		
+				function upsertUserMarker(latlng) {
+					if (!userMarker) {
+						userMarker = new kakao.maps.Marker({
+							position: latlng,
+							image: userMarkerImage,
+							clickable: false,
+							zIndex: 0
+						});
+						userMarker.setMap(map);
+					} else {
+						userMarker.setPosition(latlng);
+					}
+				}
+		
+		
+				const fallback = DEFAULT_LAT_LNG;
+		
+				// GPS 승인
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(
+						(position) => {
+							const location = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+							upsertUserMarker(location);
+							map.setCenter(location);
+						},
+						(err) => {
+							console.warn('Geolocation error:', err);
+							upsertUserMarker(fallback);
+							map.setCenter(fallback);
+						},
+						{ enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+					);
+				} else {
+					upsertUserMarker(fallback);
+					map.setCenter(fallback);
+				}
+			})();
+		
+			let overlayHiddenByCluster = false;
+		
+			// 줌 이벤트
+			kakao.maps.event.addListener(map, 'zoom_changed', function () {
+				const level = map.getLevel();
+				const isClusteredNow = level >= CLUSTER_MIN_LEVEL;
+		
+				// 1) 클러스터링 상태로 바뀌면 숨기기
+				if (isClusteredNow) {
+					if (activeOverlay !== null && overlays[activeOverlay]) {
+						overlays[activeOverlay].setMap(null);
+						overlayHiddenByCluster = true;
+					}
 					return;
-				} // if
+				}
+		
+				// 2) 클러스터 해제(줌 인)되면, 클러스터 때문에 숨긴 것만 복구
+				if (!isClusteredNow) {
+					if (overlayHiddenByCluster && activeOverlay !== null && overlays[activeOverlay]) {
+						overlays[activeOverlay].setMap(map);        // 다시 보이기
+						overlayHiddenByCluster = false;
+					}
+				}
+			});
+		
+		
+			var overlays = [];
+			var activeOverlay = null;
+			var geocoder = new kakao.maps.services.Geocoder();
+		
+			clusterMarkers.forEach(function (marker, i) {
+				var overlay = new kakao.maps.CustomOverlay({
+					content: buildOverlayContent({
+						addressHtml: positions[i].content || '주소 로딩 중...',
+						idx: i,
+						reportCount: positions[i].reportCount,
+						status: positions[i].status,
+						zIndex: 1000
+					}), //buildOverlayContent
+					map: null,
+					position: positions[i].latlng,
+					yAnchor: 1
+				}); // var overlay = new kakao.maps.CustomOverlay
+				overlays[i] = overlay;
+		
+				// 마커 클릭 이벤트
+				kakao.maps.event.addListener(marker, 'click', function () {
+					if (activeOverlay === i) {
+						overlays[i].setMap(null);
+						activeOverlay = null;
+						return;
+					} // if
+					if (activeOverlay !== null && overlays[activeOverlay]) {
+						overlays[activeOverlay].setMap(null);
+					} // if
+					overlays[i].setZIndex(9999);
+					overlays[i].setMap(map);
+					activeOverlay = i;
+		
+					// 역지오코딩
+					PotfillMap.searchDetailAddrFromCoords(geocoder, marker.getPosition(), function (result, status) {
+						var detailAddr = '주소를 불러오지 못했습니다.';
+						if (status === kakao.maps.services.Status.OK && Array.isArray(result) && result.length > 0) {
+							detailAddr = (result[0].road_address ? '도로명주소 : ' + result[0].road_address.address_name + '<br>' : '')
+								+ '지번 주소 : ' + result[0].address.address_name;
+						} // if
+						overlay.setContent(
+							buildOverlayContent({
+								addressHtml: detailAddr || '주소 로딩 중...',
+								idx: i,
+								reportCount: positions[i].reportCount,
+								status: positions[i].status
+							}), // buildOverlayContent
+						); // overlay.setContent
+					}); // searchDetailAddrFromCoords
+					map.setCenter(marker.getPosition());
+				}); // kakao.maps.event.addListener
+			});
+			kakao.maps.event.addListener(map, 'click', () => {
 				if (activeOverlay !== null && overlays[activeOverlay]) {
 					overlays[activeOverlay].setMap(null);
+					activeOverlay = null;
 				} // if
-				overlays[i].setZIndex(9999);
-				overlays[i].setMap(map);
-				activeOverlay = i;
-
-				// 역지오코딩
-				PotfillMap.searchDetailAddrFromCoords(geocoder, marker.getPosition(), function (result, status) {
-					var detailAddr = '주소를 불러오지 못했습니다.';
-					if (status === kakao.maps.services.Status.OK && Array.isArray(result) && result.length > 0) {
-						detailAddr = (result[0].road_address ? '도로명주소 : ' + result[0].road_address.address_name + '<br>' : '')
-							+ '지번 주소 : ' + result[0].address.address_name;
-					} // if
-					overlay.setContent(
-						buildOverlayContent({
-							addressHtml: detailAddr || '주소 로딩 중...',
-							idx: i,
-							reportCount: positions[i].reportCount,
-							status: positions[i].status
-						}), // buildOverlayContent
-					); // overlay.setContent
-				}); // searchDetailAddrFromCoords
-				map.setCenter(marker.getPosition());
 			}); // kakao.maps.event.addListener
-		});
-		kakao.maps.event.addListener(map, 'click', () => {
-			if (activeOverlay !== null && overlays[activeOverlay]) {
-				overlays[activeOverlay].setMap(null);
-				activeOverlay = null;
-			} // if
-		}); // kakao.maps.event.addListener
-
-
-		function buildOverlayContent({ addressHtml = '', idx, status = '', reportCount = '' } = {}) {
-			return (
-				'<div class="wrap">' +
-				'  <div class="info">' +
-				'    <div class="title">포트홀 정보 ' +
-				'      <div class="close" onclick="closeOverlay(' + idx + ')" title="닫기"></div>' +
-				'    </div>' +
-				'    <div class="body">' +
-				'      <div class="desc">' +
-				'        <div class="ellipsis">' + (addressHtml || '') + '</div>' +
-				'        <div class="ellipsis"><b>상태</b>: ' + status + '</div>' +     
-				'        <div class="ellipsis"><b>누적신고 수</b>: ' + reportCount + '</div>' +  
-				'      </div>' +
-				'    </div>' +
-				'  </div>' +
-				'</div>'
-			);
-		} // buildOverlayContent
-
-		function closeOverlay(idx) {
-			if (overlays[idx]) overlays[idx].setMap(null);
-			if (activeOverlay === idx) activeOverlay = null;
-		}
-	</script>
+		
+		
+			function buildOverlayContent({ addressHtml = '', idx, status = '', reportCount = '' } = {}) {
+				return (
+					'<div class="wrap">' +
+					'  <div class="info">' +
+					'    <div class="title">포트홀 정보 ' +
+					'      <div class="close" onclick="closeOverlay(' + idx + ')" title="닫기"></div>' +
+					'    </div>' +
+					'    <div class="body">' +
+					'      <div class="desc">' +
+					'        <div class="ellipsis">' + (addressHtml || '') + '</div>' +
+					'        <div class="ellipsis"><b>상태</b>: ' + status + '</div>' +
+					'        <div class="ellipsis"><b>누적신고 수</b>: ' + reportCount + '</div>' +
+					'      </div>' +
+					'    </div>' +
+					'  </div>' +
+					'</div>'
+				);
+			} // buildOverlayContent
+		
+			function closeOverlay(idx) {
+				if (overlays[idx]) overlays[idx].setMap(null);
+				if (activeOverlay === idx) activeOverlay = null;
+			}
+		</script>
 </body>
 </html>
