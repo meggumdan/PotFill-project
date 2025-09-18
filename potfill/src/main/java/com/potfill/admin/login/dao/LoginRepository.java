@@ -1,3 +1,7 @@
+/*
+ * 작성자 : 김슬기
+ * 설명 : DB의 로그인 관련 데이터 접근
+ */
 package com.potfill.admin.login.dao;
 
 import com.potfill.admin.login.model.Login;

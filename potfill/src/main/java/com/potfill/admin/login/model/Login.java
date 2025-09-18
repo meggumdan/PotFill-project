@@ -1,3 +1,7 @@
+/*
+ * 작성자 : 김슬기
+ * 설명 : 로그인 데이터 객체
+ */
 package com.potfill.admin.login.model;
 
 import lombok.Getter;

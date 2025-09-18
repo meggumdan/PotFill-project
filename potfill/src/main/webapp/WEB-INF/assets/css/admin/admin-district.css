@@ -1,7 +1,8 @@
-@charset "UTF-8";
 /*
 * 작성자 : 이지민
 */
+@charset "UTF-8";
+
 html, body {
   overflow: auto;              /* 스크롤 동작은 허용 */
   -ms-overflow-style: none;    /* IE, 구형 Edge */

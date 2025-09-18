@@ -1,5 +1,6 @@
 /*
 * 작성자 : 최산하
+* 설명 : 민원 관리 인터페이스
 */
 
 package com.potfill.admin.complaints.service;

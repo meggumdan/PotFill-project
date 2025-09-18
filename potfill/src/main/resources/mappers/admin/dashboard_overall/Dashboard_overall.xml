@@ -4,6 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- 
 	작성자 : 최영준
+	설명 : 전체 민원과 주요 장소를 대상으로 통계 데이터를 조회하는 매퍼
 -->
 <mapper
 	namespace="com.potfill.admin.dashboard_overall.dao.DashboardOverallRepository">

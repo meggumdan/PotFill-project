@@ -1,7 +1,7 @@
 /*
  * 작성자 : 이지민
  * 설명   : 관할 처리 대시보드 내 요청을 처리하는 Spring MVC 컨트롤러
- *			민원 ID를 세션에 저장해서 활용
+ *		   민원 ID를 세션에 저장해서 활용
  */
 package com.potfill.admin.district.controller;
 

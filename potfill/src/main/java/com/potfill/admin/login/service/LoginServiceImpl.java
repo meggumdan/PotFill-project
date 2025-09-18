@@ -1,3 +1,7 @@
+/*
+ * 작성자 : 김슬기
+ * 설명 : 로그인 비즈니스 로직 구현체
+ */
 package com.potfill.admin.login.service;
 
 import org.springframework.beans.factory.annotation.Autowired;

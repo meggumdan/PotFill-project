@@ -1,5 +1,6 @@
 /*
 * 작성자 : 최영준
+* 설명 : 관리자 메인 대시보드 관련 HTTP 요청 처리
 */
 package com.potfill.admin.dashboard_overall.controller;
 
