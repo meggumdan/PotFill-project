@@ -1,3 +1,7 @@
+/*
+ * 작성자 : 김슬기
+ * 설명 : 지도 관련 비즈니스 로직 구현체
+ */
 package com.potfill.user.map.service;
 
 import java.util.List;

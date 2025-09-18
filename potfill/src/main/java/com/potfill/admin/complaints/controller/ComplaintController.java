@@ -1,5 +1,6 @@
 /*
 * 작성자 : 최산하, 이지민
+* 설명 : 관리자의 민원(신고) 관리 관련 요청 처리
 */
 
 package com.potfill.admin.complaints.controller;

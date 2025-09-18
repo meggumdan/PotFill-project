@@ -1,3 +1,7 @@
+/*
+ * 작성자 : 김슬기
+ * 설명 : 포트홀 목록 데이터 객체
+ */
 package com.potfill.user.map.model;
 
 import lombok.Getter;

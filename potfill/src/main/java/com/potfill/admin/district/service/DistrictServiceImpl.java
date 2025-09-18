@@ -1,5 +1,6 @@
 /*
  * 작성자 : 이지민
+ * 설명 : 민원 지역 관련 비즈니스 로직 구현체
  */
 package com.potfill.admin.district.service;
 

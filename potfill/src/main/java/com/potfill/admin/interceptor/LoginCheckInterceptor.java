@@ -1,5 +1,6 @@
 /*
 * 작성자 : 최산하
+* 설명 : 관리자 로그인 인터셉터
 */
 package com.potfill.admin.interceptor;
 

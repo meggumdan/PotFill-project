@@ -1,5 +1,6 @@
 /*
 * 작성자 : 최산하
+* 설명 : 민원 관리 비즈니스 로직 구현
 */
 package com.potfill.admin.complaints.service;
 

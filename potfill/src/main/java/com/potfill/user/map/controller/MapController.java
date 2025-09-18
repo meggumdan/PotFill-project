@@ -1,3 +1,7 @@
+/*
+ * 작성자 : 김슬기
+ * 설명 : 사용자 및 관리자 지도 기능 요청 처리
+ */
 package com.potfill.user.map.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;

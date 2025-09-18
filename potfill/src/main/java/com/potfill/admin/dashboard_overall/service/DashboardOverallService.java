@@ -1,5 +1,6 @@
 /*
 * 작성자 : 최영준
+* 설명 : 대시보드 비즈니스 로직 인터페이스
 */
 package com.potfill.admin.dashboard_overall.service;
 

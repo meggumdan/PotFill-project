@@ -1,9 +1,6 @@
 /*
  * 작성자 : 김슬기
- * 작성일 : 2025.09.09
- 
- 
- 쪼꼼만 건들게요~  -산하-
+ * 설명 : 관리자 로그인 요청 처리
  */
 package com.potfill.admin.login.controller;
 

@@ -1,5 +1,6 @@
 /*
 * 작성자 : 최영준
+* 설명 : DB의 대시보드 데이터 접근
 */
 package com.potfill.admin.dashboard_overall.dao;
 
